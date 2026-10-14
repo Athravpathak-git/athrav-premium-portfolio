@@ -101,19 +101,21 @@ model Certification {
 }
 
 model Experience {
-  id           String    @id @default(uuid())
-  role         String
-  company      String
-  location     String?
-  startDate    DateTime  @map("start_date")
-  endDate      DateTime? @map("end_date")
-  isCurrent    Boolean   @default(false) @map("is_current")
-  description  String    @db.Text
-  technologies String[]
-  sortOrder    Int       @default(0) @map("sort_order")
-  isPublished  Boolean   @default(false) @map("is_published")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  id             String    @id @default(uuid())
+  role           String
+  company        String
+  employmentType String?   @default("Full-time") @map("employment_type")
+  workplaceType  String?   @default("On-site") @map("workplace_type")
+  location       String?
+  startDate      DateTime  @map("start_date")
+  endDate        DateTime? @map("end_date")
+  isCurrent      Boolean   @default(false) @map("is_current")
+  description    String    @db.Text
+  technologies   String[]
+  sortOrder      Int       @default(0) @map("sort_order")
+  isPublished    Boolean   @default(false) @map("is_published")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
   @@index([isPublished])
   @@index([sortOrder])
@@ -137,19 +139,22 @@ model Skill {
 }
 
 model Education {
-  id           String    @id @default(uuid())
-  institution  String
-  degree       String
-  fieldOfStudy String?   @map("field_of_study")
-  startDate    DateTime? @map("start_date")
-  endDate      DateTime? @map("end_date")
-  grade        String?
-  activities   String?   @db.Text
-  description  String?   @db.Text
-  sortOrder    Int       @default(0) @map("sort_order")
-  isPublished  Boolean   @default(false) @map("is_published")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  updatedAt    DateTime  @updatedAt @map("updated_at")
+  id               String    @id @default(uuid())
+  institution      String
+  degree           String
+  fieldOfStudy     String?   @map("field_of_study")
+  university       String?
+  status           String    @default("Completed")
+  startDate        DateTime? @map("start_date")
+  endDate          DateTime? @map("end_date")
+  expectedGradYear Int?      @map("expected_grad_year")
+  grade            String?
+  activities       String?   @db.Text
+  description      String?   @db.Text
+  sortOrder        Int       @default(0) @map("sort_order")
+  isPublished      Boolean   @default(false) @map("is_published")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
   @@index([isPublished])
   @@index([sortOrder])

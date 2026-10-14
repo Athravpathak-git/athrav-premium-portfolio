@@ -8,11 +8,15 @@ import { loginSchema } from '@/lib/validation.js';
 
 export async function POST(req) {
   try {
+    const isDev = process.env.NODE_ENV === 'development';
+    const limitMax = isDev ? 100 : 5;
+    const windowSeconds = 900;
+
     const ip = getClientIp(req);
     const ipLimitKey = `login:ip:${ip}`;
 
-    // Rate limit: 5 attempts per 15 minutes (900 seconds)
-    const ipLimit = await checkRateLimit(ipLimitKey, 5, 900);
+    // Rate limit check: inspect without incrementing points
+    const ipLimit = await checkRateLimit(ipLimitKey, limitMax, windowSeconds, false);
     if (!ipLimit.allowed) {
       const waitMinutes = Math.ceil((ipLimit.resetAt.getTime() - Date.now()) / 60000);
       await logAuditEvent({
@@ -35,6 +39,7 @@ export async function POST(req) {
     const parseResult = loginSchema.safeParse(body);
 
     if (!parseResult.success) {
+      await checkRateLimit(ipLimitKey, limitMax, windowSeconds, true);
       return NextResponse.json(
         { error: 'Invalid username or password.' },
         { status: 400 }
@@ -45,7 +50,7 @@ export async function POST(req) {
 
     // Rate limit by username as well to prevent distributed brute force on single account
     const userLimitKey = `login:user:${username.toLowerCase()}`;
-    const userLimit = await checkRateLimit(userLimitKey, 5, 900);
+    const userLimit = await checkRateLimit(userLimitKey, limitMax, windowSeconds, false);
     if (!userLimit.allowed) {
       return NextResponse.json(
         { error: 'Account temporarily locked due to repeated attempts. Please wait.' },
@@ -61,6 +66,10 @@ export async function POST(req) {
     });
 
     if (!user) {
+      // Record failure attempt points on invalid credentials
+      await checkRateLimit(ipLimitKey, limitMax, windowSeconds, true);
+      await checkRateLimit(userLimitKey, limitMax, windowSeconds, true);
+
       // Dummy verify to mitigate timing attacks
       await verifyPassword(
         password,
@@ -77,6 +86,10 @@ export async function POST(req) {
     const isValid = await verifyPassword(password, user.passwordHash);
 
     if (!isValid) {
+      // Record failure attempt points on invalid credentials
+      await checkRateLimit(ipLimitKey, limitMax, windowSeconds, true);
+      await checkRateLimit(userLimitKey, limitMax, windowSeconds, true);
+
       await logAuditEvent({
         userId: user.id,
         action: 'LOGIN_FAILED',

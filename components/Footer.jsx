@@ -1,12 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Shield, ArrowUp } from 'lucide-react';
+import { GitHubIcon, LinkedInIcon, TwitterXIcon, WebsiteIcon, EmailIcon } from '@/components/SocialIcons.jsx';
 
 export default function Footer() {
   const pathname = usePathname();
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/profile')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.profile) setProfile(data.profile);
+      })
+      .catch(() => {});
+  }, []);
 
   // Omit footer inside admin section
   if (pathname.startsWith('/admin')) {
@@ -46,6 +57,65 @@ export default function Footer() {
               </span>
               <span>Available for engineering opportunities</span>
             </div>
+
+            {/* Social Links */}
+            {profile && (
+              <div className="flex items-center space-x-2 pt-1">
+                {profile.githubUrl && (
+                  <a
+                    href={profile.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="GitHub Profile"
+                  >
+                    <GitHubIcon className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {profile.linkedinUrl && (
+                  <a
+                    href={profile.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="LinkedIn Profile"
+                  >
+                    <LinkedInIcon className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {profile.twitterUrl && (
+                  <a
+                    href={profile.twitterUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Twitter / X Profile"
+                  >
+                    <TwitterXIcon className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {profile.websiteUrl && (
+                  <a
+                    href={profile.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Personal Website"
+                  >
+                    <WebsiteIcon className="w-3.5 h-3.5" />
+                  </a>
+                )}
+                {profile.email && (
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Direct Email"
+                  >
+                    <EmailIcon className="w-3.5 h-3.5" />
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Navigation Sitemap */}

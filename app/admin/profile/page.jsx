@@ -228,6 +228,30 @@ export default function AdminProfilePage() {
                 className="w-full px-3.5 py-2 rounded-xl text-xs bg-white/5 border border-white/10 text-white placeholder-slate-500 focus-visible:ring-2 focus-visible:ring-slate-300 focus:outline-none"
               />
             </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-slate-400">Twitter / X URL</label>
+              <input
+                type="url"
+                name="twitterUrl"
+                value={profile.twitterUrl || ''}
+                onChange={handleChange}
+                placeholder="https://x.com/username"
+                className="w-full px-3.5 py-2 rounded-xl text-xs bg-white/5 border border-white/10 text-white placeholder-slate-500 focus-visible:ring-2 focus-visible:ring-slate-300 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-slate-400">Portfolio / Personal Website URL</label>
+              <input
+                type="url"
+                name="websiteUrl"
+                value={profile.websiteUrl || ''}
+                onChange={handleChange}
+                placeholder="https://athravpathak.com"
+                className="w-full px-3.5 py-2 rounded-xl text-xs bg-white/5 border border-white/10 text-white placeholder-slate-500 focus-visible:ring-2 focus-visible:ring-slate-300 focus:outline-none"
+              />
+            </div>
           </div>
         </div>
 

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma.js';
 import { requireAdmin } from '@/lib/auth-guard.js';
 import { logAuditEvent } from '@/lib/audit.js';
@@ -53,6 +54,15 @@ export async function POST(req) {
     req,
     metadata: { title: project.title, slug: project.slug, isPublished: project.isPublished },
   });
+
+  try {
+    revalidatePath('/projects');
+    revalidatePath(`/projects/${project.slug}`);
+    revalidatePath('/');
+    revalidatePath('/sitemap.xml');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, project });
 }
@@ -109,6 +119,18 @@ export async function PUT(req) {
     metadata: { title: updatedProject.title, slug: updatedProject.slug, isPublished: updatedProject.isPublished },
   });
 
+  try {
+    revalidatePath('/projects');
+    revalidatePath(`/projects/${updatedProject.slug}`);
+    if (current.slug !== updatedProject.slug) {
+      revalidatePath(`/projects/${current.slug}`);
+    }
+    revalidatePath('/');
+    revalidatePath('/sitemap.xml');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
+
   return NextResponse.json({ success: true, project: updatedProject });
 }
 
@@ -138,6 +160,15 @@ export async function DELETE(req) {
     req,
     metadata: { title: existing.title, slug: existing.slug },
   });
+
+  try {
+    revalidatePath('/projects');
+    revalidatePath(`/projects/${existing.slug}`);
+    revalidatePath('/');
+    revalidatePath('/sitemap.xml');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, message: 'Project deleted successfully.' });
 }

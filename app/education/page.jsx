@@ -36,20 +36,47 @@ export default async function EducationPage() {
               key={edu.id}
               className="p-6 sm:p-8 rounded-2xl glass-panel glass-panel-hover space-y-4"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <h2 className="text-xl font-medium text-white">{edu.institution}</h2>
-                  <p className="text-sm text-slate-300 font-normal">
-                    {edu.degree}
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2.5 flex-wrap">
+                    <h2 className="text-xl font-medium text-white">{edu.institution}</h2>
+                    {edu.status && (
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
+                          edu.status === 'Pursuing'
+                            ? 'bg-sky-500/15 text-sky-300 border border-sky-500/25'
+                            : edu.status === 'Completed'
+                            ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
+                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/25'
+                        }`}
+                      >
+                        {edu.status === 'Pursuing'
+                          ? `Pursuing • Expected ${edu.expectedGradYear || 'Upcoming'}`
+                          : edu.status}
+                      </span>
+                    )}
+                  </div>
+                  {edu.university && (
+                    <p className="text-xs text-slate-400">
+                      Affiliated with <span className="text-slate-300">{edu.university}</span>
+                    </p>
+                  )}
+                  <p className="text-sm text-slate-300 font-normal pt-0.5">
+                    <span className="font-medium text-slate-200">{edu.degree}</span>
                     {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}
                   </p>
                 </div>
-                {(edu.startDate || edu.endDate) && (
-                  <span className="flex items-center space-x-1 text-xs text-slate-400">
+
+                {(edu.startDate || edu.endDate || edu.expectedGradYear) && (
+                  <span className="flex items-center space-x-1.5 text-xs text-slate-400 shrink-0 self-start">
                     <Calendar className="w-3.5 h-3.5 text-slate-500" />
                     <span>
                       {edu.startDate ? new Date(edu.startDate).getFullYear() : ''}
-                      {edu.endDate ? ` - ${new Date(edu.endDate).getFullYear()}` : ' - Present'}
+                      {edu.status === 'Pursuing'
+                        ? ` – Present`
+                        : edu.endDate
+                        ? ` – ${new Date(edu.endDate).getFullYear()}`
+                        : ' – Present'}
                     </span>
                   </span>
                 )}
@@ -57,21 +84,21 @@ export default async function EducationPage() {
 
               {edu.grade && (
                 <div className="text-xs text-slate-400">
-                  <span className="text-slate-500">Academic Standing: </span>
+                  <span className="text-slate-500">Academic Standing / Grade: </span>
                   <span className="text-slate-200 font-medium">{edu.grade}</span>
                 </div>
               )}
 
               {edu.description && (
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-light">
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-light whitespace-pre-line">
                   {edu.description}
                 </p>
               )}
 
               {edu.activities && (
                 <div className="pt-2 text-xs text-slate-400 border-t border-white/[0.06]">
-                  <span className="text-slate-500 font-medium">Activities & Societies: </span>
-                  <span>{edu.activities}</span>
+                  <span className="text-slate-500 font-medium">Activities & Leadership: </span>
+                  <span className="text-slate-300">{edu.activities}</span>
                 </div>
               )}
             </div>

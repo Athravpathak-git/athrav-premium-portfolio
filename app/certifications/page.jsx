@@ -36,23 +36,41 @@ export default async function CertificationsPage() {
               key={cert.id}
               className="p-6 rounded-2xl glass-panel glass-panel-hover flex flex-col justify-between space-y-4"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span className="font-medium text-slate-300">{cert.issuer}</span>
-                  {cert.issueDate && (
-                    <span className="flex items-center space-x-1 text-slate-500">
-                      <Calendar className="w-3 h-3" />
-                      <span>
-                        {new Date(cert.issueDate).toLocaleDateString('en-US', {
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </span>
-                    </span>
-                  )}
+              <div className="space-y-3.5">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center space-x-3">
+                    {cert.imageUrl ? (
+                      <div className="w-12 h-12 rounded-xl bg-black/60 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center p-1">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={cert.imageUrl}
+                          alt={cert.title}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 shrink-0">
+                        <Award className="w-5 h-5 text-sky-400" />
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-xs font-semibold text-slate-300 block">{cert.issuer}</span>
+                      {cert.issueDate && (
+                        <span className="flex items-center space-x-1 text-[11px] text-slate-500 mt-0.5">
+                          <Calendar className="w-3 h-3" />
+                          <span>
+                            {new Date(cert.issueDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              year: 'numeric',
+                            })}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                <h2 className="text-base font-medium text-white">{cert.title}</h2>
+                <h2 className="text-base font-medium text-white leading-snug">{cert.title}</h2>
 
                 {cert.credentialId && (
                   <p className="text-xs text-slate-500 font-mono">

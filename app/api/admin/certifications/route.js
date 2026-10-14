@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma.js';
 import { requireAdmin } from '@/lib/auth-guard.js';
 import { logAuditEvent } from '@/lib/audit.js';
@@ -46,6 +47,13 @@ export async function POST(req) {
     metadata: { title: certification.title, issuer: certification.issuer },
   });
 
+  try {
+    revalidatePath('/certifications');
+    revalidatePath('/about');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
+
   return NextResponse.json({ success: true, certification });
 }
 
@@ -84,6 +92,13 @@ export async function PUT(req) {
     metadata: { title: updated.title },
   });
 
+  try {
+    revalidatePath('/certifications');
+    revalidatePath('/about');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
+
   return NextResponse.json({ success: true, certification: updated });
 }
 
@@ -113,6 +128,13 @@ export async function DELETE(req) {
     req,
     metadata: { title: existing.title },
   });
+
+  try {
+    revalidatePath('/certifications');
+    revalidatePath('/about');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, message: 'Certification deleted successfully.' });
 }

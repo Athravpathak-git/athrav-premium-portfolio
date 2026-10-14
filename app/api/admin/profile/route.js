@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma.js';
 import { requireAdmin } from '@/lib/auth-guard.js';
 import { logAuditEvent } from '@/lib/audit.js';
@@ -55,6 +56,15 @@ export async function PUT(req) {
     req,
     metadata: { name: profile.name },
   });
+
+  try {
+    revalidatePath('/');
+    revalidatePath('/about');
+    revalidatePath('/contact');
+    revalidatePath('/sitemap.xml');
+  } catch (err) {
+    // Non-fatal if invoked outside Next server runtime
+  }
 
   return NextResponse.json({ success: true, profile });
 }

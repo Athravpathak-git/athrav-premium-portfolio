@@ -47,11 +47,22 @@ export default function AdminProjectsPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  const [techSuggestions, setTechSuggestions] = useState([]);
+  const [categorySuggestions, setCategorySuggestions] = useState([]);
+
   const fetchProjects = async () => {
     try {
-      const res = await fetch('/api/admin/projects');
+      const [res, sugRes] = await Promise.all([
+        fetch('/api/admin/projects'),
+        fetch('/api/admin/suggestions'),
+      ]);
       const data = await res.json();
       if (data.projects) setProjects(data.projects);
+      if (sugRes.ok) {
+        const sugData = await sugRes.json();
+        if (sugData.techTags) setTechSuggestions(sugData.techTags);
+        if (sugData.categories) setCategorySuggestions(sugData.categories);
+      }
     } catch (err) {
       setError('Failed to fetch projects.');
     } finally {
@@ -62,6 +73,19 @@ export default function AdminProjectsPage() {
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  const handleToggleTechTag = (tag) => {
+    const current = formData.techStack
+      ? formData.techStack.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+    let updated;
+    if (current.includes(tag)) {
+      updated = current.filter((t) => t.toLowerCase() !== tag.toLowerCase());
+    } else {
+      updated = [...current, tag];
+    }
+    setFormData((prev) => ({ ...prev, techStack: updated.join(', ') }));
+  };
 
   const handleCreateNew = () => {
     setCurrentProject(null);
@@ -317,11 +341,17 @@ export default function AdminProjectsPage() {
               <input
                 type="text"
                 required
+                list="proj-category-list"
                 value={formData.category}
                 onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
                 placeholder="Full Stack / Systems / Security"
                 className="w-full px-4 py-2 rounded-xl text-xs bg-white/5 border border-white/10 text-white placeholder-slate-500 focus-visible:ring-2 focus-visible:ring-slate-300 focus:outline-none"
               />
+              <datalist id="proj-category-list">
+                {categorySuggestions.map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
             </div>
 
             <div className="space-y-1.5">
@@ -398,17 +428,54 @@ export default function AdminProjectsPage() {
             />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <label className="text-xs font-medium text-slate-300">
               Technologies (comma separated)
             </label>
             <input
               type="text"
+              list="proj-tech-list"
               value={formData.techStack}
               onChange={(e) => setFormData((prev) => ({ ...prev, techStack: e.target.value }))}
               placeholder="Next.js, PostgreSQL, Prisma, Docker, Three.js"
               className="w-full px-4 py-2 rounded-xl text-xs bg-white/5 border border-white/10 text-white placeholder-slate-500 focus-visible:ring-2 focus-visible:ring-slate-300 focus:outline-none"
             />
+            <datalist id="proj-tech-list">
+              {techSuggestions.map((tag) => (
+                <option key={tag} value={tag} />
+              ))}
+            </datalist>
+
+            {/* Quick-add suggestions chips */}
+            {techSuggestions.length > 0 && (
+              <div className="space-y-1.5 pt-1">
+                <span className="text-[11px] text-slate-400 block">Popular & database suggestions (click to add/remove):</span>
+                <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-2 rounded-xl bg-white/[0.02] border border-white/5">
+                  {techSuggestions.map((tag) => {
+                    const active = formData.techStack
+                      ? formData.techStack
+                          .split(',')
+                          .map((s) => s.trim().toLowerCase())
+                          .includes(tag.toLowerCase())
+                      : false;
+                    return (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => handleToggleTechTag(tag)}
+                        className={`text-[10px] px-2.5 py-1 rounded-md transition-all ${
+                          active
+                            ? 'bg-sky-500/25 border border-sky-400/40 text-sky-200 font-medium'
+                            : 'bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                        }`}
+                      >
+                        {tag} {active ? '✓' : '+'}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

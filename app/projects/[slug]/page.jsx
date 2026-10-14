@@ -12,9 +12,24 @@ export async function generateMetadata({ params }) {
   if (!project) {
     return { title: 'Project Not Found — Athrav Pathak' };
   }
+  const title = `${project.title} — Athrav Pathak`;
+  const description = project.summary || project.subtitle;
   return {
-    title: `${project.title} — Athrav Pathak`,
-    description: project.summary,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      url: `/projects/${project.slug}`,
+      images: project.imageUrl ? [{ url: project.imageUrl, alt: project.title }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: project.imageUrl ? [project.imageUrl] : [],
+    },
   };
 }
 
@@ -95,6 +110,18 @@ export default async function ProjectDetailPage({ params }) {
           )}
         </div>
       </div>
+
+      {/* Feature Image Banner */}
+      {project.imageUrl && (
+        <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-slate-900/60 shadow-2xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={project.imageUrl}
+            alt={project.title}
+            className="w-full max-h-[500px] object-cover"
+          />
+        </div>
+      )}
 
       {/* Technology Stack Matrix */}
       <div className="p-6 rounded-2xl glass-panel space-y-3">

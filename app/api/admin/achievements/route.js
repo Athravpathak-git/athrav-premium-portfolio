@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma.js';
 import { requireAdmin } from '@/lib/auth-guard.js';
 import { logAuditEvent } from '@/lib/audit.js';
@@ -45,6 +46,14 @@ export async function POST(req) {
     metadata: { title: achievement.title },
   });
 
+  try {
+    revalidatePath('/achievements');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
+
   return NextResponse.json({ success: true, achievement });
 }
 
@@ -82,6 +91,14 @@ export async function PUT(req) {
     metadata: { title: updated.title },
   });
 
+  try {
+    revalidatePath('/achievements');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
+
   return NextResponse.json({ success: true, achievement: updated });
 }
 
@@ -111,6 +128,14 @@ export async function DELETE(req) {
     req,
     metadata: { title: existing.title },
   });
+
+  try {
+    revalidatePath('/achievements');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, message: 'Achievement deleted successfully.' });
 }

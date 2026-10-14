@@ -37,26 +37,39 @@ export default async function ExperiencePage() {
               <div className="absolute left-1.5 sm:left-3.5 top-2 w-3.5 h-3.5 rounded-full bg-slate-800 border-2 border-slate-400 group-hover:border-sky-400 transition-colors" />
 
               <div className="p-6 rounded-2xl glass-panel glass-panel-hover space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div>
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                  <div className="space-y-1">
                     <h2 className="text-lg font-medium text-white">{exp.role}</h2>
-                    <p className="text-sm text-slate-300 font-normal">{exp.company}</p>
+                    <div className="flex items-center space-x-2 flex-wrap gap-y-1">
+                      <span className="text-sm font-medium text-slate-300">{exp.company}</span>
+                      {exp.employmentType && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20 font-medium">
+                          {exp.employmentType}
+                        </span>
+                      )}
+                      {exp.workplaceType && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 text-slate-400 border border-white/10">
+                          {exp.workplaceType}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 shrink-0 self-start">
                     {exp.location && (
                       <span className="flex items-center space-x-1">
-                        <MapPin className="w-3 h-3 text-slate-500" />
+                        <MapPin className="w-3.5 h-3.5 text-slate-500" />
                         <span>{exp.location}</span>
                       </span>
                     )}
                     <span className="flex items-center space-x-1">
-                      <Calendar className="w-3 h-3 text-slate-500" />
+                      <Calendar className="w-3.5 h-3.5 text-slate-500" />
                       <span>
                         {new Date(exp.startDate).toLocaleDateString('en-US', {
                           month: 'short',
                           year: 'numeric',
                         })}{' '}
-                        -{' '}
+                        –{' '}
                         {exp.isCurrent
                           ? 'Present'
                           : exp.endDate

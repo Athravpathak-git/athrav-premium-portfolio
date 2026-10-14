@@ -110,6 +110,18 @@ export default function ProjectsClientList({ initialProjects = [] }) {
                   )}
                 </div>
 
+                {project.imageUrl && (
+                  <div className="w-full h-44 rounded-xl overflow-hidden border border-white/10 bg-slate-900/60 relative group-hover:border-white/20 transition-colors">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={project.imageUrl}
+                      alt={project.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+
                 <div>
                   <h2 className="text-lg font-medium text-white group-hover:text-slate-100">
                     {project.title}

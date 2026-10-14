@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma.js';
 import { requireAdmin } from '@/lib/auth-guard.js';
 import { logAuditEvent } from '@/lib/audit.js';
@@ -27,13 +28,24 @@ export async function POST(req) {
     return NextResponse.json({ error: errorMsg }, { status: 400 });
   }
 
-  const { startDate, endDate, ...rest } = parseResult.data;
+  const { startDate, endDate, status, ...rest } = parseResult.data;
+
+  const parseSafeDate = (val) => {
+    if (!val) return null;
+    const trimmed = String(val).trim();
+    if (/^\d{4}$/.test(trimmed)) {
+      return new Date(`${trimmed}-01-01T00:00:00Z`);
+    }
+    const d = new Date(trimmed);
+    return isNaN(d.getTime()) ? null : d;
+  };
 
   const education = await prisma.education.create({
     data: {
       ...rest,
-      startDate: startDate ? new Date(startDate) : null,
-      endDate: endDate ? new Date(endDate) : null,
+      status: status || 'Completed',
+      startDate: parseSafeDate(startDate),
+      endDate: status === 'Pursuing' ? null : parseSafeDate(endDate),
     },
   });
 
@@ -45,6 +57,13 @@ export async function POST(req) {
     req,
     metadata: { institution: education.institution, degree: education.degree },
   });
+
+  try {
+    revalidatePath('/education');
+    revalidatePath('/about');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, education });
 }
@@ -66,12 +85,25 @@ export async function PUT(req) {
     return NextResponse.json({ error: errorMsg }, { status: 400 });
   }
 
+  const parseSafeDate = (val) => {
+    if (!val) return null;
+    const trimmed = String(val).trim();
+    if (/^\d{4}$/.test(trimmed)) {
+      return new Date(`${trimmed}-01-01T00:00:00Z`);
+    }
+    const d = new Date(trimmed);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  const { status, ...rest } = parseResult.data;
+
   const updated = await prisma.education.update({
     where: { id },
     data: {
-      ...parseResult.data,
-      startDate: startDate ? new Date(startDate) : null,
-      endDate: endDate ? new Date(endDate) : null,
+      ...rest,
+      status: status || 'Completed',
+      startDate: parseSafeDate(parseResult.data.startDate),
+      endDate: status === 'Pursuing' ? null : parseSafeDate(parseResult.data.endDate),
     },
   });
 
@@ -83,6 +115,13 @@ export async function PUT(req) {
     req,
     metadata: { institution: updated.institution, degree: updated.degree },
   });
+
+  try {
+    revalidatePath('/education');
+    revalidatePath('/about');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, education: updated });
 }
@@ -113,6 +152,13 @@ export async function DELETE(req) {
     req,
     metadata: { institution: existing.institution },
   });
+
+  try {
+    revalidatePath('/education');
+    revalidatePath('/about');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, message: 'Education record deleted successfully.' });
 }

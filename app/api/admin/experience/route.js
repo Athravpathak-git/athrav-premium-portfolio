@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma.js';
 import { requireAdmin } from '@/lib/auth-guard.js';
 import { logAuditEvent } from '@/lib/audit.js';
@@ -27,13 +28,14 @@ export async function POST(req) {
     return NextResponse.json({ error: errorMsg }, { status: 400 });
   }
 
-  const { startDate, endDate, ...rest } = parseResult.data;
+  const { startDate, endDate, isCurrent, ...rest } = parseResult.data;
 
   const experience = await prisma.experience.create({
     data: {
       ...rest,
+      isCurrent: Boolean(isCurrent),
       startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : null,
+      endDate: isCurrent ? null : (endDate ? new Date(endDate) : null),
     },
   });
 
@@ -45,6 +47,14 @@ export async function POST(req) {
     req,
     metadata: { role: experience.role, company: experience.company },
   });
+
+  try {
+    revalidatePath('/experience');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, experience });
 }
@@ -66,12 +76,15 @@ export async function PUT(req) {
     return NextResponse.json({ error: errorMsg }, { status: 400 });
   }
 
+  const { isCurrent: updatedIsCurrent, ...restUpdate } = parseResult.data;
+
   const updated = await prisma.experience.update({
     where: { id },
     data: {
-      ...parseResult.data,
-      startDate: new Date(startDate),
-      endDate: endDate ? new Date(endDate) : null,
+      ...restUpdate,
+      isCurrent: Boolean(updatedIsCurrent),
+      startDate: new Date(parseResult.data.startDate),
+      endDate: updatedIsCurrent ? null : (parseResult.data.endDate ? new Date(parseResult.data.endDate) : null),
     },
   });
 
@@ -83,6 +96,14 @@ export async function PUT(req) {
     req,
     metadata: { role: updated.role, company: updated.company },
   });
+
+  try {
+    revalidatePath('/experience');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, experience: updated });
 }
@@ -113,6 +134,14 @@ export async function DELETE(req) {
     req,
     metadata: { role: existing.role, company: existing.company },
   });
+
+  try {
+    revalidatePath('/experience');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, message: 'Experience deleted successfully.' });
 }

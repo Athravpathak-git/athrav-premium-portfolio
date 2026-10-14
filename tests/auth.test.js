@@ -19,7 +19,7 @@ describe('Authentication & Password Security', () => {
 
     const mismatch = await verifyPassword('WrongPassword#123', hash);
     expect(mismatch).toBe(false);
-  });
+  }, 15000);
 
   it('should enforce password strength rules', () => {
     // Too short

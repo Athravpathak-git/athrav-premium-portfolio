@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Terminal, Cpu, Database, Shield, Layers } from 'lucide-react';
 import { getProfile } from '@/lib/data.js';
+import { GitHubIcon, LinkedInIcon, TwitterXIcon, WebsiteIcon, EmailIcon } from '@/components/SocialIcons.jsx';
 
 export const metadata = {
   title: 'About — Athrav Pathak',
@@ -59,6 +60,17 @@ export default async function AboutPage() {
 
         {/* Sidebar Fact Sheet */}
         <div className="p-6 rounded-2xl glass-panel space-y-6 self-start">
+          {profile.avatarUrl && (
+            <div className="w-full aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/40 shadow-xl relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={profile.avatarUrl}
+                alt={profile.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
           <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
             Quick Overview
           </h2>
@@ -80,6 +92,66 @@ export default async function AboutPage() {
             <div>
               <span className="text-slate-500 block">Direct Inquiries</span>
               <span className="text-slate-200 font-medium">{profile.email}</span>
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="pt-4 border-t border-white/[0.08] space-y-2">
+            <span className="text-slate-500 text-xs block font-medium">Connect</span>
+            <div className="flex items-center space-x-2">
+              {profile.githubUrl && (
+                <a
+                  href={profile.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                  aria-label="GitHub Profile"
+                >
+                  <GitHubIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profile.linkedinUrl && (
+                <a
+                  href={profile.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                  aria-label="LinkedIn Profile"
+                >
+                  <LinkedInIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profile.twitterUrl && (
+                <a
+                  href={profile.twitterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                  aria-label="Twitter / X Profile"
+                >
+                  <TwitterXIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profile.websiteUrl && (
+                <a
+                  href={profile.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                  aria-label="Personal Website"
+                >
+                  <WebsiteIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profile.email && (
+                <a
+                  href={`mailto:${profile.email}`}
+                  className="p-2 rounded-lg glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                  aria-label="Direct Email"
+                >
+                  <EmailIcon className="w-4 h-4" />
+                </a>
+              )}
             </div>
           </div>
         </div>

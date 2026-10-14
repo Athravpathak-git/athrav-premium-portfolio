@@ -21,6 +21,18 @@ export default function Navbar() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
+  useEffect(() => {
+    fetch('/api/profile')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.profile?.avatarUrl) {
+          setAvatarUrl(data.profile.avatarUrl);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,8 +73,18 @@ export default function Navbar() {
               className="group flex items-center space-x-2.5 text-white transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-slate-300 rounded-md"
               aria-label="Athrav Pathak Portfolio Home"
             >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-slate-800 to-slate-600 border border-white/20 flex items-center justify-center font-semibold text-xs tracking-wider text-slate-100 group-hover:border-white/40 transition-colors">
-                AP
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-slate-800 to-slate-600 border border-white/20 flex items-center justify-center font-semibold text-xs tracking-wider text-slate-100 group-hover:border-white/40 transition-colors overflow-hidden shrink-0">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt="Athrav Pathak"
+                    className="w-full h-full object-cover"
+                    onError={() => setAvatarUrl(null)}
+                  />
+                ) : (
+                  <span>AP</span>
+                )}
               </div>
               <span className="font-medium tracking-tight text-sm sm:text-base text-slate-200">
                 ATHRAV PATHAK

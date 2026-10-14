@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, Code2, Database, ShieldCheck, Cpu, ArrowUpRight, Sparkles } from 'lucide-react';
 import Hero3DScene from '@/components/Hero3DScene.jsx';
 import { getProfile, getFeaturedProjects, getSkills } from '@/lib/data.js';
+import { GitHubIcon, LinkedInIcon, TwitterXIcon, WebsiteIcon, EmailIcon } from '@/components/SocialIcons.jsx';
 
 export const revalidate = 60; // Incremental static regeneration
 
@@ -25,9 +26,21 @@ export default async function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Hero Left Content */}
           <div className="lg:col-span-7 space-y-8">
-            <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full glass-panel text-xs text-slate-300">
-              <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-              <span>Full-Stack Architecture & PostgreSQL Engineering</span>
+            <div className="flex items-center space-x-3.5 flex-wrap gap-y-2">
+              {profile.avatarUrl && (
+                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative bg-slate-900 shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.avatarUrl}
+                    alt={profile.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full glass-panel text-xs text-slate-300">
+                <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                <span>Full-Stack Architecture & PostgreSQL Engineering</span>
+              </div>
             </div>
 
             <div className="space-y-4">
@@ -40,21 +53,80 @@ export default async function HomePage() {
               </p>
             </div>
 
-            {/* Call to Actions */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link
-                href="/projects"
-                className="inline-flex items-center space-x-2 px-6 py-3 rounded-full text-xs sm:text-sm font-medium bg-white text-black hover:bg-slate-200 transition-all shadow-xl hover:shadow-white/10"
-              >
-                <span>Explore Projects</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                href="/contact"
-                className="inline-flex items-center space-x-2 px-6 py-3 rounded-full text-xs sm:text-sm font-medium glass-button"
-              >
-                <span>Initiate Contact</span>
-              </Link>
+            {/* Call to Actions & Social Links */}
+            <div className="space-y-4 pt-2">
+              <div className="flex flex-wrap items-center gap-4">
+                <Link
+                  href="/projects"
+                  className="inline-flex items-center space-x-2 px-6 py-3 rounded-full text-xs sm:text-sm font-medium bg-white text-black hover:bg-slate-200 transition-all shadow-xl hover:shadow-white/10"
+                >
+                  <span>Explore Projects</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center space-x-2 px-6 py-3 rounded-full text-xs sm:text-sm font-medium glass-button"
+                >
+                  <span>Initiate Contact</span>
+                </Link>
+              </div>
+
+              {/* Verified Social Icons */}
+              <div className="flex items-center space-x-2.5 pt-1">
+                {profile.githubUrl && (
+                  <a
+                    href={profile.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-full glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="GitHub Profile"
+                  >
+                    <GitHubIcon className="w-4 h-4" />
+                  </a>
+                )}
+                {profile.linkedinUrl && (
+                  <a
+                    href={profile.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-full glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="LinkedIn Profile"
+                  >
+                    <LinkedInIcon className="w-4 h-4" />
+                  </a>
+                )}
+                {profile.twitterUrl && (
+                  <a
+                    href={profile.twitterUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-full glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Twitter / X Profile"
+                  >
+                    <TwitterXIcon className="w-4 h-4" />
+                  </a>
+                )}
+                {profile.websiteUrl && (
+                  <a
+                    href={profile.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-full glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Personal Website"
+                  >
+                    <WebsiteIcon className="w-4 h-4" />
+                  </a>
+                )}
+                {profile.email && (
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="p-2 rounded-full glass-panel hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Direct Email"
+                  >
+                    <EmailIcon className="w-4 h-4" />
+                  </a>
+                )}
+              </div>
             </div>
 
             {/* Quick Metrics / Focus */}
@@ -176,6 +248,17 @@ export default async function HomePage() {
                       </span>
                     )}
                   </div>
+                  {project.imageUrl && (
+                    <div className="w-full h-40 rounded-xl overflow-hidden border border-white/10 bg-slate-900/60 relative group-hover:border-white/20 transition-colors">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={project.imageUrl}
+                        alt={project.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
                   <div>
                     <h3 className="text-lg font-medium text-white group-hover:text-slate-100">
                       {project.title}

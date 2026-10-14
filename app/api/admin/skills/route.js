@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import prisma from '@/lib/prisma.js';
 import { requireAdmin } from '@/lib/auth-guard.js';
 import { logAuditEvent } from '@/lib/audit.js';
@@ -40,6 +41,14 @@ export async function POST(req) {
     metadata: { name: skill.name, category: skill.category },
   });
 
+  try {
+    revalidatePath('/skills');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
+
   return NextResponse.json({ success: true, skill });
 }
 
@@ -74,6 +83,14 @@ export async function PUT(req) {
     metadata: { name: updated.name, category: updated.category },
   });
 
+  try {
+    revalidatePath('/skills');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
+
   return NextResponse.json({ success: true, skill: updated });
 }
 
@@ -103,6 +120,14 @@ export async function DELETE(req) {
     req,
     metadata: { name: existing.name },
   });
+
+  try {
+    revalidatePath('/skills');
+    revalidatePath('/about');
+    revalidatePath('/');
+  } catch (err) {
+    // Non-fatal if outside server context
+  }
 
   return NextResponse.json({ success: true, message: 'Skill deleted successfully.' });
 }
