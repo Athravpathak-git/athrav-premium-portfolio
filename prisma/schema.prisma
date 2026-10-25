@@ -1,0 +1,329 @@
+// Prisma schema for Athrav Pathak Premium Portfolio
+// Configured for PostgreSQL (Neon ready)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+}
+
+enum AdminStatus {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+model AdminUser {
+  id                 String       @id @default(uuid())
+  email              String       @unique
+  username           String       @unique
+  passwordHash       String       @map("password_hash")
+  role               Role         @default(ADMIN)
+  status             AdminStatus  @default(ACTIVE)
+  mustChangePassword Boolean      @default(false) @map("must_change_password")
+  lastLoginAt        DateTime?    @map("last_login_at")
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+
+  sessions           Session[]
+  auditLogs          AuditLog[]
+
+  @@map("admin_users")
+}
+
+model Session {
+  id           String    @id @default(uuid())
+  sessionToken String    @unique @map("session_token")
+  userId       String    @map("user_id")
+  expiresAt    DateTime  @map("expires_at")
+  ipAddress    String?   @map("ip_address")
+  userAgent    String?   @map("user_agent")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user         AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model Profile {
+  id              String   @id @default(uuid())
+  name            String   @default("Athrav Pathak")
+  headline        String   @default("Aspiring AI Engineer Building Intelligent Digital Experiences")
+  bio             String   @db.Text
+  email           String   @default("athravpathak07@gmail.com")
+  location        String?  @default("India")
+  status          String?  @default("Available for AI & Engineering Opportunities")
+  avatarUrl       String?  @map("avatar_url")
+  githubUrl       String?  @default("https://github.com/Athravpathak-git") @map("github_url")
+  linkedinUrl     String?  @map("linkedin_url")
+  twitterUrl      String?  @map("twitter_url")
+  websiteUrl      String?  @map("website_url")
+  resumeUrl       String?  @map("resume_url")
+  resumePublished Boolean  @default(false) @map("resume_published")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model Education {
+  id               String    @id @default(uuid())
+  institution      String
+  degree           String
+  fieldOfStudy     String?   @map("field_of_study")
+  university       String?
+  status           String    @default("In Progress") // e.g., "Second Year (In Progress)"
+  startDate        DateTime? @map("start_date")
+  endDate          DateTime? @map("end_date")
+  grade            String?
+  description      String?   @db.Text
+  sortOrder        Int       @default(0) @map("sort_order")
+  isPublished      Boolean   @default(true) @map("is_published")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  @@index([isPublished])
+  @@index([sortOrder])
+  @@map("education")
+}
+
+model Skill {
+  id          String   @id @default(uuid())
+  name        String
+  category    String   // Programming, Web Development, Databases, Artificial Intelligence, Machine Learning, Tools and Platforms
+  proficiency String?  // Exploring, Intermediate, Proficient
+  icon        String?
+  description String?  @db.Text
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([isPublished])
+  @@index([isFeatured])
+  @@index([sortOrder])
+  @@map("skills")
+}
+
+model Project {
+  id                  String   @id @default(uuid())
+  slug                String   @unique
+  title               String
+  subtitle            String?
+  summary             String   @db.Text
+  description         String   @db.Text
+  category            String   @default("Artificial Intelligence")
+  isFeatured          Boolean  @default(false) @map("is_featured")
+  techStack           String[] @map("tech_stack")
+  liveUrl             String?  @map("live_url")
+  repoUrl             String?  @map("repo_url")
+  imageUrl            String?  @map("image_url")
+  screenshots         String[] @default([])
+  architectureSummary String?  @map("architecture_summary") @db.Text
+  challenges          String?  @db.Text
+  solutions           String?  @db.Text
+  results             String?  @db.Text
+  futureImprovements  String?  @map("future_improvements") @db.Text
+  sortOrder           Int      @default(0) @map("sort_order")
+  isPublished         Boolean  @default(false) @map("is_published")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([isPublished])
+  @@index([isFeatured])
+  @@index([sortOrder])
+  @@map("projects")
+}
+
+model Certification {
+  id            String    @id @default(uuid())
+  slug          String    @unique
+  title         String
+  issuer        String
+  category      String    @default("Machine Learning") // Machine Learning, Data Analytics, Cloud, Software Engineering
+  issueDate     DateTime? @map("issue_date")
+  expiryDate    DateTime? @map("expiry_date")
+  credentialId  String?   @map("credential_id")
+  credentialUrl String?   @map("credential_url")
+  imageUrl      String?   @map("image_url")
+  pdfUrl        String?   @map("pdf_url")
+  description   String?   @db.Text
+  relatedSkills String[]  @default([]) @map("related_skills")
+  isFeatured    Boolean   @default(false) @map("is_featured")
+  isPublished   Boolean   @default(false) @map("is_published")
+  sortOrder     Int       @default(0) @map("sort_order")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([category])
+  @@index([isPublished])
+  @@index([isFeatured])
+  @@index([sortOrder])
+  @@map("certifications")
+}
+
+model Experience {
+  id             String    @id @default(uuid())
+  slug           String    @unique
+  role           String
+  company        String
+  employmentType String?   @default("Internship") @map("employment_type")
+  workplaceType  String?   @default("Remote") @map("workplace_type")
+  location       String?
+  startDate      DateTime? @map("start_date")
+  endDate        DateTime? @map("end_date")
+  isCurrent      Boolean   @default(false) @map("is_current")
+  description    String    @db.Text
+  responsibilities String[] @default([])
+  technologies   String[]  @default([])
+  certificateUrl String?   @map("certificate_url")
+  companyUrl     String?   @map("company_url")
+  sortOrder      Int       @default(0) @map("sort_order")
+  isPublished    Boolean   @default(false) @map("is_published")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([isPublished])
+  @@index([sortOrder])
+  @@map("experiences")
+}
+
+model Achievement {
+  id          String    @id @default(uuid())
+  title       String
+  category    String    @default("Academic & Technical")
+  issuer      String?
+  date        DateTime?
+  description String?   @db.Text
+  badgeUrl    String?   @map("badge_url")
+  sortOrder   Int       @default(0) @map("sort_order")
+  isPublished Boolean   @default(false) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([isPublished])
+  @@index([sortOrder])
+  @@map("achievements")
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  icon        String?
+  techStack   String[] @default([]) @map("tech_stack")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isPublished Boolean  @default(true) @map("is_published")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([isPublished])
+  @@index([sortOrder])
+  @@map("services")
+}
+
+model HomepageSection {
+  id          String   @id @default(uuid())
+  sectionKey  String   @unique @map("section_key") // hero, about, education, skills, projects, certifications, experience, achievements, services, contact
+  title       String
+  subtitle    String?
+  description String?  @db.Text
+  isEnabled   Boolean  @default(true) @map("is_enabled")
+  sortOrder   Int      @default(0) @map("sort_order")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([isEnabled])
+  @@index([sortOrder])
+  @@map("homepage_sections")
+}
+
+model ContactMessage {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  subject    String
+  message    String   @db.Text
+  isRead     Boolean  @default(false) @map("is_read")
+  isResolved Boolean  @default(false) @map("is_resolved")
+  isArchived Boolean  @default(false) @map("is_archived")
+  ipAddress  String?  @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([isRead])
+  @@index([isResolved])
+  @@index([createdAt])
+  @@map("contact_messages")
+}
+
+model MediaItem {
+  id              String   @id @default(uuid())
+  filename        String
+  originalName    String   @map("original_name")
+  mimeType        String   @map("mime_type")
+  sizeBytes       Int      @map("size_bytes")
+  url             String
+  storageProvider String   @default("local") @map("storage_provider")
+  altText         String?  @map("alt_text")
+  category        String   @default("general") // avatar, project, certificate, general
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([category])
+  @@index([createdAt])
+  @@map("media_items")
+}
+
+model AuditLog {
+  id         String     @id @default(uuid())
+  userId     String?    @map("user_id")
+  action     String     // AUTH_LOGIN_SUCCESS, AUTH_LOGIN_FAILED, PROJECT_CREATED, etc.
+  entityType String?    @map("entity_type")
+  entityId   String?    @map("entity_id")
+  ipAddress  String?    @map("ip_address")
+  userAgent  String?    @map("user_agent")
+  metadata   String?    @db.Text // JSON string with safe details
+  createdAt  DateTime   @default(now()) @map("created_at")
+  user       AdminUser? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([createdAt])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model RateLimit {
+  key       String   @id
+  points    Int      @default(1)
+  expireAt  DateTime @map("expire_at")
+
+  @@index([expireAt])
+  @@map("rate_limits")
+}
+
+model WebsiteSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String   @db.Text
+  category    String   @default("general") // general, seo, theme, notifications, security
+  description String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@map("website_settings")
+}
