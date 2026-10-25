@@ -6,6 +6,9 @@ import {
   verifyPassword,
   createSession,
   setSessionCookie,
+  SESSION_COOKIE_NAME,
+  SESSION_MAX_AGE_SECONDS,
+  isSecureContext,
 } from '@/lib/auth';
 import { logAuditEvent } from '@/lib/audit';
 
@@ -90,7 +93,7 @@ export async function POST(req: Request) {
       req,
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       user: {
         id: user.id,
@@ -100,6 +103,16 @@ export async function POST(req: Request) {
         mustChangePassword: user.mustChangePassword,
       },
     });
+
+    response.cookies.set(SESSION_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: isSecureContext(),
+      sameSite: 'lax',
+      path: '/',
+      maxAge: SESSION_MAX_AGE_SECONDS,
+    });
+
+    return response;
   } catch (err) {
     console.error('[API Auth Login Error]:', err);
     return NextResponse.json(

@@ -89,4 +89,18 @@ describe('Data Service & Content Publishing Workflows', () => {
     expect(eduList[0].degree).toContain('Bachelor of Computer Applications');
     expect(eduList[0].status).toContain('Second Year');
   });
+
+  it('persists store updates to local dev-storage JSON file in mock mode', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const storePath = path.join(process.cwd(), '.dev-storage', 'portfolio-dev-store.json');
+    
+    // File must exist
+    expect(fs.existsSync(storePath)).toBe(true);
+
+    const content = JSON.parse(fs.readFileSync(storePath, 'utf-8'));
+    expect(content.profile).toBeDefined();
+    expect(content.profile.name).toBe('Athrav Pathak');
+    expect(Array.isArray(content.projects)).toBe(true);
+  });
 });

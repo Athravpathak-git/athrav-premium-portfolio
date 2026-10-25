@@ -57,7 +57,7 @@ export default async function HomePage() {
       {/* ==================================================================== */}
       {/* 1. HERO SECTION WITH 3D ORBITAL EXPERIENCE                           */}
       {/* ==================================================================== */}
-      <section className="relative min-h-[92vh] flex items-center justify-center pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <section className="relative min-h-[94vh] flex items-center justify-center pt-36 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Three.js 3D Background Canvas */}
         <div className="absolute inset-0 z-0">
           <Hero3DClient />

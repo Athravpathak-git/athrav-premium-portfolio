@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import { ThemeToggle } from './ThemeToggle';
@@ -27,8 +26,9 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 15);
     };
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -40,10 +40,10 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-black/75 dark:bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/40 py-3'
-          : 'bg-transparent py-5'
+          ? 'bg-black/85 dark:bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/50 py-3'
+          : 'bg-black/40 backdrop-blur-md border-b border-white/5 py-4'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,7 +69,7 @@ export function Navbar() {
 
           {/* Desktop Navigation Links */}
           <nav
-            className="hidden lg:flex items-center gap-1 bg-zinc-900/40 dark:bg-zinc-900/40 border border-white/10 rounded-full px-4 py-1.5 backdrop-blur-md"
+            className="hidden lg:flex items-center gap-0.5 bg-zinc-900/60 dark:bg-zinc-900/60 border border-white/10 rounded-full px-3 py-1.5 backdrop-blur-md shadow-inner"
             aria-label="Main Navigation"
           >
             {NAV_LINKS.map((link) => {
@@ -78,9 +78,9 @@ export function Navbar() {
                 <NextLink
                   key={link.href}
                   href={link.href}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-silver-400 ${
+                  className={`text-[12px] font-medium px-2.5 py-1 rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-silver-400 ${
                     isActive
-                      ? 'text-white bg-white/15 shadow-sm font-semibold'
+                      ? 'text-white bg-white/20 shadow-sm font-semibold'
                       : 'text-zinc-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
@@ -97,7 +97,7 @@ export function Navbar() {
             {/* Admin Portal Shortcut */}
             <NextLink
               href="/admin/login"
-              className="hidden sm:inline-flex items-center gap-1 text-xs font-mono text-zinc-400 hover:text-white bg-zinc-900/50 hover:bg-zinc-800/80 border border-white/10 hover:border-white/20 px-3 py-1.5 rounded-full transition-all backdrop-blur-sm"
+              className="hidden sm:inline-flex items-center gap-1 text-xs font-mono text-zinc-400 hover:text-white bg-zinc-900/60 hover:bg-zinc-800 border border-white/10 hover:border-white/20 px-3 py-1.5 rounded-full transition-all backdrop-blur-sm"
               title="Admin Portal"
             >
               <span>Admin</span>

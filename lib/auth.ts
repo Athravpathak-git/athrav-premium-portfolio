@@ -1,12 +1,22 @@
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 import { cookies } from 'next/headers';
 import { isDatabaseConfigured, getPrisma } from './db';
 
-const SESSION_COOKIE_NAME = 'athrav_admin_session';
-const SESSION_MAX_AGE_SECONDS = Number(process.env.SESSION_MAX_AGE_SECONDS) || 60 * 60 * 24 * 7; // 7 days
+export const SESSION_COOKIE_NAME = 'athrav_admin_session';
+export const SESSION_MAX_AGE_SECONDS = Number(process.env.SESSION_MAX_AGE_SECONDS) || 60 * 60 * 24 * 7; // 7 days
+
+export function isSecureContext(): boolean {
+  return process.env.NODE_ENV === 'production' && Boolean(process.env.VERCEL || process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https'));
+}
+
+const DEV_STORAGE_DIR = path.join(process.cwd(), '.dev-storage');
+const SESSIONS_FILE = path.join(DEV_STORAGE_DIR, 'sessions.json');
+const USERS_FILE = path.join(DEV_STORAGE_DIR, 'admin-users.json');
 
 // In-memory mock session and user store when database is not configured
-interface MockAdmin {
+export interface MockAdmin {
   id: string;
   email: string;
   username: string;
@@ -16,22 +26,75 @@ interface MockAdmin {
   mustChangePassword?: boolean;
 }
 
-const mockSessions = new Map<
-  string,
-  {
-    userId: string;
-    expiresAt: Date;
-    ipAddress?: string;
-    userAgent?: string;
+interface StoredSession {
+  userId: string;
+  expiresAt: string;
+  ipAddress?: string;
+  userAgent?: string;
+}
+
+function ensureDevStorageDir() {
+  try {
+    if (!fs.existsSync(DEV_STORAGE_DIR)) {
+      fs.mkdirSync(DEV_STORAGE_DIR, { recursive: true });
+    }
+  } catch {
+    // ignore
   }
->();
+}
+
+function loadDevSessions(): Map<string, { userId: string; expiresAt: Date; ipAddress?: string; userAgent?: string }> {
+  const map = new Map<string, { userId: string; expiresAt: Date; ipAddress?: string; userAgent?: string }>();
+  try {
+    if (fs.existsSync(SESSIONS_FILE)) {
+      const raw = fs.readFileSync(SESSIONS_FILE, 'utf-8');
+      const data = JSON.parse(raw);
+      const now = new Date();
+      for (const [token, s] of Object.entries(data as Record<string, StoredSession>)) {
+        const exp = new Date(s.expiresAt);
+        if (exp > now) {
+          map.set(token, {
+            userId: s.userId,
+            expiresAt: exp,
+            ipAddress: s.ipAddress,
+            userAgent: s.userAgent,
+          });
+        }
+      }
+    }
+  } catch {
+    // fallback to empty map
+  }
+  return map;
+}
+
+function saveDevSessions(map: Map<string, { userId: string; expiresAt: Date; ipAddress?: string; userAgent?: string }>) {
+  try {
+    ensureDevStorageDir();
+    const serializable: Record<string, StoredSession> = {};
+    const now = new Date();
+    for (const [token, s] of map.entries()) {
+      if (s.expiresAt > now) {
+        serializable[token] = {
+          userId: s.userId,
+          expiresAt: s.expiresAt.toISOString(),
+          ipAddress: s.ipAddress,
+          userAgent: s.userAgent,
+        };
+      }
+    }
+    fs.writeFileSync(SESSIONS_FILE, JSON.stringify(serializable, null, 2), 'utf-8');
+  } catch {
+    // ignore write errors in restricted environments
+  }
+}
 
 // Default mock admin password hash (fallback if unconfigured)
 // Password: "ReplaceWithStrongPassword123!"
 const defaultSalt = '0f9a2b8e4c7d1f3a5e8c2a9f4b7d1e3c';
 const defaultHash = crypto.scryptSync('ReplaceWithStrongPassword123!', defaultSalt, 64).toString('hex');
 
-const mockAdminUsers: MockAdmin[] = [
+const initialMockAdminUsers: MockAdmin[] = [
   {
     id: 'admin-super-1',
     email: process.env.INITIAL_ADMIN_EMAIL || 'admin@athravpathak.dev',
@@ -42,6 +105,42 @@ const mockAdminUsers: MockAdmin[] = [
     mustChangePassword: false,
   },
 ];
+
+function loadDevUsers(): MockAdmin[] {
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      const raw = fs.readFileSync(USERS_FILE, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return [...initialMockAdminUsers];
+}
+
+function saveDevUsers(users: MockAdmin[]) {
+  try {
+    ensureDevStorageDir();
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+  } catch {
+    // ignore
+  }
+}
+
+// Global persistence for Next.js hot module reloads
+const globalForAuth = globalThis as unknown as {
+  __athravMockSessions?: Map<string, { userId: string; expiresAt: Date; ipAddress?: string; userAgent?: string }>;
+  __athravMockUsers?: MockAdmin[];
+};
+
+const mockSessions = globalForAuth.__athravMockSessions ?? loadDevSessions();
+globalForAuth.__athravMockSessions = mockSessions;
+
+const mockAdminUsers = globalForAuth.__athravMockUsers ?? loadDevUsers();
+globalForAuth.__athravMockUsers = mockAdminUsers;
 
 // ============================================================================
 // SECURE PASSWORD HASHING (Argon2id + Scrypt Fallback)
@@ -126,6 +225,7 @@ export async function createSession(
     ipAddress: meta?.ipAddress,
     userAgent: meta?.userAgent,
   });
+  saveDevSessions(mockSessions);
 
   return token;
 }
@@ -170,11 +270,20 @@ export async function validateSessionToken(token: string) {
     }
   }
 
-  const memSession = mockSessions.get(token);
+  let memSession = mockSessions.get(token);
+  if (!memSession) {
+    // If not found in memory, reload from disk in development
+    const reloaded = loadDevSessions();
+    for (const [k, v] of reloaded.entries()) {
+      mockSessions.set(k, v);
+    }
+    memSession = mockSessions.get(token);
+  }
   if (!memSession) return null;
 
   if (memSession.expiresAt < new Date()) {
     mockSessions.delete(token);
+    saveDevSessions(mockSessions);
     return null;
   }
 
@@ -208,6 +317,7 @@ export async function invalidateSession(token: string): Promise<void> {
     }
   }
   mockSessions.delete(token);
+  saveDevSessions(mockSessions);
 }
 
 export async function invalidateAllUserSessions(userId: string): Promise<void> {
@@ -223,6 +333,7 @@ export async function invalidateAllUserSessions(userId: string): Promise<void> {
       mockSessions.delete(token);
     }
   }
+  saveDevSessions(mockSessions);
 }
 
 // ============================================================================
@@ -233,7 +344,7 @@ export async function setSessionCookie(token: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureContext(),
     sameSite: 'lax',
     path: '/',
     maxAge: SESSION_MAX_AGE_SECONDS,
@@ -249,7 +360,7 @@ export async function clearSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, '', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureContext(),
     sameSite: 'lax',
     path: '/',
     maxAge: 0,
@@ -308,6 +419,7 @@ export async function changeAdminPassword(userId: string, newPassword: string): 
   const user = mockAdminUsers.find((u) => u.id === userId);
   if (!user) return false;
   user.passwordHash = newHash;
+  saveDevUsers(mockAdminUsers);
   await invalidateAllUserSessions(userId);
   return true;
 }

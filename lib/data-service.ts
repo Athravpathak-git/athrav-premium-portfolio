@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { isDatabaseConfigured, getPrisma } from './db';
 import {
   initialProfile,
@@ -22,42 +24,99 @@ import {
   AuditLogData,
 } from './mock-data';
 
-// In-memory state store for development when database is unconfigured
-const devStore = {
-  profile: { ...initialProfile },
-  education: [...initialEducation],
-  skills: [...initialSkills],
-  projects: [...initialProjects],
-  certifications: [...initialCertifications],
-  experience: [...initialExperience],
-  achievements: [...initialAchievements],
-  services: [...initialServices],
-  homepageSections: [...initialHomepageSections],
-  contactMessages: [] as ContactMessageData[],
-  auditLogs: [] as AuditLogData[],
-  mediaItems: [] as {
-    id: string;
-    filename: string;
-    originalName: string;
-    mimeType: string;
-    sizeBytes: number;
-    url: string;
-    storageProvider: string;
-    altText?: string;
-    category: string;
-    createdAt: string;
-  }[],
-  settings: {
-    siteName: 'Athrav Pathak Portfolio',
-    metaTitle: 'Athrav Pathak — Aspiring AI Engineer',
-    metaDescription:
-      'Personal portfolio of Athrav Pathak, Aspiring AI Engineer pursuing BCA in second year. Explore projects, machine learning credentials, and technical capabilities.',
-    themeDefault: 'dark',
-    allowThemeToggle: 'true',
-    resumeEnabled: 'false',
-    notificationEmail: 'athravpathak07@gmail.com',
-  } as Record<string, string>,
+const DEV_STORAGE_DIR = path.join(process.cwd(), '.dev-storage');
+const DEV_STORE_FILE = path.join(DEV_STORAGE_DIR, 'portfolio-dev-store.json');
+
+function ensureDevStorageDir() {
+  try {
+    if (!fs.existsSync(DEV_STORAGE_DIR)) {
+      fs.mkdirSync(DEV_STORAGE_DIR, { recursive: true });
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function getInitialDevStore() {
+  return {
+    profile: { ...initialProfile },
+    education: [...initialEducation],
+    skills: [...initialSkills],
+    projects: [...initialProjects],
+    certifications: [...initialCertifications],
+    experience: [...initialExperience],
+    achievements: [...initialAchievements],
+    services: [...initialServices],
+    homepageSections: [...initialHomepageSections],
+    contactMessages: [] as ContactMessageData[],
+    auditLogs: [] as AuditLogData[],
+    mediaItems: [] as {
+      id: string;
+      filename: string;
+      originalName: string;
+      mimeType: string;
+      sizeBytes: number;
+      url: string;
+      storageProvider: string;
+      altText?: string;
+      category: string;
+      createdAt: string;
+    }[],
+    settings: {
+      siteName: 'Athrav Pathak Portfolio',
+      metaTitle: 'Athrav Pathak — Aspiring AI Engineer',
+      metaDescription:
+        'Personal portfolio of Athrav Pathak, Aspiring AI Engineer pursuing BCA in second year. Explore projects, machine learning credentials, and technical capabilities.',
+      themeDefault: 'dark',
+      allowThemeToggle: 'true',
+      resumeEnabled: 'false',
+      notificationEmail: 'athravpathak07@gmail.com',
+    } as Record<string, string>,
+  };
+}
+
+export type DevStoreType = ReturnType<typeof getInitialDevStore>;
+
+function loadDevStore(): DevStoreType {
+  try {
+    if (fs.existsSync(DEV_STORE_FILE)) {
+      const raw = fs.readFileSync(DEV_STORE_FILE, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && parsed.profile) {
+        return {
+          ...getInitialDevStore(),
+          ...parsed,
+        };
+      }
+    }
+  } catch {
+    // ignore
+  }
+  const initial = getInitialDevStore();
+  saveDevStore(initial);
+  return initial;
+}
+
+function saveDevStore(store: DevStoreType) {
+  try {
+    ensureDevStorageDir();
+    fs.writeFileSync(DEV_STORE_FILE, JSON.stringify(store, null, 2), 'utf-8');
+  } catch {
+    // ignore
+  }
+}
+
+// Global persistence for Next.js hot module reloads
+const globalForData = globalThis as unknown as {
+  __athravDevStore?: DevStoreType;
 };
+
+const devStore = globalForData.__athravDevStore ?? loadDevStore();
+globalForData.__athravDevStore = devStore;
+
+function persistDevStore() {
+  saveDevStore(devStore);
+}
 
 // ============================================================================
 // PROFILE SERVICE
@@ -124,6 +183,7 @@ export async function updateProfile(data: Partial<ProfileData>): Promise<Profile
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.profile;
 }
 
@@ -198,6 +258,7 @@ export async function createEducation(data: Omit<EducationData, 'id' | 'createdA
     }
   }
   devStore.education.push(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -242,6 +303,7 @@ export async function updateEducation(id: string, data: Partial<EducationData>):
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.education[idx];
 }
 
@@ -257,6 +319,7 @@ export async function deleteEducation(id: string): Promise<boolean> {
   const idx = devStore.education.findIndex((e) => e.id === id);
   if (idx === -1) return false;
   devStore.education.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -326,6 +389,7 @@ export async function createSkill(data: Omit<SkillData, 'id' | 'createdAt' | 'up
     }
   }
   devStore.skills.push(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -369,6 +433,7 @@ export async function updateSkill(id: string, data: Partial<SkillData>): Promise
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.skills[idx];
 }
 
@@ -384,6 +449,7 @@ export async function deleteSkill(id: string): Promise<boolean> {
   const idx = devStore.skills.findIndex((s) => s.id === id);
   if (idx === -1) return false;
   devStore.skills.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -528,6 +594,7 @@ export async function createProject(data: Omit<ProjectData, 'id' | 'createdAt' |
     }
   }
   devStore.projects.push(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -593,6 +660,7 @@ export async function updateProject(id: string, data: Partial<ProjectData>): Pro
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.projects[idx];
 }
 
@@ -608,6 +676,7 @@ export async function deleteProject(id: string): Promise<boolean> {
   const idx = devStore.projects.findIndex((p) => p.id === id);
   if (idx === -1) return false;
   devStore.projects.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -742,6 +811,7 @@ export async function createCertification(
     }
   }
   devStore.certifications.push(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -802,6 +872,7 @@ export async function updateCertification(
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.certifications[idx];
 }
 
@@ -817,6 +888,7 @@ export async function deleteCertification(id: string): Promise<boolean> {
   const idx = devStore.certifications.findIndex((c) => c.id === id);
   if (idx === -1) return false;
   devStore.certifications.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -942,6 +1014,7 @@ export async function createExperience(
     }
   }
   devStore.experience.push(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -1004,6 +1077,7 @@ export async function updateExperience(
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.experience[idx];
 }
 
@@ -1019,6 +1093,7 @@ export async function deleteExperience(id: string): Promise<boolean> {
   const idx = devStore.experience.findIndex((e) => e.id === id);
   if (idx === -1) return false;
   devStore.experience.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -1090,6 +1165,7 @@ export async function createAchievement(
     }
   }
   devStore.achievements.push(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -1136,6 +1212,7 @@ export async function updateAchievement(
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.achievements[idx];
 }
 
@@ -1151,6 +1228,7 @@ export async function deleteAchievement(id: string): Promise<boolean> {
   const idx = devStore.achievements.findIndex((a) => a.id === id);
   if (idx === -1) return false;
   devStore.achievements.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -1218,6 +1296,7 @@ export async function createService(
     }
   }
   devStore.services.push(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -1257,6 +1336,7 @@ export async function updateService(id: string, data: Partial<ServiceData>): Pro
     ...data,
     updatedAt: new Date().toISOString(),
   };
+  persistDevStore();
   return devStore.services[idx];
 }
 
@@ -1272,6 +1352,7 @@ export async function deleteService(id: string): Promise<boolean> {
   const idx = devStore.services.findIndex((s) => s.id === id);
   if (idx === -1) return false;
   devStore.services.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -1346,6 +1427,7 @@ export async function updateHomepageSection(
     ...devStore.homepageSections[idx],
     ...data,
   };
+  persistDevStore();
   return devStore.homepageSections[idx];
 }
 
@@ -1419,6 +1501,7 @@ export async function createContactMessage(
     }
   }
   devStore.contactMessages.unshift(newItem);
+  persistDevStore();
   return newItem;
 }
 
@@ -1454,6 +1537,7 @@ export async function updateContactMessageStatus(
     ...devStore.contactMessages[idx],
     ...status,
   };
+  persistDevStore();
   return devStore.contactMessages[idx];
 }
 
@@ -1469,6 +1553,7 @@ export async function deleteContactMessage(id: string): Promise<boolean> {
   const idx = devStore.contactMessages.findIndex((m) => m.id === id);
   if (idx === -1) return false;
   devStore.contactMessages.splice(idx, 1);
+  persistDevStore();
   return true;
 }
 
@@ -1547,6 +1632,7 @@ export async function createMediaRecord(data: {
     }
   }
   devStore.mediaItems.unshift(item);
+  persistDevStore();
   return item;
 }
 
@@ -1583,6 +1669,7 @@ export async function updateSettings(settings: Record<string, string>): Promise<
     }
   }
   devStore.settings = { ...devStore.settings, ...settings };
+  persistDevStore();
   return devStore.settings;
 }
 
@@ -1639,6 +1726,7 @@ export async function recordAuditEntry(entry: Omit<AuditLogData, 'id' | 'created
     }
   }
   devStore.auditLogs.unshift(item);
+  persistDevStore();
   return item;
 }
 
