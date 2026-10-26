@@ -7,19 +7,14 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const sessionToken = req.cookies.get(SESSION_COOKIE_NAME)?.value;
 
-  // Protect all /admin routes
-  if (pathname.startsWith('/admin')) {
-    // If accessing the login page:
-    if (pathname === '/admin/login') {
-      const fromParam = req.nextUrl.searchParams.get('from');
-      if (sessionToken && !fromParam) {
-        // Already logged in, redirect to overview
-        return NextResponse.redirect(new URL('/admin', req.url));
-      }
-      return NextResponse.next();
-    }
+  // Never redirect away from the login page in middleware.
+  // This completely eliminates infinite redirect loops when a stale or invalid session cookie is present.
+  if (pathname === '/admin/login') {
+    return NextResponse.next();
+  }
 
-    // If accessing any protected admin route without session cookie:
+  // Protect all other /admin routes
+  if (pathname.startsWith('/admin')) {
     if (!sessionToken) {
       const loginUrl = new URL('/admin/login', req.url);
       loginUrl.searchParams.set('from', pathname);

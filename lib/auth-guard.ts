@@ -11,7 +11,7 @@ export async function getCurrentAdmin() {
 export async function requireAdminPage() {
   const current = await getCurrentAdmin();
   if (!current) {
-    redirect('/admin/login');
+    redirect('/admin/login?reason=session_expired');
   }
   return current;
 }

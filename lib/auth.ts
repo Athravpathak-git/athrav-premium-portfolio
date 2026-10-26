@@ -118,7 +118,9 @@ function loadDevUsers(): MockAdmin[] {
   } catch {
     // fallback
   }
-  return [...initialMockAdminUsers];
+  const fallback = [...initialMockAdminUsers];
+  saveDevUsers(fallback);
+  return fallback;
 }
 
 function saveDevUsers(users: MockAdmin[]) {

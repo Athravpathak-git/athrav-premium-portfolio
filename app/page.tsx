@@ -152,6 +152,19 @@ export default async function HomePage() {
                   but from the mathematical ground up: gradient descent optimization, loss functions, tensor operations,
                   and software engineering craft.
                 </p>
+                {profile.avatarUrl && (
+                  <div className="flex items-center gap-3.5 p-3 rounded-2xl border border-white/10 bg-zinc-950/70 backdrop-blur-md">
+                    <img
+                      src={profile.avatarUrl}
+                      alt={profile.name}
+                      className="w-12 h-12 rounded-xl object-cover border border-white/20 shadow-md shrink-0"
+                    />
+                    <div>
+                      <h4 className="text-sm font-semibold text-white">{profile.name}</h4>
+                      <p className="text-xs font-mono text-zinc-400">BCA Undergraduate • Year 2</p>
+                    </div>
+                  </div>
+                )}
                 <div className="pt-2">
                   <Link
                     href="/about"
