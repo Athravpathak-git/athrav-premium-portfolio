@@ -24,6 +24,11 @@ const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.
 const PROFILE_PHOTO_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const PROFILE_PHOTO_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
 
+// Certificate images strictly restricted to standard web image formats (JPEG, PNG, WebP) up to 10MB
+export const CERTIFICATE_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+export const CERTIFICATE_IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+export const MAX_CERTIFICATE_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const MAX_PROFILE_PHOTO_SIZE_BYTES = 5 * 1024 * 1024; // 5MB for profile photos
 
@@ -116,6 +121,71 @@ export function validateUploadedFile(file: File, isProfilePhoto = false): { vali
   }
 
   return { valid: true };
+}
+
+export function validateCertificateFile(file: File): { valid: boolean; error?: string } {
+  if (file.size > MAX_CERTIFICATE_IMAGE_SIZE_BYTES) {
+    return {
+      valid: false,
+      error: `Certificate image size exceeds the maximum limit of 10MB (file is ${(file.size / (1024 * 1024)).toFixed(2)}MB).`,
+    };
+  }
+
+  if (!CERTIFICATE_IMAGE_MIME_TYPES.has(file.type)) {
+    return {
+      valid: false,
+      error: `Unsupported file type: "${file.type}". Certificate images must be JPG, JPEG, PNG, or WebP. (SVG is rejected for security).`,
+    };
+  }
+
+  const ext = path.extname(file.name).toLowerCase();
+  if (!CERTIFICATE_IMAGE_EXTENSIONS.has(ext)) {
+    return {
+      valid: false,
+      error: `Invalid file extension "${ext}". Allowed: .jpg, .jpeg, .png, .webp`,
+    };
+  }
+
+  return { valid: true };
+}
+
+export async function saveCertificateImage(file: File): Promise<StorageResult> {
+  const metadataValidation = validateCertificateFile(file);
+  if (!metadataValidation.valid) {
+    throw new Error(metadataValidation.error);
+  }
+
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  // Strict binary magic bytes verification
+  const magicValidation = validateFileMagicBytes(buffer);
+  if (!magicValidation.valid) {
+    throw new Error(magicValidation.error);
+  }
+
+  if (!CERTIFICATE_IMAGE_MIME_TYPES.has(magicValidation.detectedMime!)) {
+    throw new Error(
+      `Invalid image content. Detected ${magicValidation.detectedMime}, but certificate image must be JPEG, PNG, or WebP.`
+    );
+  }
+
+  const ext = path.extname(file.name).toLowerCase();
+  const safeBase = crypto.randomBytes(12).toString('hex');
+  const filename = `cert-${Date.now()}-${safeBase}${ext}`;
+
+  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+  await fs.mkdir(uploadsDir, { recursive: true });
+
+  const filePath = path.join(uploadsDir, filename);
+  await fs.writeFile(filePath, buffer);
+
+  return {
+    url: `/uploads/${filename}`,
+    filename,
+    originalName: file.name,
+    mimeType: magicValidation.detectedMime || file.type,
+    sizeBytes: file.size,
+  };
 }
 
 export async function saveUploadedFile(file: File, isProfilePhoto = false): Promise<StorageResult> {

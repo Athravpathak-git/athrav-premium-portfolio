@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server';
 import { requireAdminApi } from '@/lib/auth-guard';
 import {
   getCertificationsList,
+  getCertificationById,
   createCertification,
   updateCertification,
   deleteCertification,
+  checkMediaReferences,
 } from '@/lib/data-service';
+import { deleteUploadedFile } from '@/lib/storage';
 import { certificationSchema } from '@/lib/validation/schemas';
 import { logAuditEvent } from '@/lib/audit';
 
@@ -66,6 +69,25 @@ export async function PUT(req: Request) {
       );
     }
 
+    // Check if replacing an existing uploaded image and clean up old image if unreferenced elsewhere
+    const current = await getCertificationById(id);
+    if (!current) return NextResponse.json({ error: 'Certification not found.' }, { status: 404 });
+
+    if (
+      validation.data.imageUrl !== undefined &&
+      validation.data.imageUrl !== current.imageUrl &&
+      current.imageUrl &&
+      current.imageUrl.startsWith('/uploads/')
+    ) {
+      const references = checkMediaReferences(current.imageUrl);
+      const otherReferences = references.filter(
+        (ref) => !(ref.type === 'certification' && ref.title === current.title)
+      );
+      if (otherReferences.length === 0) {
+        await deleteUploadedFile(current.imageUrl);
+      }
+    }
+
     const updated = await updateCertification(id, validation.data as any);
     if (!updated) return NextResponse.json({ error: 'Certification not found.' }, { status: 404 });
 
@@ -92,6 +114,20 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'Certification ID is required.' }, { status: 400 });
+
+    const current = await getCertificationById(id);
+    if (!current) return NextResponse.json({ error: 'Certification not found.' }, { status: 404 });
+
+    // Clean up uploaded image if it was a local upload and not referenced elsewhere
+    if (current.imageUrl && current.imageUrl.startsWith('/uploads/')) {
+      const references = checkMediaReferences(current.imageUrl);
+      const otherReferences = references.filter(
+        (ref) => !(ref.type === 'certification' && ref.title === current.title)
+      );
+      if (otherReferences.length === 0) {
+        await deleteUploadedFile(current.imageUrl);
+      }
+    }
 
     const success = await deleteCertification(id);
     if (!success) return NextResponse.json({ error: 'Certification not found.' }, { status: 404 });

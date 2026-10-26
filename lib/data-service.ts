@@ -771,6 +771,41 @@ export async function getCertificationBySlug(slug: string, publishedOnly = false
   return found;
 }
 
+export async function getCertificationById(id: string): Promise<CertificationData | null> {
+  if (isDatabaseAvailable()) {
+    try {
+      const c = await getPrisma().certification.findUnique({ where: { id } });
+      if (c) {
+        return {
+          id: c.id,
+          slug: c.slug,
+          title: c.title,
+          issuer: c.issuer,
+          category: c.category,
+          issueDate: c.issueDate?.toISOString() || null,
+          expiryDate: c.expiryDate?.toISOString() || null,
+          credentialId: c.credentialId,
+          credentialUrl: c.credentialUrl,
+          imageUrl: c.imageUrl,
+          pdfUrl: c.pdfUrl,
+          description: c.description || undefined,
+          relatedSkills: c.relatedSkills,
+          isFeatured: c.isFeatured,
+          isPublished: c.isPublished,
+          sortOrder: c.sortOrder,
+          createdAt: c.createdAt.toISOString(),
+          updatedAt: c.updatedAt.toISOString(),
+        };
+      }
+    } catch (err) {
+      console.warn('[DataService] Prisma cert id error:', err);
+    }
+  }
+
+  const found = devStore.certifications.find((c) => c.id === id);
+  return found || null;
+}
+
 export async function createCertification(
   data: Omit<CertificationData, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<CertificationData> {

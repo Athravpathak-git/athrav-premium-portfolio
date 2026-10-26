@@ -9,7 +9,9 @@ import {
   Award,
   ExternalLink,
   CheckCircle2,
+  Calendar,
 } from 'lucide-react';
+import { CertificateImagePreview } from '@/components/public/CertificateImagePreview';
 
 interface CertPageProps {
   params: Promise<{ slug: string }>;
@@ -72,8 +74,22 @@ export default async function CertificationDetailPage({ params }: CertPageProps)
             <p className="text-base text-rosegold font-semibold">{cert.issuer}</p>
           </div>
 
+          {/* Certificate Image Preview Section */}
+          {cert.imageUrl && (
+            <div className="py-2">
+              <CertificateImagePreview
+                imageUrl={cert.imageUrl}
+                title={cert.title}
+                issuer={cert.issuer}
+                issueDate={cert.issueDate}
+                credentialId={cert.credentialId}
+                credentialUrl={cert.credentialUrl}
+              />
+            </div>
+          )}
+
           {/* Credential Metadata Box */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 border-y border-border-soft dark:border-charcoal-700 text-xs font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4 border-y border-border-soft dark:border-charcoal-700 text-xs font-mono">
             <div>
               <span className="text-charcoal/70 dark:text-cream/70 block mb-1">Verification Status:</span>
               {cert.credentialUrl ? (
@@ -94,6 +110,16 @@ export default async function CertificationDetailPage({ params }: CertPageProps)
                 {cert.credentialId || 'Unspecified (Editable in Admin)'}
               </span>
             </div>
+
+            {cert.issueDate && (
+              <div>
+                <span className="text-charcoal/70 dark:text-cream/70 block mb-1">Issue Date:</span>
+                <span className="font-semibold text-burgundy dark:text-cream flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-rosegold" />
+                  {cert.issueDate}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Narrative Description */}

@@ -188,3 +188,68 @@ The portfolio has undergone a complete, bespoke visual redesign into a luxury ed
    - **Production Next.js Build (`npm run build`):** 51/51 routes compiled cleanly.
    - **Automated HTTP & DOM Verification (`node scripts/verify-theme-and-pages.mjs`):** 14/14 public and error routes passed with inline theme-initializer, proper dark mode classes, and zero-flash attributes.
    - **Admin E2E Verification (`node scripts/test-admin-e2e.mjs`):** Authenticated session and dashboard access verified (HTTP 200).
+
+---
+
+### Phase 9: Certificate Image Upload, Details & Public Portfolio Lightbox
+1. **Root Cause Analysis**
+   - The data model (`CertificationData`), Zod schema (`certificationSchema`), data service (`data-service.ts`), and media reference tracker (`checkMediaReferences`) previously included an optional `imageUrl` property.
+   - However, the Admin Panel UI (`app/admin/certifications/page.tsx`) lacked:
+     - File input controls, upload buttons, or image dropzones.
+     - State management for file upload, client-side validation, error handling, or progress indicators.
+     - Form input for `issueDate` (which existed in the data model but was absent from the form UI).
+     - Image preview before saving or thumbnail display in the admin certificates table.
+   - On the public portfolio side:
+     - `CertificateCard.tsx` and `app/certifications/[slug]/page.tsx` lacked image display, lightbox preview triggers, and separate "Verify Credential" buttons.
+     - `app/certifications/page.tsx` was marked as static in Next.js builds, preventing immediate reflection of newly added certifications without rebuilding.
+
+2. **Dedicated Certificate Image Upload API (`/api/admin/certifications/upload`)**
+   - Protected with `requireAdminApi()` session authorization.
+   - Accepts multipart/form-data with strict binary magic bytes verification (`lib/storage/index.ts`).
+   - Accepts JPG, JPEG, PNG, and WebP up to 10MB; rejects unsafe or disguised files (e.g. SVG or executable payloads).
+   - Generates cryptographically unique filenames (`cert-<timestamp>-<hash>.<ext>`) in `public/uploads/` with path traversal guards.
+   - Automatically registers uploaded assets into the Media Library (`createMediaRecord` with category `'certification'`).
+   - Logs security audit trail (`CERTIFICATE_IMAGE_UPLOADED`).
+
+3. **Admin Certificate Management UI Enhancements (`app/admin/certifications/page.tsx`)**
+   - Added clear "Upload Certificate Image" button and dashed drag-and-drop file upload container.
+   - Client-side pre-validation: rejects files >10MB or unsupported extensions prior to network dispatch.
+   - Live image preview with aspect-ratio preservation and upload progress spinner.
+   - "Replace Image" action and "Remove Image" action to clear unwanted attachments.
+   - Added `Issue Date` input (e.g., `YYYY-MM` or `Month YYYY`).
+   - Supported all certificate fields: Title, URL Slug, Issuer, Category, Issue Date, Credential ID, Verification URL, Image Document, Description, Related Skills, Featured, and Published.
+   - Admin listing table now displays a certificate image thumbnail preview badge for immediate visual feedback.
+   - Safe deletion: `PUT` and `DELETE` handlers verify whether replaced or deleted certificate images are referenced elsewhere (`checkMediaReferences`) before unlinking disk files.
+
+4. **Public Portfolio Lightbox & Card Enhancements**
+   - **Accessible Modal Lightbox (`components/public/CertificateModal.tsx`):**
+     - Full-resolution certificate document viewer with Escape key listener and backdrop click dismissal.
+     - Displays Certificate Title, Issuer, Issue Date badge, and Credential ID badge.
+     - "Full Image" download link and separate "Verify Credential" external link button.
+     - Complete Dark Mode & Light Mode support matching Deep Burgundy, Soft Cream, Rose Gold, and Charcoal visual identity.
+   - **`CertificateCard.tsx` (`components/public/CertificateCard.tsx`):**
+     - Client component managing interactive preview modal.
+     - Displays certificate image preview frame with hover zoom and click-to-view overlay.
+     - Dedicated "View Certificate" button alongside "Details →".
+     - Separate "Verify Credential" external link button.
+     - Issue date and credential ID metadata badges.
+   - **`app/certifications/[slug]/page.tsx`:**
+     - Interactive `CertificateImagePreview` component with click-to-expand lightbox.
+     - 3-column metadata grid showing Verification Status, Credential ID, and Issue Date.
+     - Separate "View Certificate", "Download Image", and "Verify Credential on Issuer Portal" action buttons.
+   - **Dynamic Updates:** Configured `export const dynamic = 'force-dynamic'` in `app/certifications/page.tsx` so changes in the Admin Panel reflect on the public listing instantly.
+
+5. **Verification & Quality Assurance**
+   - **TypeScript (`npm run typecheck`):** PASSED with 0 errors.
+   - **Vitest Unit Tests (`npm test`):** 9 test suites, 51/51 tests PASSED (including dedicated `tests/certificate-image.test.ts`).
+   - **Production Next.js Build (`npm run build`):** 51/51 routes compiled cleanly.
+   - **Automated E2E Verification (`node scripts/verify-certificate-upload.mjs`):** All 8 checks PASSED:
+     1. Admin session login.
+     2. Genuine PNG certificate creation.
+     3. Multipart image upload to `/api/admin/certifications/upload`.
+     4. Stored image HTTP accessibility and content-type verification.
+     5. Automatic Media Library registration.
+     6. Certificate creation with `imageUrl`, `issueDate`, `credentialId`, and `credentialUrl`.
+     7. Public listing and detail page rendering of image, issue date, and "View Certificate" button.
+     8. Safe deletion and media reference handling.
+   - **Theme & Route Verification (`node scripts/verify-theme-and-pages.mjs`):** 14/14 routes PASSED.

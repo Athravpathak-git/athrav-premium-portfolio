@@ -5,6 +5,8 @@ import { constructMetadata } from '@/lib/seo';
 import { CertificateCard } from '@/components/public/CertificateCard';
 import { Award, ShieldAlert } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = constructMetadata({
   title: 'Certifications & Coursework — Athrav Pathak',
   description:
