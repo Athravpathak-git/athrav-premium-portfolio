@@ -63,10 +63,10 @@ export default function AdminHomepageSectionsPage() {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between pb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Homepage Sections</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Homepage Sections</h1>
+          <p className="text-xs font-mono text-charcoal/70 mt-1">
             CONTROL SECTION VISIBILITY, HEADINGS & DISPLAY ORDER ACROSS THE HOMEPAGE
           </p>
         </div>
@@ -93,14 +93,14 @@ export default function AdminHomepageSectionsPage() {
         {sections.map((sec) => (
           <div
             key={sec.sectionKey}
-            className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 space-y-4"
+            className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4"
           >
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border-soft">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-zinc-900 border border-white/10 text-silver-300">
+                <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-cream-50 border border-border-soft text-silver-300">
                   {sec.sectionKey}
                 </span>
-                <span className="text-xs font-mono text-zinc-400">
+                <span className="text-xs font-mono text-charcoal/70">
                   Order: #{sec.sortOrder}
                 </span>
               </div>
@@ -112,7 +112,7 @@ export default function AdminHomepageSectionsPage() {
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono border transition-all ${
                     sec.isEnabled
                       ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                      : 'border-zinc-700 bg-zinc-900 text-zinc-500'
+                      : 'border-zinc-700 bg-cream-50 text-charcoal/60'
                   }`}
                 >
                   {sec.isEnabled ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -123,7 +123,7 @@ export default function AdminHomepageSectionsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Section Title</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Section Title</label>
                 <input
                   type="text"
                   value={sec.title || ''}
@@ -133,12 +133,12 @@ export default function AdminHomepageSectionsPage() {
                       sections.map((s) => (s.sectionKey === sec.sectionKey ? { ...s, title: val } : s))
                     );
                   }}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Subtitle / Eyebrow</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Subtitle / Eyebrow</label>
                 <input
                   type="text"
                   value={sec.subtitle || ''}
@@ -150,13 +150,13 @@ export default function AdminHomepageSectionsPage() {
                       )
                     );
                   }}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">Description</label>
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">Description</label>
               <textarea
                 rows={2}
                 value={sec.description || ''}
@@ -168,7 +168,7 @@ export default function AdminHomepageSectionsPage() {
                     )
                   );
                 }}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white resize-y"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal resize-y"
               />
             </div>
 
@@ -177,7 +177,7 @@ export default function AdminHomepageSectionsPage() {
                 type="button"
                 disabled={savingKey === sec.sectionKey}
                 onClick={() => handleUpdate(sec)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors disabled:opacity-60"
               >
                 {savingKey === sec.sectionKey ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

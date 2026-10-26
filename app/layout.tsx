@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/public/ThemeProvider';
 import { Navbar } from '@/components/public/Navbar';
@@ -18,10 +18,16 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap',
 });
 
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  display: 'swap',
+});
+
 export const metadata: Metadata = constructMetadata({
-  title: 'Athrav Pathak — Aspiring AI Engineer',
+  title: 'Athrav Pathak — Creative Developer & AI Engineer',
   description:
-    'Athrav Pathak is an aspiring AI engineer pursuing BCA in second year. Explore intelligent machine learning projects, software architecture, coursework credentials, and technical capabilities.',
+    'Athrav Pathak is an aspiring AI engineer and creative developer pursuing BCA. Explore thoughtful digital experiences, machine learning projects, software architecture, and technical capabilities.',
   path: '/',
 });
 
@@ -33,14 +39,18 @@ export default function RootLayout({
   const jsonLd = generatePersonJsonLd();
 
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.variable} ${jetbrainsMono.variable} ${playfair.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="font-sans bg-black text-zinc-100 antialiased selection:bg-white/20 selection:text-white">
+      <body className="font-sans bg-cream text-charcoal antialiased selection:bg-burgundy/15 selection:text-burgundy">
         <ThemeProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />

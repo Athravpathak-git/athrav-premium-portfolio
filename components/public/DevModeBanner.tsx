@@ -10,24 +10,24 @@ export function DevModeBanner() {
   }
 
   return (
-    <div className="bg-forest-900 border-b border-forest-700 text-xs text-cream-200 py-1.5 px-4 backdrop-blur-md sticky top-0 z-50">
+    <div className="bg-burgundy border-b border-burgundy-800 text-xs text-cream py-1.5 px-4 backdrop-blur-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-champagne-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-champagne-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rosegold opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-rosegold"></span>
           </span>
-          <span className="font-mono text-champagne-300 font-bold">DEV MOCK MODE</span>
-          <span className="hidden sm:inline text-forest-500">|</span>
-          <span className="hidden sm:inline text-sage-200">
-            Database unconfigured. Safe local JSON store active. Real Neon PostgreSQL connection deferred for manual setup.
+          <span className="font-mono text-rosegold font-bold">DEV MOCK MODE</span>
+          <span className="hidden sm:inline text-burgundy-400">|</span>
+          <span className="hidden sm:inline text-blush-100">
+            Database unconfigured. Safe local JSON store active. Neon PostgreSQL connection deferred for manual setup.
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="hidden md:inline-flex items-center gap-1 text-sage-300">
-            <ShieldCheck className="w-3.5 h-3.5 text-sage-300" /> Security Hardened
+          <span className="hidden md:inline-flex items-center gap-1 text-blush-200">
+            <ShieldCheck className="w-3.5 h-3.5 text-rosegold" /> Security Hardened
           </span>
-          <span className="inline-flex items-center gap-1 text-champagne-300 font-mono">
+          <span className="inline-flex items-center gap-1 text-rosegold font-mono font-medium">
             <Database className="w-3.5 h-3.5" /> Ready for Neon
           </span>
         </div>

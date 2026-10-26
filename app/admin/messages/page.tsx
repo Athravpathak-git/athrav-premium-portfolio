@@ -86,10 +86,10 @@ export default function AdminMessagesPage() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      <div className="flex items-center justify-between pb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Contact Submissions</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Contact Submissions</h1>
+          <p className="text-xs font-mono text-charcoal/70 mt-1">
             REVIEW, MANAGE & RESOLVE INCOMING PORTFOLIO INQUIRIES
           </p>
         </div>
@@ -115,7 +115,7 @@ export default function AdminMessagesPage() {
       {messages.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Messages List Sidebar */}
-          <div className="md:col-span-5 rounded-2xl border border-white/10 bg-zinc-950/70 p-4 space-y-2 h-[600px] overflow-y-auto">
+          <div className="md:col-span-5 rounded-2xl border border-border-soft bg-white shadow-sm p-4 space-y-2 h-[600px] overflow-y-auto">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -125,12 +125,12 @@ export default function AdminMessagesPage() {
                 }}
                 className={`p-4 rounded-xl border transition-all cursor-pointer ${
                   selectedMsg?.id === msg.id
-                    ? 'border-white/20 bg-zinc-900 shadow-md'
-                    : 'border-white/5 bg-zinc-900/30 hover:bg-zinc-900/60'
+                    ? 'border-border-soft bg-cream-50 shadow-md'
+                    : 'border-border-soft bg-cream-50 hover:bg-cream-100/70'
                 }`}
               >
                 <div className="flex items-center justify-between text-xs mb-1">
-                  <span className={`font-semibold ${!msg.isRead ? 'text-white' : 'text-zinc-400'}`}>
+                  <span className={`font-semibold ${!msg.isRead ? 'text-white' : 'text-charcoal/70'}`}>
                     {msg.name}
                   </span>
                   {!msg.isRead && (
@@ -138,8 +138,8 @@ export default function AdminMessagesPage() {
                   )}
                 </div>
                 <h4 className="text-xs font-mono text-silver-300 truncate">{msg.subject}</h4>
-                <p className="text-xs text-zinc-400 line-clamp-1 mt-1">{msg.message}</p>
-                <span className="text-[10px] font-mono text-zinc-400 mt-2 block">
+                <p className="text-xs text-charcoal/70 line-clamp-1 mt-1">{msg.message}</p>
+                <span className="text-[10px] font-mono text-charcoal/70 mt-2 block">
                   {new Date(msg.createdAt).toLocaleString()}
                 </span>
               </div>
@@ -147,13 +147,13 @@ export default function AdminMessagesPage() {
           </div>
 
           {/* Message Detail View */}
-          <div className="md:col-span-7 rounded-2xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8 space-y-6">
+          <div className="md:col-span-7 rounded-2xl border border-border-soft bg-white shadow-sm p-6 sm:p-8 space-y-6">
             {selectedMsg ? (
               <div className="space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/10">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-border-soft">
                   <div className="space-y-1">
-                    <h3 className="text-xl font-bold text-white">{selectedMsg.subject}</h3>
-                    <p className="text-xs font-mono text-zinc-400">
+                    <h3 className="text-xl font-bold text-burgundy">{selectedMsg.subject}</h3>
+                    <p className="text-xs font-mono text-charcoal/70">
                       From: <span className="text-white">{selectedMsg.name}</span> &lt;
                       <a
                         href={`mailto:${selectedMsg.email}`}
@@ -174,7 +174,7 @@ export default function AdminMessagesPage() {
                       className={`text-xs font-mono px-3 py-1.5 rounded-lg border transition-all ${
                         selectedMsg.isResolved
                           ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                          : 'border-white/10 bg-zinc-900 text-zinc-400 hover:text-white'
+                          : 'border-border-soft bg-cream-50 text-charcoal/70 hover:text-burgundy'
                       }`}
                     >
                       {selectedMsg.isResolved ? 'Marked Resolved' : 'Mark Resolved'}
@@ -182,7 +182,7 @@ export default function AdminMessagesPage() {
                     <button
                       type="button"
                       onClick={() => handleDelete(selectedMsg.id)}
-                      className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400"
+                      className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
                       title="Delete Message"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -190,12 +190,12 @@ export default function AdminMessagesPage() {
                   </div>
                 </div>
 
-                <div className="text-xs font-mono text-zinc-400 flex items-center gap-4">
+                <div className="text-xs font-mono text-charcoal/70 flex items-center gap-4">
                   <span>Received: {new Date(selectedMsg.createdAt).toLocaleString()}</span>
                   {selectedMsg.ipAddress && <span>IP: {selectedMsg.ipAddress}</span>}
                 </div>
 
-                <div className="p-5 rounded-xl bg-zinc-900/50 border border-white/5 text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                <div className="p-5 rounded-xl bg-cream-100/60 border border-border-soft text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
                   {selectedMsg.message}
                 </div>
 
@@ -204,7 +204,7 @@ export default function AdminMessagesPage() {
                     href={`mailto:${selectedMsg.email}?subject=Re: ${encodeURIComponent(
                       selectedMsg.subject
                     )}`}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
                   >
                     <Mail className="w-4 h-4" />
                     <span>Reply via Email</span>
@@ -212,17 +212,17 @@ export default function AdminMessagesPage() {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-20 text-zinc-400 text-xs font-mono">
+              <div className="text-center py-20 text-charcoal/70 text-xs font-mono">
                 Select a message on the left to read its contents.
               </div>
             )}
           </div>
         </div>
       ) : (
-        <div className="text-center py-24 rounded-2xl border border-white/10 bg-zinc-950/70 p-8 space-y-3">
+        <div className="text-center py-24 rounded-2xl border border-border-soft bg-white shadow-sm p-8 space-y-3">
           <Inbox className="w-10 h-10 text-zinc-600 mx-auto mb-2" />
-          <h3 className="text-base font-semibold text-white">No Inquiries Received</h3>
-          <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+          <h3 className="text-base font-semibold text-burgundy">No Inquiries Received</h3>
+          <p className="text-xs text-charcoal/70 max-w-sm mx-auto">
             When users submit the contact form on your portfolio website, messages will securely appear here.
           </p>
         </div>

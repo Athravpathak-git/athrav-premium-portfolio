@@ -135,17 +135,17 @@ export default function AdminCertificationsPage() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      <div className="flex items-center justify-between pb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Certifications Management</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Certifications Management</h1>
+          <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE COURSEWORK CREDENTIALS, VERIFICATION IDS & ISSUER METADATA
           </p>
         </div>
         <button
           type="button"
           onClick={() => handleOpenEditor()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>New Credential Record</span>
@@ -171,9 +171,9 @@ export default function AdminCertificationsPage() {
 
       {/* Editor Modal / Inline Form */}
       {(isCreating || editingItem) && (
-        <div className="p-6 rounded-2xl border border-white/20 bg-zinc-950 p-6 sm:p-8 space-y-5 animate-fade-in shadow-2xl">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <h3 className="text-lg font-semibold text-white">
+        <div className="p-6 rounded-2xl border border-border-soft bg-white p-6 sm:p-8 space-y-5 animate-fade-in shadow-2xl">
+          <div className="flex items-center justify-between pb-3 border-b border-border-soft">
+            <h3 className="text-lg font-serif font-bold text-burgundy">
               {editingItem?.id ? `Edit: ${editingItem.title}` : 'Create Certification Record'}
             </h3>
             <button
@@ -182,7 +182,7 @@ export default function AdminCertificationsPage() {
                 setEditingItem(null);
                 setIsCreating(false);
               }}
-              className="p-1 rounded text-zinc-400 hover:text-white"
+              className="p-1 rounded text-charcoal/70 hover:text-burgundy"
             >
               <X className="w-4 h-4" />
             </button>
@@ -191,7 +191,7 @@ export default function AdminCertificationsPage() {
           <form onSubmit={handleSave} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">
                   Certification Title *
                 </label>
                 <input
@@ -211,26 +211,26 @@ export default function AdminCertificationsPage() {
                     });
                   }}
                   placeholder="e.g. Machine Learning Specialization"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">URL Slug *</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">URL Slug *</label>
                 <input
                   type="text"
                   required
                   value={editingItem.slug || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, slug: e.target.value })}
                   placeholder="e.g. coursera-ml-specialization"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white font-mono"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal font-mono"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">
                   Issuing Organization *
                 </label>
                 <input
@@ -239,16 +239,16 @@ export default function AdminCertificationsPage() {
                   value={editingItem.issuer || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, issuer: e.target.value })}
                   placeholder="e.g. Coursera / DeepLearning.AI"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Category</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Category</label>
                 <select
                   value={editingItem.category || 'Machine Learning'}
                   onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
                 >
                   <option value="Machine Learning">Machine Learning</option>
                   <option value="Data Analytics">Data Analytics</option>
@@ -260,18 +260,18 @@ export default function AdminCertificationsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Credential ID</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Credential ID</label>
                 <input
                   type="text"
                   value={editingItem.credentialId || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, credentialId: e.target.value })}
                   placeholder="e.g. ABC123XYZ"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white font-mono"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">
                   Online Verification URL
                 </label>
                 <input
@@ -279,25 +279,25 @@ export default function AdminCertificationsPage() {
                   value={editingItem.credentialUrl || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, credentialUrl: e.target.value })}
                   placeholder="https://coursera.org/verify/..."
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white font-mono"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Description / Syllabus Notes
               </label>
               <textarea
                 rows={3}
                 value={editingItem.description || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white resize-y"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal resize-y"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Related Skills (comma-separated)
               </label>
               <input
@@ -305,31 +305,31 @@ export default function AdminCertificationsPage() {
                 value={skillsInput}
                 onChange={(e) => setSkillsInput(e.target.value)}
                 placeholder="Python, Scikit-Learn, Linear Regression"
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div className="flex flex-wrap items-center gap-6 pt-2">
-              <label className="flex items-center gap-2 text-xs font-mono text-zinc-300">
+              <label className="flex items-center gap-2 text-xs font-mono text-charcoal/85">
                 <input
                   type="checkbox"
                   checked={editingItem.isFeatured || false}
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, isFeatured: e.target.checked })
                   }
-                  className="w-4 h-4 rounded bg-zinc-900 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
                 />
                 <span>Featured Credential (Homepage priority)</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs font-mono text-zinc-300">
+              <label className="flex items-center gap-2 text-xs font-mono text-charcoal/85">
                 <input
                   type="checkbox"
                   checked={editingItem.isPublished || false}
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, isPublished: e.target.checked })
                   }
-                  className="w-4 h-4 rounded bg-zinc-900 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
                 />
                 <span>Published (Visible on Public Website)</span>
               </label>
@@ -339,7 +339,7 @@ export default function AdminCertificationsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors shadow-lg shadow-white/10"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-lg shadow-md"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>Save Credential</span>
@@ -350,9 +350,9 @@ export default function AdminCertificationsPage() {
       )}
 
       {/* Listing Table */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-900/60 border-b border-white/10 font-mono text-zinc-400 uppercase">
+          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
             <tr>
               <th className="p-4">Certificate</th>
               <th className="p-4">Issuer</th>
@@ -362,11 +362,11 @@ export default function AdminCertificationsPage() {
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border-soft">
             {items.map((item) => (
-              <tr key={item.id} className="hover:bg-zinc-900/30 transition-colors">
-                <td className="p-4 font-semibold text-white">{item.title}</td>
-                <td className="p-4 text-zinc-300">{item.issuer}</td>
+              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
+                <td className="p-4 font-semibold text-burgundy">{item.title}</td>
+                <td className="p-4 text-charcoal/85">{item.issuer}</td>
                 <td className="p-4 font-mono text-silver-300">{item.category}</td>
                 <td className="p-4">
                   {item.credentialUrl ? (
@@ -382,7 +382,7 @@ export default function AdminCertificationsPage() {
                     className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
                       item.isPublished
                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-zinc-800 text-zinc-400 border border-white/10'
+                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
                     }`}
                   >
                     {item.isPublished ? 'Published' : 'Draft'}
@@ -393,7 +393,7 @@ export default function AdminCertificationsPage() {
                     <Link
                       href={`/certifications/${item.slug}`}
                       target="_blank"
-                      className="p-1.5 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white inline-block"
+                      className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-block"
                       title="Preview Details"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -402,14 +402,14 @@ export default function AdminCertificationsPage() {
                   <button
                     type="button"
                     onClick={() => handleOpenEditor(item)}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(item.id, item.title)}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

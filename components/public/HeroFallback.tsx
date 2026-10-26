@@ -3,33 +3,67 @@ import React from 'react';
 export function HeroFallback() {
   return (
     <div className="relative w-full h-[400px] sm:h-[480px] flex items-center justify-center select-none pointer-events-none">
-      {/* Soft natural contact shadow on the floor */}
-      <div className="absolute bottom-10 w-44 h-8 rounded-full bg-forest-900/10 blur-xl" />
+      {/* Studio Contact Shadow on Cream Ground */}
+      <div className="absolute bottom-10 w-56 h-8 rounded-full bg-charcoal/10 blur-xl" />
 
-      {/* Orbital Ring 1: Champagne Gold */}
-      <div className="absolute w-64 h-64 sm:w-72 sm:h-72 rounded-full border border-champagne-400/50 [transform:rotateX(66deg)_rotateY(18deg)] animate-spin-slow" />
+      {/* Stylized Burgundy Glass Ribbon Graphic with Rose Gold Trim */}
+      <div className="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center">
+        <svg
+          viewBox="0 0 320 320"
+          className="w-full h-full drop-shadow-[0_20px_35px_rgba(87,38,51,0.22)]"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            {/* Burgundy Translucent Glass Gradient */}
+            <linearGradient id="burgundyGlassFront" x1="40" y1="40" x2="280" y2="280" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#753244" stopOpacity="0.95" />
+              <stop offset="45%" stopColor="#572633" stopOpacity="0.88" />
+              <stop offset="100%" stopColor="#361720" stopOpacity="0.96" />
+            </linearGradient>
 
-      {/* Orbital Ring 2: Muted Sage */}
-      <div
-        className="absolute w-72 h-72 sm:w-80 sm:h-80 rounded-full border border-sage-500/40 [transform:rotateX(58deg)_rotateY(-32deg)]"
-        style={{ animation: 'spin 18s linear infinite reverse' }}
-      />
+            <linearGradient id="burgundyGlassBack" x1="280" y1="60" x2="60" y2="260" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#461E29" stopOpacity="0.85" />
+              <stop offset="60%" stopColor="#572633" stopOpacity="0.75" />
+              <stop offset="100%" stopColor="#261016" stopOpacity="0.9" />
+            </linearGradient>
 
-      {/* Orbital Ring 3: Delicate Champagne Accent */}
-      <div
-        className="absolute w-52 h-52 sm:w-60 sm:h-60 rounded-full border border-champagne-300/30 [transform:rotateX(42deg)_rotateY(40deg)]"
-        style={{ animation: 'spin 26s linear infinite' }}
-      />
+            {/* Rose Gold Metallic Edge Trim */}
+            <linearGradient id="roseGoldTrim" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#DCB5AB" />
+              <stop offset="40%" stopColor="#C18E83" />
+              <stop offset="70%" stopColor="#F4E7E4" />
+              <stop offset="100%" stopColor="#A86D61" />
+            </linearGradient>
+          </defs>
 
-      {/* Translucent Emerald Glass Orb */}
-      <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-forest-500/80 via-forest-700/90 to-forest-900/95 p-[1px] shadow-[0_20px_45px_-12px_rgba(24,61,50,0.35)] flex items-center justify-center border border-sage-300/30 backdrop-blur-md">
-        <div className="w-full h-full rounded-full bg-gradient-to-tr from-forest-800 via-forest-700/90 to-forest-600/80 flex items-center justify-center overflow-hidden relative">
-          {/* Subtle studio specular highlight */}
-          <div className="absolute top-3 left-6 w-12 h-6 bg-ivory/40 rounded-full blur-[2px] transform -rotate-45" />
-          <div className="absolute bottom-3 right-6 w-10 h-4 bg-sage-300/25 rounded-full blur-[3px]" />
-          {/* Internal golden core hint */}
-          <div className="w-10 h-10 rounded-full border border-champagne-400/40 bg-champagne-500/15" />
-        </div>
+          {/* Background Ribbon Loop (Inner sweeping fold) */}
+          <path
+            d="M95 180 C60 110, 110 50, 185 65 C240 75, 270 145, 225 210 C190 260, 120 265, 85 220"
+            fill="url(#burgundyGlassBack)"
+            stroke="url(#roseGoldTrim)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+
+          {/* Foreground Ribbon Swirl (Sculptural twist with soft specular highlight) */}
+          <path
+            d="M80 135 C115 70, 205 60, 245 125 C280 180, 225 255, 155 255 C95 255, 60 205, 80 135 Z"
+            fill="url(#burgundyGlassFront)"
+            stroke="url(#roseGoldTrim)"
+            strokeWidth="3"
+            strokeLinejoin="round"
+          />
+
+          {/* Specular light catch reflection on glass curve */}
+          <path
+            d="M110 100 C145 75, 195 78, 225 110"
+            stroke="rgba(255, 255, 255, 0.45)"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </svg>
       </div>
     </div>
   );

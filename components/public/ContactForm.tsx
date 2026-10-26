@@ -9,7 +9,7 @@ export function ContactForm() {
     email: '',
     subject: '',
     message: '',
-    honeypot: '', // Trap field: if filled, spam bots caught
+    honeypot: '', // Spam trap
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
@@ -49,7 +49,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-      {/* Honeypot field (hidden from screen readers & users) */}
+      {/* Honeypot field (hidden from users) */}
       <div className="hidden" aria-hidden="true">
         <label htmlFor="company_website_input">Leave this field empty</label>
         <input
@@ -63,17 +63,17 @@ export function ContactForm() {
       </div>
 
       {status === 'success' && (
-        <div className="p-4 rounded-xl border border-sage-500 bg-sage-50 dark:bg-forest-900 text-forest dark:text-ivory text-sm flex items-start gap-3 animate-fade-in shadow-sm">
-          <CheckCircle2 className="w-5 h-5 text-forest dark:text-sage-300 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl border border-rosegold/50 bg-rosegold-50 text-burgundy text-sm flex items-start gap-3 animate-fade-in shadow-sm">
+          <CheckCircle2 className="w-5 h-5 text-burgundy shrink-0 mt-0.5" />
           <div>
             <p className="font-bold">Message Delivered</p>
-            <p className="text-xs text-forest-700 dark:text-sage-100 mt-0.5">{successMessage}</p>
+            <p className="text-xs text-charcoal/80 mt-0.5">{successMessage}</p>
           </div>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="p-4 rounded-xl border border-red-400 bg-red-50 text-red-900 text-sm flex items-start gap-3 animate-fade-in">
+        <div className="p-4 rounded-xl border border-red-300 bg-red-50 text-red-900 text-sm flex items-start gap-3 animate-fade-in">
           <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
             <p className="font-bold">Submission Error</p>
@@ -84,7 +84,7 @@ export function ContactForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="contact_name" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
+          <label htmlFor="contact_name" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
             Your Name *
           </label>
           <input
@@ -94,13 +94,13 @@ export function ContactForm() {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="e.g. Sarah Jenkins"
-            className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
+            className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
           />
         </div>
 
         <div>
-          <label htmlFor="contact_email" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
-            Email Address *
+          <label htmlFor="contact_email" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
+            Your Email *
           </label>
           <input
             id="contact_email"
@@ -108,14 +108,14 @@ export function ContactForm() {
             required
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            placeholder="sarah@example.com"
-            className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
+            placeholder="e.g. sarah@example.com"
+            className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="contact_subject" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
+        <label htmlFor="contact_subject" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
           Subject *
         </label>
         <input
@@ -124,13 +124,13 @@ export function ContactForm() {
           required
           value={formData.subject}
           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-          placeholder="AI Internship Opportunity / Project Collaboration"
-          className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
+          placeholder="e.g. Internship Inquiry / Collaboration"
+          className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
         />
       </div>
 
       <div>
-        <label htmlFor="contact_message" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
+        <label htmlFor="contact_message" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
           Message *
         </label>
         <textarea
@@ -139,25 +139,25 @@ export function ContactForm() {
           required
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-          placeholder="Please share details about your inquiry, project scope, or opportunity..."
-          className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all resize-y"
+          placeholder="Describe your inquiry, project scope, or opportunity..."
+          className="w-full bg-cream-50 border border-border-soft rounded-xl p-4 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all resize-y"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-forest hover:bg-forest-600 text-ivory font-bold text-sm transition-all duration-200 shadow-md hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-60 shadow-md"
       >
         {status === 'loading' ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Transmitting...</span>
+            <span>Sending Secure Message...</span>
           </>
         ) : (
           <>
-            <span>Send Secure Message</span>
             <Send className="w-4 h-4" />
+            <span>Send Message</span>
           </>
         )}
       </button>

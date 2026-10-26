@@ -16,7 +16,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-cream-100 dark:bg-forest-950 text-forest dark:text-cream-100 flex flex-col transition-colors">
+    <div className="min-h-screen bg-cream text-charcoal flex flex-col transition-colors">
       <DevModeBanner />
       <div className="flex-1 flex">
         <AdminSidebar user={current.user} />

@@ -93,10 +93,10 @@ export default function AdminSkillsPage() {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between pb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Skills Matrix</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Skills Matrix</h1>
+          <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE CATEGORIZED PROGRAMMING, AI, AND TOOL COMPETENCIES
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function AdminSkillsPage() {
             });
             setIsCreating(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Skill</span>
@@ -140,9 +140,9 @@ export default function AdminSkillsPage() {
 
       {/* Editor Modal / Inline Form */}
       {(isCreating || editingItem) && (
-        <div className="p-6 rounded-2xl border border-white/20 bg-zinc-950 p-6 space-y-5 animate-fade-in">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <h3 className="text-base font-semibold text-white">
+        <div className="p-6 rounded-2xl border border-border-soft bg-white p-6 space-y-5 animate-fade-in">
+          <div className="flex items-center justify-between pb-3 border-b border-border-soft">
+            <h3 className="text-base font-semibold text-burgundy">
               {editingItem?.id ? 'Edit Skill Record' : 'Create New Skill'}
             </h3>
             <button
@@ -151,7 +151,7 @@ export default function AdminSkillsPage() {
                 setEditingItem(null);
                 setIsCreating(false);
               }}
-              className="p-1 rounded text-zinc-400 hover:text-white"
+              className="p-1 rounded text-charcoal/70 hover:text-burgundy"
             >
               <X className="w-4 h-4" />
             </button>
@@ -160,23 +160,23 @@ export default function AdminSkillsPage() {
           <form onSubmit={handleSave} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Skill Name *</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Skill Name *</label>
                 <input
                   type="text"
                   required
                   value={editingItem.name || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, name: e.target.value })}
                   placeholder="e.g. PyTorch"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Category *</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Category *</label>
                 <select
                   value={editingItem.category || 'Programming'}
                   onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c}>
@@ -187,11 +187,11 @@ export default function AdminSkillsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Proficiency</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Proficiency</label>
                 <select
                   value={editingItem.proficiency || 'Intermediate'}
                   onChange={(e) => setEditingItem({ ...editingItem, proficiency: e.target.value })}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
                 >
                   <option value="Exploring">Exploring (Coursework)</option>
                   <option value="Intermediate">Intermediate (Project Use)</option>
@@ -201,33 +201,33 @@ export default function AdminSkillsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">Description / Context</label>
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">Description / Context</label>
               <input
                 type="text"
                 value={editingItem.description || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
                 placeholder="e.g. Tensor operations and loss function optimization."
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div className="flex items-center gap-6 pt-1">
-              <label className="flex items-center gap-2 text-xs font-mono text-zinc-300">
+              <label className="flex items-center gap-2 text-xs font-mono text-charcoal/85">
                 <input
                   type="checkbox"
                   checked={editingItem.isFeatured || false}
                   onChange={(e) => setEditingItem({ ...editingItem, isFeatured: e.target.checked })}
-                  className="w-4 h-4 rounded bg-zinc-900 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
                 />
                 <span>Featured on Homepage</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs font-mono text-zinc-300">
+              <label className="flex items-center gap-2 text-xs font-mono text-charcoal/85">
                 <input
                   type="checkbox"
                   checked={editingItem.isPublished ?? true}
                   onChange={(e) => setEditingItem({ ...editingItem, isPublished: e.target.checked })}
-                  className="w-4 h-4 rounded bg-zinc-900 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
                 />
                 <span>Published</span>
               </label>
@@ -237,7 +237,7 @@ export default function AdminSkillsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>Save Skill</span>
@@ -248,9 +248,9 @@ export default function AdminSkillsPage() {
       )}
 
       {/* Skills Table */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-900/60 border-b border-white/10 font-mono text-zinc-400 uppercase">
+          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
             <tr>
               <th className="p-4">Skill</th>
               <th className="p-4">Category</th>
@@ -260,11 +260,11 @@ export default function AdminSkillsPage() {
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border-soft">
             {items.map((item) => (
-              <tr key={item.id} className="hover:bg-zinc-900/30 transition-colors">
-                <td className="p-4 font-semibold text-white">{item.name}</td>
-                <td className="p-4 text-zinc-300 font-mono">{item.category}</td>
+              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
+                <td className="p-4 font-semibold text-burgundy">{item.name}</td>
+                <td className="p-4 text-charcoal/85 font-mono">{item.category}</td>
                 <td className="p-4 font-mono text-silver-300">{item.proficiency}</td>
                 <td className="p-4">
                   {item.isFeatured ? (
@@ -272,7 +272,7 @@ export default function AdminSkillsPage() {
                       <Star className="w-3 h-3 fill-amber-400" /> Yes
                     </span>
                   ) : (
-                    <span className="text-zinc-500 font-mono">No</span>
+                    <span className="text-charcoal/60 font-mono">No</span>
                   )}
                 </td>
                 <td className="p-4">
@@ -280,7 +280,7 @@ export default function AdminSkillsPage() {
                     className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
                       item.isPublished
                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-zinc-800 text-zinc-400 border border-white/10'
+                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
                     }`}
                   >
                     {item.isPublished ? 'Published' : 'Draft'}
@@ -293,14 +293,14 @@ export default function AdminSkillsPage() {
                       setEditingItem({ ...item });
                       setIsCreating(false);
                     }}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(item.id)}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

@@ -142,17 +142,17 @@ export default function AdminProjectsPage() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      <div className="flex items-center justify-between pb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Projects Management</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Projects Management</h1>
+          <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE AI IMPLEMENTATIONS, ARCHITECTURES, DRAFTS & REPOSITORIES
           </p>
         </div>
         <button
           type="button"
           onClick={() => handleOpenEditor()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>New Project</span>
@@ -178,9 +178,9 @@ export default function AdminProjectsPage() {
 
       {/* Editor Modal / Section */}
       {(isCreating || editingItem) && (
-        <div className="p-6 rounded-2xl border border-white/20 bg-zinc-950 p-6 sm:p-8 space-y-6 animate-fade-in shadow-2xl">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <h3 className="text-lg font-semibold text-white">
+        <div className="p-6 rounded-2xl border border-border-soft bg-white p-6 sm:p-8 space-y-6 animate-fade-in shadow-2xl">
+          <div className="flex items-center justify-between pb-3 border-b border-border-soft">
+            <h3 className="text-lg font-serif font-bold text-burgundy">
               {editingItem?.id ? `Edit: ${editingItem.title}` : 'Create New Project Record'}
             </h3>
             <button
@@ -189,7 +189,7 @@ export default function AdminProjectsPage() {
                 setEditingItem(null);
                 setIsCreating(false);
               }}
-              className="p-1 rounded text-zinc-400 hover:text-white"
+              className="p-1 rounded text-charcoal/70 hover:text-burgundy"
             >
               <X className="w-4 h-4" />
             </button>
@@ -198,7 +198,7 @@ export default function AdminProjectsPage() {
           <form onSubmit={handleSave} className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Project Title *</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Project Title *</label>
                 <input
                   type="text"
                   required
@@ -215,41 +215,41 @@ export default function AdminProjectsPage() {
                       slug: editingItem.slug || slug,
                     });
                   }}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">URL Slug *</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">URL Slug *</label>
                 <input
                   type="text"
                   required
                   value={editingItem.slug || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, slug: e.target.value })}
                   placeholder="e.g. omnimind-ai"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white font-mono"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal font-mono"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Subtitle / Tagline</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Subtitle / Tagline</label>
                 <input
                   type="text"
                   value={editingItem.subtitle || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, subtitle: e.target.value })}
                   placeholder="Autonomous Agentic Intelligence Platform"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Category</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Category</label>
                 <select
                   value={editingItem.category || 'Artificial Intelligence'}
                   onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
                 >
                   <option value="Artificial Intelligence">Artificial Intelligence</option>
                   <option value="Machine Learning">Machine Learning</option>
@@ -260,18 +260,18 @@ export default function AdminProjectsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">Summary (1-2 sentences) *</label>
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">Summary (1-2 sentences) *</label>
               <textarea
                 rows={2}
                 required
                 value={editingItem.summary || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, summary: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Full Technical Description *
               </label>
               <textarea
@@ -279,12 +279,12 @@ export default function AdminProjectsPage() {
                 required
                 value={editingItem.description || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Technology Stack (comma-separated) *
               </label>
               <input
@@ -293,36 +293,36 @@ export default function AdminProjectsPage() {
                 value={techInput}
                 onChange={(e) => setTechInput(e.target.value)}
                 placeholder="Next.js, TypeScript, Python, PyTorch, PostgreSQL"
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">GitHub Repo URL</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">GitHub Repo URL</label>
                 <input
                   type="url"
                   value={editingItem.repoUrl || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, repoUrl: e.target.value })}
                   placeholder="https://github.com/Athravpathak-git/..."
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Live Demo URL</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Live Demo URL</label>
                 <input
                   type="url"
                   value={editingItem.liveUrl || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, liveUrl: e.target.value })}
                   placeholder="https://..."
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Architecture Summary / Diagram Notes
               </label>
               <textarea
@@ -331,53 +331,53 @@ export default function AdminProjectsPage() {
                 onChange={(e) =>
                   setEditingItem({ ...editingItem, architectureSummary: e.target.value })
                 }
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Challenges</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Challenges</label>
                 <textarea
                   rows={2}
                   value={editingItem.challenges || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, challenges: e.target.value })}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Solutions</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Solutions</label>
                 <textarea
                   rows={2}
                   value={editingItem.solutions || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, solutions: e.target.value })}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-6 pt-2">
-              <label className="flex items-center gap-2 text-xs font-mono text-zinc-300">
+              <label className="flex items-center gap-2 text-xs font-mono text-charcoal/85">
                 <input
                   type="checkbox"
                   checked={editingItem.isFeatured || false}
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, isFeatured: e.target.checked })
                   }
-                  className="w-4 h-4 rounded bg-zinc-900 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
                 />
                 <span>Featured Project (Homepage priority)</span>
               </label>
 
-              <label className="flex items-center gap-2 text-xs font-mono text-zinc-300">
+              <label className="flex items-center gap-2 text-xs font-mono text-charcoal/85">
                 <input
                   type="checkbox"
                   checked={editingItem.isPublished || false}
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, isPublished: e.target.checked })
                   }
-                  className="w-4 h-4 rounded bg-zinc-900 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
                 />
                 <span>Published (Visible on Public Website)</span>
               </label>
@@ -387,7 +387,7 @@ export default function AdminProjectsPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors shadow-lg shadow-white/10"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-lg shadow-md"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>Save Project</span>
@@ -398,9 +398,9 @@ export default function AdminProjectsPage() {
       )}
 
       {/* Projects Listing Table */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-900/60 border-b border-white/10 font-mono text-zinc-400 uppercase">
+          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
             <tr>
               <th className="p-4">Title & Slug</th>
               <th className="p-4">Category</th>
@@ -409,21 +409,21 @@ export default function AdminProjectsPage() {
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border-soft">
             {items.map((item) => (
-              <tr key={item.id} className="hover:bg-zinc-900/30 transition-colors">
+              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
                 <td className="p-4">
-                  <div className="font-semibold text-white">{item.title}</div>
-                  <div className="text-[10px] font-mono text-zinc-400 mt-0.5">/{item.slug}</div>
+                  <div className="font-semibold text-burgundy">{item.title}</div>
+                  <div className="text-[10px] font-mono text-charcoal/70 mt-0.5">/{item.slug}</div>
                 </td>
-                <td className="p-4 text-zinc-300 font-mono">{item.category}</td>
+                <td className="p-4 text-charcoal/85 font-mono">{item.category}</td>
                 <td className="p-4">
                   {item.isFeatured ? (
                     <span className="text-amber-400 font-mono flex items-center gap-1">
                       <Star className="w-3.5 h-3.5 fill-amber-400" /> Featured
                     </span>
                   ) : (
-                    <span className="text-zinc-500 font-mono">Standard</span>
+                    <span className="text-charcoal/60 font-mono">Standard</span>
                   )}
                 </td>
                 <td className="p-4">
@@ -431,7 +431,7 @@ export default function AdminProjectsPage() {
                     className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
                       item.isPublished
                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-zinc-800 text-zinc-400 border border-white/10'
+                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
                     }`}
                   >
                     {item.isPublished ? 'Published' : 'Draft (Hidden)'}
@@ -442,7 +442,7 @@ export default function AdminProjectsPage() {
                     <Link
                       href={`/projects/${item.slug}`}
                       target="_blank"
-                      className="p-1.5 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white inline-block"
+                      className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-block"
                       title="Preview on Public Site"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -451,7 +451,7 @@ export default function AdminProjectsPage() {
                   <button
                     type="button"
                     onClick={() => handleOpenEditor(item)}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
                     title="Edit Project"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
@@ -459,7 +459,7 @@ export default function AdminProjectsPage() {
                   <button
                     type="button"
                     onClick={() => handleDelete(item.id, item.title)}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
                     title="Delete Project"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

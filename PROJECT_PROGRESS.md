@@ -1,109 +1,94 @@
-# ATHRAV PATHAK — LUXURY 3D PORTFOLIO & CMS
-## Technical Audit, Bug Resolution, and Status Report
+# ATHRAV PATHAK — LUXURY EDITORIAL 3D PORTFOLIO & CMS
+## Visual Identity Redesign, Technical Audit, and Status Report
 
 ### Executive Summary
-The portfolio has undergone a complete technical recovery, stability audit, and luxury visual redesign into an elegant **Forest Green + Warm Cream** identity with realistic 3D elements, verified running on `http://localhost:4280`.
+The portfolio has undergone a complete, bespoke visual redesign into a luxury editorial aesthetic featuring **Deep Burgundy + Soft Cream + Rose Gold** with an interactive 3D **Burgundy Glass Ribbon** centerpiece, verified and live on `http://localhost:4280`.
 
 ---
 
-### Phase 1 & 2: Critical Bug Fixes (Admin Panel & Profile Photo)
-
-1. **Admin Panel Accessibility & Navigation**
-   - **Root Cause:** A recursive interaction existed between `middleware.ts` and Server Component session validation in `requireAdminPage()` (`lib/auth-guard.ts`). When an expired or unauthenticated cookie was present, an infinite redirect loop (`ERR_TOO_MANY_REDIRECTS`) occurred between `/admin` and `/admin/login`.
-   - **Fix:**
-     - Removed blind redirect on `/admin/login` in `middleware.ts`.
-     - In `app/api/auth/me/route.ts`: Actively clears invalid cookies via `Set-Cookie: athrav_admin_session=; Max-Age=0`.
-     - In `lib/auth-guard.ts`: Cleanly redirects to `/admin/login?reason=session_expired`.
-     - In `app/admin/login/page.tsx`: Replaced soft `router.push` with `window.location.href = destination` to guarantee clean HTTP document navigation with the fresh cookie. Added one-click dev credentials auto-fill.
-     - Verified: All 16 admin routes load without hang or infinite redirect.
-
-2. **Profile Photo Upload, Persistence, & Display**
-   - **Root Cause:**
-     1. In Next.js production mode (`next start`), runtime uploads into `public/uploads/` returned 404 because Next.js only registers static files present at build time.
-     2. In Admin Profile UI, selecting a file lacked preview feedback and dedicated save control.
-   - **Fix:**
-     1. Created dynamic App Router Route Handler `app/uploads/[...path]/route.ts` with path-traversal protection, streaming runtime images with appropriate MIME types (`image/png`, `image/jpeg`, `image/webp`) and caching headers.
-     2. Created `components/public/ProfilePortrait.tsx` with graceful error fallback to stylized badge.
-     3. Upgraded `app/admin/profile/page.tsx` with immediate client-side preview, "Save Photo Now", upload progress, and "Cancel Selection".
-     4. Verified: User's uploaded portrait (`/uploads/profile-1793013930445-d7f4837227f112de8d472f17.png`, 1.99 MB) returns HTTP 200 and renders on Homepage and About page.
-
----
-
-### Phase 3: Forest Green + Warm Cream Visual Identity & 3D Redesign
-
+### Phase 1: New Visual Identity & Typography
 1. **Color Palette**
-   - **Warm Cream (`#F5F0E6`):** Primary page background, organic softness.
-   - **Deep Forest Green (`#183D32`):** Primary headings, body typography, action buttons, footer surface.
-   - **Muted Sage (`#A8B9A0`):** Subdued borders, badges, tags, subtle rim highlights.
-   - **Soft Ivory (`#FFFDF7`):** Card surfaces, panels, modal dropdowns.
-   - **Muted Champagne Gold (`#B49A68`):** Metallic orbital rings, featured markers, credential badges.
-   - **Strictly Excluded:** Neon blues, purples, cyans, pinks, electric gradients, glowing borders, and gaming-style particles.
+   - **Deep Burgundy (`#572633`):** Primary brand identity, large serif headlines, main call-to-action buttons, and admin sidebar background.
+   - **Soft Cream (`#F7F2EA`):** Warm editorial background across all public pages, modals, and admin views.
+   - **Rose Gold (`#C18E83`):** Subdued metallic highlights, badges, icons, edge piping on 3D objects, and status indicators.
+   - **Charcoal (`#292326`):** High-readability body text, narrative paragraphs, and contact information.
+   - **Muted Blush (`#E7D5D2`):** Soft studio fill lighting, cards, and subtle surface accents.
+   - **Soft Border (`#E5DCD4`):** Refined, elegant borders across cards, inputs, and navigation containers.
+   - **Strictly Excluded:** Neon colors, cyberpunk styling, black-and-silver themes, deep teal styling, glowing spheres, orbital rings, and excessive particles.
 
-2. **Interactive 3D Hero Centerpiece**
-   - **Components:** `components/public/Hero3DScene.tsx`, `components/public/HeroFallback.tsx`, `components/public/Hero3DClient.tsx`.
-   - **Orb Centerpiece:** Emerald-green physical glass sphere (`MeshPhysicalMaterial`: `roughness={0.12}`, `transmission={0.88}`, `thickness={1.3}`, `ior={1.52}`, `clearcoat={1.0}`, `color="#183D32"`).
-   - **Internal Core:** Delicate geometric facet with brushed champagne wireframe (`#B49A68`) adding realistic optical depth as light refracts.
-   - **Orbital Rings:**
-     - Ring 1: Brushed Champagne Gold metal (`#B49A68`, `metalness={0.88}`).
-     - Ring 2: Muted Sage metal (`#A8B9A0`, `metalness={0.82}`).
-     - Ring 3: Delicate Champagne Accent (`#CDB78C`, `metalness={0.9}`).
-   - **Studio Lighting:** Three warm directional studio lights (`#FFFDF7`), soft sage rim light (`#A8B9A0`), and subtle champagne fill (`#B49A68`).
-   - **Parallax & Motion:** Gentle rotation with subtle mouse-responsive damping (`THREE.MathUtils.damp`), with reduced-motion accessibility support.
-   - **Fallback:** Pure CSS/SVG emerald glass orb with sage and champagne brushed rings and contact shadow on floor.
-
-3. **Homepage Layout (Two-Column Balanced Composition)**
-   - **Left Column:**
-     - Eyebrow Badge: `Aspiring AI Engineer • BCA 2nd Year`
-     - Heading: `ATHRAV PATHAK` (Deep Forest Green, bold, tracking-tight)
-     - Subtitle: `Aspiring AI Engineer` (Brushed Champagne Gold)
-     - Professional Introduction: Focus on machine learning algorithms, neural network foundations, and modern software engineering.
-     - Athrav's Actual Profile Photo: Integrated card display with verified portrait.
-     - Primary Actions: "Explore Projects" (`bg-forest text-ivory`) & "Contact Me" (`border border-cream-300 text-forest`).
-   - **Right Column:**
-     - Interactive 3D Emerald Centerpiece with studio lighting.
-   - **Preview Sections:**
-     - About & Career Vision Preview
-     - 3D Interactive Spatial Showcase (`Showcase3DClient`)
-     - Technical Capabilities & Tooling (`SkillBadge`)
-     - Featured Projects (`ProjectCard`)
-     - Formal Education (`BCA Year 2`) & Internship Experience
-     - Certifications & Coursework (`CertificateCard`)
-     - What I Build (`Services`)
-     - Contact Call to Action with GitHub link
-
-4. **Public Subpages & Shared Elements Updated**
-   - `Navbar`: Warm Cream / Soft Ivory surface with fine `#D8CEBD` border, Deep Forest Green links, active pill, mobile menu drawer.
-   - `Footer`: Deep Forest Green background (`#183D32`) with Soft Ivory headings, Warm Cream text, Muted Sage navigation links, and Champagne accents.
-   - `About` (`/about`): Complete narrative biography, context facts, and profile portrait card.
-   - `Projects` (`/projects` & `[slug]`): Soft Ivory cards, Muted Sage tech pills, Deep Forest headings, and detailed system architecture case studies.
-   - `Education` (`/education`): Academic progression timeline with Forest Green and Champagne nodes.
-   - `Skills` (`/skills`): Categorized matrix across 6 technical categories with proficiency indicators.
-   - `Certifications` (`/certifications` & `[slug]`): Soft Ivory cards with draft transparency notices and credential verification links.
-   - `Experience` (`/experience`): Internship program details and scope checklists.
-   - `Achievements` (`/achievements`): Timeline milestones and 2026 growth objectives.
-   - `Services` (`/services`): Prototyping and engineering capabilities.
-   - `Contact` (`/contact`): Contact information sidebar and secure contact form.
-
-5. **Admin Panel Redesign**
-   - `AdminSidebar`: Deep Forest Green sidebar with Soft Ivory active navigation states, champagne icons, and profile status.
-   - `Admin Layout`: Warm Cream surface, subtle Dev Mode banner, polished spacing.
-   - `Admin Login` (`/admin/login`): Soft Ivory surface, Forest Green button, auto-fill dev credentials button.
-   - `Admin Overview` (`/admin`): Metrics grid, database status banner, recent inquiries, and security audit stream.
-   - `Admin Profile` (`/admin/profile`): Immediate photo preview, "Save Photo Now", upload progress, and profile details form.
+2. **Typography System**
+   - **Playfair Display (Serif):** Large editorial headlines, wordmark, and case study titles.
+   - **Inter (Sans):** Body paragraphs, descriptions, and primary navigation links.
+   - **JetBrains Mono (Monospace):** Tech tags, dates, credentials, and code metrics.
 
 ---
 
-### Verification Summary
-- **TypeScript:** `tsc --noEmit` passed with 0 errors.
-- **Vitest Test Suite:** 6 test suites passed, 30/30 unit & integration tests passed.
-- **Production Build:** `next build` compiled 51/51 routes with exit code 0.
-- **Port:** Server is running live on `http://localhost:4280`.
-- **Active Profile Photo:** `http://localhost:4280/uploads/profile-1793013930445-d7f4837227f112de8d472f17.png` verified returning HTTP 200 (1.99 MB).
-- **Admin Authentication:** Verified returning HTTP 200 with session cookie and granting access to `/admin`.
+### Phase 2: 3D Burgundy Glass Ribbon Centerpiece
+1. **Sculptural Geometry & Materiality**
+   - **Ribbon Geometry:** Procedural, continuous 3D Catmull-Rom spline with 16 asymmetrical spatial control points generating an organically twisted, flowing ribbon silhouette.
+   - **Glass Material (`MeshPhysicalMaterial`):**
+     - Color: `#572633` (Deep Burgundy)
+     - Transmission: `0.88`
+     - Thickness: `1.6`
+     - IOR: `1.54`
+     - Roughness: `0.1`
+     - Clearcoat: `1.0`
+     - Clearcoat Roughness: `0.04`
+     - Attenuation: `#572633` (distance `1.4`)
+   - **Rose Gold Edge Accents:** Dual continuous tube geometry rims running precisely along both edges in brushed Rose Gold (`#C18E83`, `metalness={0.92}`).
+   - **Lighting & Shadows:** Three-point studio lighting setup (pure white key light, warm cream ambient light, muted blush fill, and rose-gold rim light) with natural contact shadow on the cream floor.
+   - **Animation & Parallax:** Slow, elegant rotation with mouse-responsive damping via `THREE.MathUtils.damp`. Respects `prefers-reduced-motion` with static sculptural positioning.
+   - **Fallback:** Graceful SVG/CSS representation in `HeroFallback.tsx` with translucent burgundy glass gradient and rose-gold metallic trim.
 
 ---
 
-### Local Admin Credentials
-- **Username / Identifier:** `athrav_admin` (or `admin@athravpathak.dev`)
-- **Password:** `ReplaceWithStrongPassword123!`
-- **Shortcut:** Click the "Fill Local Dev Credentials (athrav_admin)" button on `/admin/login`.
+### Phase 3: Homepage Redesign (Luxury Editorial Hero & Selected Projects)
+1. **Hero Composition**
+   - Wordmark: `ATHRAV PATHAK` on the left with subtle hover transitions.
+   - Introductory Label: `CREATIVE DEVELOPER · AI & MACHINE LEARNING`
+   - Headline: `Building ideas into thoughtful digital experiences.` (with "thoughtful digital experiences." in highlighted burgundy italic).
+   - Professional Introduction: Focus on machine learning architectures, deep learning algorithms, and modern full-stack development.
+   - Action Buttons: `Explore Projects` (`bg-burgundy text-white`) and `Get in Touch` (`border-border-soft text-burgundy`).
+   - Verified Portrait Pill: Real profile photo preview with status indicator.
+   - 3D Art Object: Balanced Burgundy Glass Ribbon on the right with generous whitespace.
+
+2. **Selected Projects (Editorial Grid)**
+   - Asymmetrical editorial grid with `featuredLarge` spanning 2 columns.
+   - Clean typography, tech stack badges, GitHub and Live Demo links, and deep case study navigation.
+
+3. **Subsequent Sections**
+   - About & Philosophy Preview with Athrav's verified portrait.
+   - 3D Interactive Spatial Showcase (`Showcase3DClient`).
+   - Technical Stack Preview (`SkillBadge`).
+   - Formal Education (BCA Year 2) & Internship Experience.
+   - Certifications & Coursework.
+   - What I Build (Services).
+   - Contact CTA.
+
+---
+
+### Phase 4: Public Subpages & Admin CMS Redesign
+- `Navbar` (`components/public/Navbar.tsx`): Minimal editorial layout with primary links, active pill, and mobile drawer.
+- `Footer` (`components/public/Footer.tsx`): Deep Burgundy surface with Soft Cream typography and Rose Gold accents.
+- `About` (`app/about/page.tsx`): Real portrait, narrative biography, facts, and engineering principles.
+- `Projects` (`app/projects/page.tsx` & `[slug]`): Editorial case studies with architecture flows and verified outcomes.
+- `Education` (`app/education/page.tsx`): Academic progression timeline with burgundy nodes.
+- `Skills` (`app/skills/page.tsx`): Categorized matrix with proficiency indicators.
+- `Certifications` (`app/certifications/page.tsx` & `[slug]`): Detailed credential cards and syllabus summaries.
+- `Experience` (`app/experience/page.tsx`): Internship and practical programs.
+- `Achievements` (`app/achievements/page.tsx`): Milestones and immediate growth objectives.
+- `Services` (`app/services/page.tsx`): Prototyping capabilities and technical offerings.
+- `Contact` (`app/contact/page.tsx`): Secure contact form with honeypot spam protection.
+- `Admin Panel` (`/admin`, `/admin/login`, `/admin/profile`, and all subpages): Deep Burgundy sidebar, clean white cards, rose-gold accents, and full photo management workflow.
+
+---
+
+### Phase 5: Verification & Testing Results
+- **TypeScript (`npm run typecheck`):** PASSED with 0 errors.
+- **Unit Tests (`vitest run`):** 6 test files, 30/30 tests PASSED.
+- **Production Build (`next build`):** 51/51 routes generated, PASSED with exit code 0.
+- **Automated Live Server Verification (`scripts/verify-redesign.js`):** 32/32 tests PASSED.
+  - Homepage HTTP 200 with required headlines and buttons.
+  - Real profile photo returns HTTP 200 (`image/png`, 1.99 MB).
+  - All public routes HTTP 200.
+  - Admin login API, session cookies, authenticated `/api/auth/me`, `/admin`, and `/admin/profile` all functional.

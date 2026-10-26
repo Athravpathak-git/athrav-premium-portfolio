@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { getProfile } from '@/lib/data-service';
 import { constructMetadata } from '@/lib/seo';
 import { ContactForm } from '@/components/public/ContactForm';
-import { Mail, Github, MapPin, Sparkles, ShieldCheck } from 'lucide-react';
+import { Mail, Github, MapPin, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = constructMetadata({
   title: 'Contact & Inquiries — Athrav Pathak',
@@ -16,18 +16,18 @@ export default async function ContactPage() {
   const profile = await getProfile();
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-forest-950 text-forest dark:text-cream-100 transition-colors pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-cream text-charcoal pt-32 pb-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="space-y-4 mb-16 text-center max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 text-xs font-mono text-forest-700 dark:text-sage shadow-sm">
-            <Mail className="w-3.5 h-3.5 text-champagne-600" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft bg-white text-xs font-mono text-rosegold shadow-sm">
+            <Mail className="w-3.5 h-3.5 text-rosegold" />
             <span>Direct Channel</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-forest dark:text-ivory">
+          <h1 className="text-4xl sm:text-5xl font-serif font-extrabold tracking-tight text-burgundy">
             Get in Touch
           </h1>
-          <p className="text-base text-forest-700/80 dark:text-sage-100 leading-relaxed">
+          <p className="text-base text-charcoal/80 leading-relaxed font-normal">
             Have an inquiry regarding software internships, AI project discussions, or academic collaborations?
             Reach out through the secure form below.
           </p>
@@ -36,19 +36,19 @@ export default async function ContactPage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
           {/* Contact Info Sidebar */}
           <div className="md:col-span-5 space-y-6">
-            <div className="rounded-2xl border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 p-6 space-y-6 shadow-sm">
-              <h3 className="text-lg font-bold text-forest dark:text-ivory">Contact Information</h3>
+            <div className="rounded-2xl border border-border-soft bg-white p-6 space-y-6 shadow-sm">
+              <h3 className="text-lg font-serif font-bold text-burgundy">Contact Information</h3>
 
               <div className="space-y-4 text-xs font-mono">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-cream-200 dark:bg-forest-800 border border-cream-300 dark:border-forest-700 flex items-center justify-center shrink-0 text-forest dark:text-champagne-300 shadow-inner">
-                    <Mail className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-lg bg-cream-100 border border-border-soft flex items-center justify-center shrink-0 text-burgundy shadow-inner">
+                    <Mail className="w-4 h-4 text-rosegold" />
                   </div>
                   <div>
-                    <span className="text-forest-600 dark:text-sage block">Direct Email:</span>
+                    <span className="text-charcoal/70 block">Direct Email:</span>
                     <a
                       href={`mailto:${profile.email}`}
-                      className="font-semibold text-forest dark:text-ivory hover:text-champagne-600 transition-colors"
+                      className="font-semibold text-burgundy hover:text-rosegold transition-colors"
                     >
                       {profile.email}
                     </a>
@@ -56,16 +56,16 @@ export default async function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-cream-200 dark:bg-forest-800 border border-cream-300 dark:border-forest-700 flex items-center justify-center shrink-0 text-forest dark:text-champagne-300 shadow-inner">
-                    <Github className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-lg bg-cream-100 border border-border-soft flex items-center justify-center shrink-0 text-burgundy shadow-inner">
+                    <Github className="w-4 h-4 text-rosegold" />
                   </div>
                   <div>
-                    <span className="text-forest-600 dark:text-sage block">GitHub Profile:</span>
+                    <span className="text-charcoal/70 block">GitHub Profile:</span>
                     <a
                       href={profile.githubUrl || 'https://github.com/Athravpathak-git'}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-forest dark:text-ivory hover:text-champagne-600 transition-colors"
+                      className="font-semibold text-burgundy hover:text-rosegold transition-colors"
                     >
                       @Athravpathak-git
                     </a>
@@ -73,22 +73,22 @@ export default async function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-cream-200 dark:bg-forest-800 border border-cream-300 dark:border-forest-700 flex items-center justify-center shrink-0 text-forest dark:text-champagne-300 shadow-inner">
-                    <MapPin className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded-lg bg-cream-100 border border-border-soft flex items-center justify-center shrink-0 text-burgundy shadow-inner">
+                    <MapPin className="w-4 h-4 text-rosegold" />
                   </div>
                   <div>
-                    <span className="text-forest-600 dark:text-sage block">Location:</span>
-                    <span className="font-semibold text-forest dark:text-ivory">{profile.location || 'India'}</span>
+                    <span className="text-charcoal/70 block">Location:</span>
+                    <span className="font-semibold text-burgundy">{profile.location || 'India'}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-cream-300/60 dark:border-forest-800 space-y-2">
-                <div className="flex items-center gap-1.5 text-xs font-mono text-forest-700 dark:text-sage">
-                  <ShieldCheck className="w-3.5 h-3.5 text-forest dark:text-sage-300" />
+              <div className="pt-4 border-t border-border-soft space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-burgundy">
+                  <ShieldCheck className="w-3.5 h-3.5 text-rosegold" />
                   <span>Rate Limited & Encrypted Transmission</span>
                 </div>
-                <p className="text-[11px] text-forest-600 dark:text-sage leading-relaxed">
+                <p className="text-[11px] text-charcoal/70 leading-relaxed">
                   Contact submissions are securely recorded and forwarded to the administrator with honeypot spam protection.
                 </p>
               </div>
@@ -97,8 +97,7 @@ export default async function ContactPage() {
 
           {/* Contact Form */}
           <div className="md:col-span-7">
-            <div className="rounded-2xl border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 p-6 sm:p-8 shadow-sm">
-              <h3 className="text-xl font-bold text-forest dark:text-ivory mb-6">Send a Message</h3>
+            <div className="rounded-2xl border border-border-soft bg-white p-6 sm:p-8 shadow-sm">
               <ContactForm />
             </div>
           </div>

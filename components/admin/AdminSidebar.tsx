@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   User,
@@ -28,7 +28,7 @@ const ADMIN_NAV = [
   { name: 'Overview', href: '/admin', icon: LayoutDashboard },
   { name: 'Profile & Bio', href: '/admin/profile', icon: User },
   { name: 'Education', href: '/admin/education', icon: GraduationCap },
-  { name: 'Technical Skills', href: '/admin/skills', icon: Cpu },
+  { name: 'Technical Stack', href: '/admin/skills', icon: Cpu },
   { name: 'Projects', href: '/admin/projects', icon: Layers },
   { name: 'Certifications', href: '/admin/certifications', icon: Award },
   { name: 'Experience', href: '/admin/experience', icon: Briefcase },
@@ -59,18 +59,18 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
   };
 
   return (
-    <aside className="w-64 bg-forest dark:bg-forest-950 border-r border-forest-800 text-cream-100 flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto">
+    <aside className="w-64 bg-burgundy border-r border-burgundy-800 text-cream flex flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto">
       <div>
         {/* Brand header */}
-        <div className="p-5 border-b border-forest-700/60 flex items-center justify-between">
+        <div className="p-5 border-b border-burgundy-700/60 flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-bold tracking-wider text-ivory">ATHRAV PORTFOLIO</h2>
-            <p className="text-[10px] font-mono text-champagne-300">ADMIN CONTROL CENTER</p>
+            <h2 className="text-sm font-serif font-bold tracking-tight text-cream">ATHRAV PORTFOLIO</h2>
+            <p className="text-[10px] font-mono text-rosegold tracking-wider">ADMIN CONTROL CENTER</p>
           </div>
           <Link
             href="/"
             target="_blank"
-            className="text-sage-300 hover:text-ivory p-1 rounded hover:bg-forest-700 transition-colors"
+            className="text-blush-200 hover:text-cream p-1.5 rounded hover:bg-burgundy-700 transition-colors"
             title="View Live Website"
           >
             <ExternalLink className="w-4 h-4" />
@@ -86,13 +86,13 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium transition-all ${
                   isActive
-                    ? 'bg-ivory text-forest font-bold shadow-sm'
-                    : 'text-sage-200 hover:text-ivory hover:bg-forest-600/70 border border-transparent'
+                    ? 'bg-cream text-burgundy font-bold shadow-sm'
+                    : 'text-blush-100 hover:text-cream hover:bg-burgundy-700/70 border border-transparent'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-forest' : 'text-champagne-300'}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-burgundy' : 'text-rosegold'}`} />
                 <span>{item.name}</span>
               </Link>
             );
@@ -101,27 +101,26 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
       </div>
 
       {/* User profile & Logout */}
-      <div className="p-4 border-t border-forest-700/60 bg-forest-900/60">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5 overflow-hidden pr-2">
-            <div className="w-8 h-8 rounded-lg bg-forest-800 border border-forest-600 flex items-center justify-center shrink-0 font-mono text-xs font-bold text-champagne-300 shadow-inner">
-              {user.username.substring(0, 2).toUpperCase()}
-            </div>
-            <div className="overflow-hidden">
-              <p className="text-xs font-bold text-ivory truncate">{user.username}</p>
-              <p className="text-[10px] font-mono text-sage-300 truncate">{user.role}</p>
-            </div>
+      <div className="p-4 border-t border-burgundy-700/60 space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-cream text-burgundy flex items-center justify-center font-bold text-xs uppercase shadow-sm">
+            {user.username.slice(0, 2)}
           </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="p-1.5 rounded-lg text-sage-300 hover:text-red-300 hover:bg-forest-800 transition-colors disabled:opacity-50"
-            title="Sign Out"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+          <div className="truncate">
+            <p className="text-xs font-bold text-cream truncate">{user.username}</p>
+            <p className="text-[10px] font-mono text-rosegold-200 truncate capitalize">{user.role}</p>
+          </div>
         </div>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-burgundy-700/80 hover:bg-burgundy-800 border border-burgundy-600/70 text-cream text-xs font-medium transition-colors disabled:opacity-50"
+        >
+          <LogOut className="w-3.5 h-3.5 text-rosegold" />
+          <span>{loggingOut ? 'Signing Out...' : 'Sign Out'}</span>
+        </button>
       </div>
     </aside>
   );

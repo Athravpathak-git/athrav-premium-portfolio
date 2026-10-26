@@ -72,9 +72,9 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="space-y-8 max-w-4xl">
-      <div className="pb-6 border-b border-white/10">
-        <h1 className="text-3xl font-bold tracking-tight text-white">System Settings</h1>
-        <p className="text-xs font-mono text-zinc-400 mt-1">
+      <div className="pb-6 border-b border-border-soft">
+        <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">System Settings</h1>
+        <p className="text-xs font-mono text-charcoal/70 mt-1">
           GLOBAL SEO, EMAIL NOTIFICATIONS, DATABASE GUIDELINES & APPEARANCE
         </p>
       </div>
@@ -98,87 +98,87 @@ export default function AdminSettingsPage() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* SEO Configuration */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 space-y-4">
+        <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
           <div className="flex items-center gap-2">
             <Globe className="w-4 h-4 text-silver-300" />
-            <h3 className="text-sm font-semibold text-white">Global SEO & Metadata</h3>
+            <h3 className="text-sm font-semibold text-burgundy">Global SEO & Metadata</h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">Website Brand Title</label>
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">Website Brand Title</label>
               <input
                 type="text"
                 value={settings.siteName || ''}
                 onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Default Meta Title
               </label>
               <input
                 type="text"
                 value={settings.metaTitle || ''}
                 onChange={(e) => setSettings({ ...settings, metaTitle: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Default Meta Description
               </label>
               <textarea
                 rows={2}
                 value={settings.metaDescription || ''}
                 onChange={(e) => setSettings({ ...settings, metaDescription: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white resize-y"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal resize-y"
               />
             </div>
           </div>
         </div>
 
         {/* Email Notification Settings */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 space-y-4">
+        <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
           <div className="flex items-center gap-2">
             <Mail className="w-4 h-4 text-silver-300" />
-            <h3 className="text-sm font-semibold text-white">Email Dispatch & Notifications</h3>
+            <h3 className="text-sm font-semibold text-burgundy">Email Dispatch & Notifications</h3>
           </div>
-          <p className="text-xs text-zinc-400 leading-relaxed">
+          <p className="text-xs text-charcoal/70 leading-relaxed">
             Configure the administrative recipient email for incoming inquiries. In development,
             emails are simulated safely in console logs without external credentials.
           </p>
 
           <div>
-            <label className="block text-xs font-mono text-zinc-300 mb-1">
+            <label className="block text-xs font-mono text-charcoal/85 mb-1">
               Recipient Email for Inquiries
             </label>
             <input
               type="email"
               value={settings.notificationEmail || 'athravpathak07@gmail.com'}
               onChange={(e) => setSettings({ ...settings, notificationEmail: e.target.value })}
-              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white font-mono"
+              className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal font-mono"
             />
           </div>
         </div>
 
         {/* Theme Settings */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 space-y-4">
+        <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
           <div className="flex items-center gap-2">
             <SunMoon className="w-4 h-4 text-silver-300" />
-            <h3 className="text-sm font-semibold text-white">Appearance & Theme Defaults</h3>
+            <h3 className="text-sm font-semibold text-burgundy">Appearance & Theme Defaults</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">Default Theme</label>
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">Default Theme</label>
               <select
                 value={settings.themeDefault || 'dark'}
                 onChange={(e) => setSettings({ ...settings, themeDefault: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
               >
                 <option value="dark">Dark (Apple Luxury Tech)</option>
                 <option value="light">Light (Silver Monochrome)</option>
@@ -186,11 +186,11 @@ export default function AdminSettingsPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">Theme Switcher</label>
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">Theme Switcher</label>
               <select
                 value={settings.allowThemeToggle || 'true'}
                 onChange={(e) => setSettings({ ...settings, allowThemeToggle: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
               >
                 <option value="true">Enabled (Allow User Toggle)</option>
                 <option value="false">Enforce Dark Mode Only</option>
@@ -202,7 +202,7 @@ export default function AdminSettingsPage() {
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors shadow-lg shadow-white/10 disabled:opacity-60"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-lg shadow-md disabled:opacity-60"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           <span>Save Website Settings</span>
@@ -210,16 +210,16 @@ export default function AdminSettingsPage() {
       </form>
 
       {/* Manual Neon Database Connection Instructions */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 space-y-4">
+      <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Database className="w-4 h-4 text-silver-300" />
-          <h3 className="text-sm font-semibold text-white">Manual Neon PostgreSQL Integration Guide</h3>
+          <h3 className="text-sm font-semibold text-burgundy">Manual Neon PostgreSQL Integration Guide</h3>
         </div>
-        <p className="text-xs text-zinc-400 leading-relaxed">
+        <p className="text-xs text-charcoal/70 leading-relaxed">
           When you are ready to connect your production Neon PostgreSQL database:
         </p>
 
-        <ol className="space-y-2 text-xs font-mono text-zinc-300 list-decimal list-inside leading-relaxed">
+        <ol className="space-y-2 text-xs font-mono text-charcoal/85 list-decimal list-inside leading-relaxed">
           <li>Create a project in your Neon console and copy the PostgreSQL connection strings.</li>
           <li>Set <code className="text-silver-300 font-mono">DATABASE_URL</code> and <code className="text-silver-300 font-mono">DIRECT_URL</code> in your <code className="text-silver-300 font-mono">.env.local</code>.</li>
           <li>Run <code className="text-silver-300 font-mono">npm run prisma:deploy</code> or <code className="text-silver-300 font-mono">npx prisma migrate deploy</code>.</li>

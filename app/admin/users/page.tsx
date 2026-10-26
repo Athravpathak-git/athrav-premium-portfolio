@@ -77,17 +77,17 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between pb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Administrator Accounts</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Administrator Accounts</h1>
+          <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE AUTHENTICATION ACCESS, ROLES & SUPER ADMIN PRIVILEGES
           </p>
         </div>
         <button
           type="button"
           onClick={() => setShowPasswordModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
         >
           <Key className="w-4 h-4" />
           <span>Change Password</span>
@@ -113,16 +113,16 @@ export default function AdminUsersPage() {
 
       {/* Change Password Modal */}
       {showPasswordModal && (
-        <div className="p-6 rounded-2xl border border-white/20 bg-zinc-950 p-6 space-y-4 animate-fade-in shadow-2xl">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <h3 className="text-base font-semibold text-white flex items-center gap-2">
+        <div className="p-6 rounded-2xl border border-border-soft bg-white p-6 space-y-4 animate-fade-in shadow-2xl">
+          <div className="flex items-center justify-between pb-3 border-b border-border-soft">
+            <h3 className="text-base font-semibold text-burgundy flex items-center gap-2">
               <Lock className="w-4 h-4 text-silver-300" />
               <span>Update Administrator Password</span>
             </h3>
             <button
               type="button"
               onClick={() => setShowPasswordModal(false)}
-              className="text-xs text-zinc-400 hover:text-white"
+              className="text-xs text-charcoal/70 hover:text-burgundy"
             >
               Cancel
             </button>
@@ -130,7 +130,7 @@ export default function AdminUsersPage() {
 
           <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Current Password *
               </label>
               <input
@@ -140,12 +140,12 @@ export default function AdminUsersPage() {
                 onChange={(e) =>
                   setPasswordData({ ...passwordData, currentPassword: e.target.value })
                 }
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 New Strong Password * (min 8 chars, uppercase, lowercase, number)
               </label>
               <input
@@ -153,12 +153,12 @@ export default function AdminUsersPage() {
                 required
                 value={passwordData.newPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Confirm New Password *
               </label>
               <input
@@ -168,7 +168,7 @@ export default function AdminUsersPage() {
                 onChange={(e) =>
                   setPasswordData({ ...passwordData, confirmPassword: e.target.value })
                 }
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
@@ -176,7 +176,7 @@ export default function AdminUsersPage() {
               <button
                 type="submit"
                 disabled={savingPassword}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs"
               >
                 {savingPassword ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -191,9 +191,9 @@ export default function AdminUsersPage() {
       )}
 
       {/* Users Table */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-900/60 border-b border-white/10 font-mono text-zinc-400 uppercase">
+          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
             <tr>
               <th className="p-4">Username</th>
               <th className="p-4">Email Address</th>
@@ -202,14 +202,14 @@ export default function AdminUsersPage() {
               <th className="p-4">Created Date</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border-soft">
             {users.map((u) => (
-              <tr key={u.id} className="hover:bg-zinc-900/30 transition-colors">
-                <td className="p-4 font-semibold text-white flex items-center gap-2">
+              <tr key={u.id} className="hover:bg-cream-50 transition-colors">
+                <td className="p-4 font-semibold text-burgundy flex items-center gap-2">
                   <Shield className="w-3.5 h-3.5 text-silver-300" />
                   <span>{u.username}</span>
                 </td>
-                <td className="p-4 text-zinc-300 font-mono">{u.email}</td>
+                <td className="p-4 text-charcoal/85 font-mono">{u.email}</td>
                 <td className="p-4">
                   <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-silver-400/10 border border-silver-400/20 text-silver-300">
                     {u.role}
@@ -220,7 +220,7 @@ export default function AdminUsersPage() {
                     {u.status}
                   </span>
                 </td>
-                <td className="p-4 font-mono text-zinc-400">
+                <td className="p-4 font-mono text-charcoal/70">
                   {new Date(u.createdAt).toLocaleDateString()}
                 </td>
               </tr>

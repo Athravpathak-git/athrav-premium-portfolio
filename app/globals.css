@@ -3,31 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --background: #F5F0E6;
-  --secondary-bg: #EAE3D2;
-  --surface: #FFFDF7;
-  --surface-hover: #F8F4EC;
-  --foreground: #183D32;
-  --text-muted: #4B6359;
-  --border: #D8CEBD;
-  --border-subtle: #E8E1D3;
-  --accent-forest: #183D32;
-  --accent-sage: #A8B9A0;
-  --accent-champagne: #B49A68;
+  --background: #F7F2EA;
+  --secondary-bg: #EFE6D9;
+  --surface: #FFFFFF;
+  --surface-hover: #FDFBF8;
+  --foreground: #292326;
+  --text-muted: #7B7079;
+  --border: #E5DCD4;
+  --border-subtle: #EFE6D9;
+  --accent-burgundy: #572633;
+  --accent-rosegold: #C18E83;
+  --accent-blush: #E7D5D2;
+  --accent-charcoal: #292326;
 }
 
 .dark {
-  --background: #0E261F;
-  --secondary-bg: #122D25;
-  --surface: #183D32;
-  --surface-hover: #225345;
-  --foreground: #FFFDF7;
-  --text-muted: #A8B9A0;
-  --border: #2A5A4C;
-  --border-subtle: #1F4539;
-  --accent-forest: #FFFDF7;
-  --accent-sage: #BDCEB7;
-  --accent-champagne: #D1BF96;
+  --background: #F7F2EA;
+  --secondary-bg: #EFE6D9;
+  --surface: #FFFFFF;
+  --surface-hover: #FDFBF8;
+  --foreground: #292326;
+  --text-muted: #7B7079;
+  --border: #E5DCD4;
+  --border-subtle: #EFE6D9;
+  --accent-burgundy: #572633;
+  --accent-rosegold: #C18E83;
+  --accent-blush: #E7D5D2;
+  --accent-charcoal: #292326;
 }
 
 * {
@@ -49,61 +51,47 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom refined luxury scrollbar */
+/* Editorial Minimalist Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F0E6;
+  background: #F7F2EA;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #A8B9A0;
-  border-radius: 3px;
+  background: #C18E83;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #183D32;
+  background: #572633;
 }
 
-/* Refined selection */
+/* Editorial Text Selection */
 ::selection {
-  background: rgba(180, 154, 104, 0.28);
-  color: #183D32;
+  background: rgba(87, 38, 51, 0.15);
+  color: #572633;
 }
 
-/* Luxury card styling */
-.luxury-card {
-  background: #FFFDF7;
-  border: 1px solid #D8CEBD;
-  border-radius: 1rem;
-}
-
-.luxury-card-hover {
+/* Editorial Card & Bento Grid Utilities */
+.editorial-card {
+  background: #FFFFFF;
+  border: 1px solid #E5DCD4;
+  border-radius: 0.875rem;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.luxury-card-hover:hover {
-  background: #FFFFFF;
-  border-color: #B49A68;
-  box-shadow: 0 12px 30px -10px rgba(24, 61, 50, 0.08);
+.editorial-card:hover {
+  border-color: #C18E83;
+  box-shadow: 0 10px 25px -5px rgba(87, 38, 51, 0.06);
   transform: translateY(-2px);
 }
 
-.glass-panel {
-  background: rgba(255, 253, 247, 0.85);
+.glass-editorial {
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #D8CEBD;
-}
-
-.glass-panel-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-panel-hover:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: #B49A68;
-  transform: translateY(-2px);
+  border: 1px solid #E5DCD4;
 }

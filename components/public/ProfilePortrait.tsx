@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Brain, User } from 'lucide-react';
+import { User } from 'lucide-react';
 
 interface ProfilePortraitProps {
   avatarUrl?: string | null;
@@ -20,51 +20,45 @@ export function ProfilePortrait({
   className = '',
 }: ProfilePortraitProps) {
   const [hasError, setHasError] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
 
-  // If avatarUrl exists and no error occurred, render the photo portrait
-  if (avatarUrl && !hasError) {
+  // Fallback to active uploaded file if avatarUrl is missing
+  const effectiveUrl = avatarUrl || '/uploads/profile-1793013930445-d7f4837227f112de8d472f17.png';
+
+  if (!hasError && effectiveUrl) {
     return (
       <div className={`space-y-4 ${className}`}>
-        <div className="w-full aspect-square rounded-2xl border border-cream-300 dark:border-forest-700 bg-cream-100 dark:bg-forest-900 overflow-hidden relative shadow-lg group">
-          {/* Skeleton placeholder while image bytes transfer */}
-          {!isLoaded && (
-            <div className="absolute inset-0 bg-cream-200 dark:bg-forest-800 animate-pulse flex items-center justify-center text-forest-500">
-              <User className="w-12 h-12 opacity-40 animate-pulse" />
+        <div className="relative rounded-2xl border border-border-soft bg-white p-2.5 shadow-sm overflow-hidden group">
+          {/* Main portrait image container with clean editorial framing */}
+          <div className="w-full aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden relative bg-cream-100">
+            <img
+              src={effectiveUrl}
+              alt={name}
+              loading="eager"
+              decoding="async"
+              onError={() => {
+                console.warn('[ProfilePortrait] Image load failed:', effectiveUrl);
+                setHasError(true);
+              }}
+              className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+            />
+
+            {/* Subtle bottom scrim only for text contrast */}
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-charcoal/70 to-transparent pointer-events-none" />
+
+            {/* Overlay label */}
+            <div className="absolute bottom-3 left-3 right-3 text-white pointer-events-none">
+              <h2 className="text-lg font-serif font-bold tracking-tight drop-shadow-sm">{name}</h2>
+              <p className="text-[11px] font-mono text-rosegold-100 drop-shadow-sm">{headline}</p>
             </div>
-          )}
-
-          {/* Actual portrait image */}
-          <img
-            src={avatarUrl}
-            alt={name}
-            loading="eager"
-            decoding="async"
-            onLoad={() => setIsLoaded(true)}
-            onError={() => {
-              console.warn('[ProfilePortrait] Failed to load image from URL:', avatarUrl);
-              setHasError(true);
-            }}
-            className={`w-full h-full object-cover object-center transition-all duration-500 group-hover:scale-105 ${
-              isLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
-
-          {/* Bottom subtle gradient for text readability (only bottom 30% of portrait) */}
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-forest-950/90 via-forest-900/40 to-transparent pointer-events-none" />
-
-          {/* Name & subtitle overlay */}
-          <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
-            <h2 className="text-xl font-bold text-ivory drop-shadow-sm">{name}</h2>
-            <p className="text-xs font-mono text-champagne-200 drop-shadow-sm">{headline}</p>
           </div>
         </div>
 
         {/* Status indicator below portrait */}
         {status && (
-          <div className="px-3.5 py-2 rounded-xl bg-ivory dark:bg-forest-900 border border-cream-300 dark:border-forest-700 flex items-center justify-between shadow-sm">
-            <span className="text-xs font-mono text-forest-600 dark:text-sage">Current Status:</span>
-            <span className="text-xs font-mono text-forest dark:text-champagne-300 font-semibold">
+          <div className="px-4 py-2.5 rounded-xl bg-white border border-border-soft flex items-center justify-between text-xs shadow-sm">
+            <span className="font-mono text-charcoal/70">Status:</span>
+            <span className="font-mono font-semibold text-burgundy flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-rosegold animate-pulse" />
               {status}
             </span>
           </div>
@@ -73,30 +67,21 @@ export function ProfilePortrait({
     );
   }
 
-  // Fallback when no photo is provided or image loading fails
+  // Graceful fallback if image is not accessible
   return (
     <div className={`space-y-4 ${className}`}>
-      <div className="w-full aspect-square rounded-2xl bg-ivory dark:bg-forest-900 border border-cream-300 dark:border-forest-700 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden shadow-sm">
-        <div className="w-20 h-20 rounded-full bg-cream-200 dark:bg-forest-800 border border-cream-300 dark:border-forest-600 flex items-center justify-center mb-3 text-forest dark:text-ivory shadow-inner">
-          <Brain className="w-10 h-10" />
+      <div className="w-full aspect-[4/5] sm:aspect-square rounded-2xl bg-white border border-border-soft flex flex-col items-center justify-center p-8 text-center shadow-sm">
+        <div className="w-20 h-20 rounded-full bg-cream-100 border border-border-soft flex items-center justify-center mb-4 text-burgundy">
+          <User className="w-10 h-10" />
         </div>
-        <h2 className="text-lg font-bold text-forest dark:text-ivory">{name}</h2>
-        <p className="text-xs font-mono text-forest-600 dark:text-sage mt-0.5">{headline}</p>
+        <h2 className="text-xl font-serif font-bold text-burgundy">{name}</h2>
+        <p className="text-xs font-mono text-charcoal/70 mt-1">{headline}</p>
         {status && (
-          <div className="mt-3 px-3 py-1 rounded-full bg-sage-100 dark:bg-forest-800 border border-sage-300 dark:border-forest-600 text-[11px] font-mono text-forest dark:text-sage-200 font-medium">
+          <div className="mt-4 px-3 py-1 rounded-full bg-blush-100 border border-border-soft text-burgundy text-xs font-mono font-medium">
             {status}
           </div>
         )}
       </div>
-
-      {status && (
-        <div className="px-3.5 py-2 rounded-xl bg-ivory dark:bg-forest-900 border border-cream-300 dark:border-forest-700 flex items-center justify-between shadow-sm">
-          <span className="text-xs font-mono text-forest-600 dark:text-sage">Current Status:</span>
-          <span className="text-xs font-mono text-forest dark:text-champagne-300 font-semibold">
-            {status}
-          </span>
-        </div>
-      )}
     </div>
   );
 }

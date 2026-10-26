@@ -116,17 +116,17 @@ export default function AdminServicesPage() {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between pb-6 border-b border-white/10">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Services & Capabilities</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Services & Capabilities</h1>
+          <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE APPLIED TECHNICAL OFFERINGS AND COLLABORATIVE SERVICES
           </p>
         </div>
         <button
           type="button"
           onClick={() => handleOpenEditor()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>New Service</span>
@@ -152,9 +152,9 @@ export default function AdminServicesPage() {
 
       {/* Editor Modal */}
       {(isCreating || editingItem) && (
-        <div className="p-6 rounded-2xl border border-white/20 bg-zinc-950 p-6 space-y-4 animate-fade-in shadow-2xl">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <h3 className="text-base font-semibold text-white">
+        <div className="p-6 rounded-2xl border border-border-soft bg-white p-6 space-y-4 animate-fade-in shadow-2xl">
+          <div className="flex items-center justify-between pb-3 border-b border-border-soft">
+            <h3 className="text-base font-semibold text-burgundy">
               {editingItem?.id ? 'Edit Service' : 'Create New Service'}
             </h3>
             <button
@@ -163,7 +163,7 @@ export default function AdminServicesPage() {
                 setEditingItem(null);
                 setIsCreating(false);
               }}
-              className="p-1 rounded text-zinc-400 hover:text-white"
+              className="p-1 rounded text-charcoal/70 hover:text-burgundy"
             >
               <X className="w-4 h-4" />
             </button>
@@ -172,23 +172,23 @@ export default function AdminServicesPage() {
           <form onSubmit={handleSave} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Service Title *</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Service Title *</label>
                 <input
                   type="text"
                   required
                   value={editingItem.title || ''}
                   onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
                   placeholder="e.g. AI & Machine Learning Prototyping"
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-zinc-300 mb-1">Icon Representation</label>
+                <label className="block text-xs font-mono text-charcoal/85 mb-1">Icon Representation</label>
                 <select
                   value={editingItem.icon || 'Layers'}
                   onChange={(e) => setEditingItem({ ...editingItem, icon: e.target.value })}
-                  className="w-full bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-sm text-white"
+                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
                 >
                   <option value="Layers">Layers (Full Stack / Architecture)</option>
                   <option value="Cpu">Cpu (AI / Machine Learning)</option>
@@ -199,18 +199,18 @@ export default function AdminServicesPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">Description *</label>
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">Description *</label>
               <textarea
                 rows={3}
                 required
                 value={editingItem.description || ''}
                 onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white resize-y"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal resize-y"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1">
+              <label className="block text-xs font-mono text-charcoal/85 mb-1">
                 Technology Stack (comma-separated)
               </label>
               <input
@@ -218,19 +218,19 @@ export default function AdminServicesPage() {
                 value={techInput}
                 onChange={(e) => setTechInput(e.target.value)}
                 placeholder="Python, PyTorch, FastAPI, PostgreSQL"
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2 text-sm text-white"
+                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
               />
             </div>
 
             <div className="flex items-center gap-4 pt-1">
-              <label className="flex items-center gap-2 text-xs font-mono text-zinc-300">
+              <label className="flex items-center gap-2 text-xs font-mono text-charcoal/85">
                 <input
                   type="checkbox"
                   checked={editingItem.isPublished ?? true}
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, isPublished: e.target.checked })
                   }
-                  className="w-4 h-4 rounded bg-zinc-900 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
                 />
                 <span>Published on Website</span>
               </label>
@@ -240,7 +240,7 @@ export default function AdminServicesPage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>Save Service</span>
@@ -251,9 +251,9 @@ export default function AdminServicesPage() {
       )}
 
       {/* Listing Table */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/70 overflow-hidden">
+      <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-900/60 border-b border-white/10 font-mono text-zinc-400 uppercase">
+          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
             <tr>
               <th className="p-4">Service</th>
               <th className="p-4">Icon</th>
@@ -262,18 +262,18 @@ export default function AdminServicesPage() {
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-border-soft">
             {items.map((item) => (
-              <tr key={item.id} className="hover:bg-zinc-900/30 transition-colors">
-                <td className="p-4 font-semibold text-white">{item.title}</td>
-                <td className="p-4 font-mono text-zinc-400">{item.icon || 'Layers'}</td>
-                <td className="p-4 text-zinc-300 font-mono">{item.techStack?.join(', ')}</td>
+              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
+                <td className="p-4 font-semibold text-burgundy">{item.title}</td>
+                <td className="p-4 font-mono text-charcoal/70">{item.icon || 'Layers'}</td>
+                <td className="p-4 text-charcoal/85 font-mono">{item.techStack?.join(', ')}</td>
                 <td className="p-4">
                   <span
                     className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
                       item.isPublished
                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-zinc-800 text-zinc-400 border border-white/10'
+                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
                     }`}
                   >
                     {item.isPublished ? 'Published' : 'Draft'}
@@ -283,14 +283,14 @@ export default function AdminServicesPage() {
                   <button
                     type="button"
                     onClick={() => handleOpenEditor(item)}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-300 hover:text-white"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(item.id, item.title)}
-                    className="p-1.5 rounded hover:bg-zinc-800 text-zinc-400 hover:text-red-400"
+                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
