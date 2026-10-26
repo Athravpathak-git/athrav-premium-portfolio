@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateUploadedFile } from '@/lib/storage';
+import { validateUploadedFile, validateFileMagicBytes } from '@/lib/storage';
 
 describe('Storage & File Upload Security Validation', () => {
   it('accepts legitimate JPEG, PNG, and PDF files within size limits', () => {
@@ -48,5 +48,25 @@ describe('Storage & File Upload Security Validation', () => {
     const result = validateUploadedFile(oversizedFile);
     expect(result.valid).toBe(false);
     expect(result.error).toContain('exceeds the maximum limit of 10MB');
+  });
+
+  it('validates binary magic bytes and detects disguised files', () => {
+    // Legitimate JPEG buffer
+    const jpegBuffer = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01]);
+    const jpegCheck = validateFileMagicBytes(jpegBuffer);
+    expect(jpegCheck.valid).toBe(true);
+    expect(jpegCheck.detectedMime).toBe('image/jpeg');
+
+    // Legitimate PNG buffer
+    const pngBuffer = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d]);
+    const pngCheck = validateFileMagicBytes(pngBuffer);
+    expect(pngCheck.valid).toBe(true);
+    expect(pngCheck.detectedMime).toBe('image/png');
+
+    // Disguised script/HTML file
+    const fakePngBuffer = Buffer.from('<html><script>alert("hack")</script></html>');
+    const fakeCheck = validateFileMagicBytes(fakePngBuffer);
+    expect(fakeCheck.valid).toBe(false);
+    expect(fakeCheck.error).toContain('Unrecognized or unsafe binary file format');
   });
 });

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { requireAdminPage } from '@/lib/auth-guard';
 import {
   getProjectsList,
   getCertificationsList,
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 
 export default async function AdminDashboardPage() {
+  await requireAdminPage();
   const isDbConnected = isDatabaseConfigured();
   const projects = await getProjectsList({ publishedOnly: false });
   const certs = await getCertificationsList({ publishedOnly: false });

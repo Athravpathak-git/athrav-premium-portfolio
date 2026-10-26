@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { isDatabaseConfigured, getPrisma } from './db';
+import { isDatabaseConfigured, isDatabaseAvailable, withDbTimeout, getPrisma } from './db';
 import {
   initialProfile,
   initialEducation,
@@ -123,7 +123,7 @@ function persistDevStore() {
 // ============================================================================
 
 export async function getProfile(): Promise<ProfileData> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const p = await getPrisma().profile.findFirst();
       if (p) {
@@ -154,7 +154,7 @@ export async function getProfile(): Promise<ProfileData> {
 }
 
 export async function updateProfile(data: Partial<ProfileData>): Promise<ProfileData> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const existing = await getPrisma().profile.findFirst();
       if (existing) {
@@ -192,7 +192,7 @@ export async function updateProfile(data: Partial<ProfileData>): Promise<Profile
 // ============================================================================
 
 export async function getEducationList(publishedOnly = false): Promise<EducationData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().education.findMany({
         where: publishedOnly ? { isPublished: true } : undefined,
@@ -231,7 +231,7 @@ export async function createEducation(data: Omit<EducationData, 'id' | 'createdA
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().education.create({
         data: {
@@ -263,7 +263,7 @@ export async function createEducation(data: Omit<EducationData, 'id' | 'createdA
 }
 
 export async function updateEducation(id: string, data: Partial<EducationData>): Promise<EducationData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().education.update({
         where: { id },
@@ -308,7 +308,7 @@ export async function updateEducation(id: string, data: Partial<EducationData>):
 }
 
 export async function deleteEducation(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().education.delete({ where: { id } });
       return true;
@@ -328,7 +328,7 @@ export async function deleteEducation(id: string): Promise<boolean> {
 // ============================================================================
 
 export async function getSkillsList(publishedOnly = false): Promise<SkillData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().skill.findMany({
         where: publishedOnly ? { isPublished: true } : undefined,
@@ -364,7 +364,7 @@ export async function createSkill(data: Omit<SkillData, 'id' | 'createdAt' | 'up
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().skill.create({
         data: {
@@ -394,7 +394,7 @@ export async function createSkill(data: Omit<SkillData, 'id' | 'createdAt' | 'up
 }
 
 export async function updateSkill(id: string, data: Partial<SkillData>): Promise<SkillData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().skill.update({
         where: { id },
@@ -438,7 +438,7 @@ export async function updateSkill(id: string, data: Partial<SkillData>): Promise
 }
 
 export async function deleteSkill(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().skill.delete({ where: { id } });
       return true;
@@ -464,7 +464,7 @@ export async function getProjectsList(options?: {
   const publishedOnly = options?.publishedOnly ?? false;
   const featuredOnly = options?.featuredOnly ?? false;
 
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const whereClause: { isPublished?: boolean; isFeatured?: boolean } = {};
       if (publishedOnly) whereClause.isPublished = true;
@@ -510,7 +510,7 @@ export async function getProjectsList(options?: {
 }
 
 export async function getProjectBySlug(slug: string, publishedOnly = false): Promise<ProjectData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const p = await getPrisma().project.findUnique({ where: { slug } });
       if (p) {
@@ -558,7 +558,7 @@ export async function createProject(data: Omit<ProjectData, 'id' | 'createdAt' |
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().project.create({
         data: {
@@ -599,7 +599,7 @@ export async function createProject(data: Omit<ProjectData, 'id' | 'createdAt' |
 }
 
 export async function updateProject(id: string, data: Partial<ProjectData>): Promise<ProjectData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().project.update({
         where: { id },
@@ -665,7 +665,7 @@ export async function updateProject(id: string, data: Partial<ProjectData>): Pro
 }
 
 export async function deleteProject(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().project.delete({ where: { id } });
       return true;
@@ -691,7 +691,7 @@ export async function getCertificationsList(options?: {
   const publishedOnly = options?.publishedOnly ?? false;
   const featuredOnly = options?.featuredOnly ?? false;
 
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const whereClause: { isPublished?: boolean; isFeatured?: boolean } = {};
       if (publishedOnly) whereClause.isPublished = true;
@@ -733,7 +733,7 @@ export async function getCertificationsList(options?: {
 }
 
 export async function getCertificationBySlug(slug: string, publishedOnly = false): Promise<CertificationData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const c = await getPrisma().certification.findUnique({ where: { slug } });
       if (c) {
@@ -779,7 +779,7 @@ export async function createCertification(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().certification.create({
         data: {
@@ -819,7 +819,7 @@ export async function updateCertification(
   id: string,
   data: Partial<CertificationData>
 ): Promise<CertificationData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().certification.update({
         where: { id },
@@ -877,7 +877,7 @@ export async function updateCertification(
 }
 
 export async function deleteCertification(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().certification.delete({ where: { id } });
       return true;
@@ -897,7 +897,7 @@ export async function deleteCertification(id: string): Promise<boolean> {
 // ============================================================================
 
 export async function getExperienceList(publishedOnly = false): Promise<ExperienceData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().experience.findMany({
         where: publishedOnly ? { isPublished: true } : undefined,
@@ -935,7 +935,7 @@ export async function getExperienceList(publishedOnly = false): Promise<Experien
 }
 
 export async function getExperienceBySlug(slug: string, publishedOnly = false): Promise<ExperienceData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const e = await getPrisma().experience.findUnique({ where: { slug } });
       if (e) {
@@ -981,7 +981,7 @@ export async function createExperience(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().experience.create({
         data: {
@@ -1022,7 +1022,7 @@ export async function updateExperience(
   id: string,
   data: Partial<ExperienceData>
 ): Promise<ExperienceData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().experience.update({
         where: { id },
@@ -1082,7 +1082,7 @@ export async function updateExperience(
 }
 
 export async function deleteExperience(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().experience.delete({ where: { id } });
       return true;
@@ -1102,7 +1102,7 @@ export async function deleteExperience(id: string): Promise<boolean> {
 // ============================================================================
 
 export async function getAchievementsList(publishedOnly = false): Promise<AchievementData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().achievement.findMany({
         where: publishedOnly ? { isPublished: true } : undefined,
@@ -1140,7 +1140,7 @@ export async function createAchievement(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().achievement.create({
         data: {
@@ -1173,7 +1173,7 @@ export async function updateAchievement(
   id: string,
   data: Partial<AchievementData>
 ): Promise<AchievementData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().achievement.update({
         where: { id },
@@ -1217,7 +1217,7 @@ export async function updateAchievement(
 }
 
 export async function deleteAchievement(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().achievement.delete({ where: { id } });
       return true;
@@ -1237,7 +1237,7 @@ export async function deleteAchievement(id: string): Promise<boolean> {
 // ============================================================================
 
 export async function getServicesList(publishedOnly = false): Promise<ServiceData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().service.findMany({
         where: publishedOnly ? { isPublished: true } : undefined,
@@ -1273,7 +1273,7 @@ export async function createService(
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().service.create({
         data: {
@@ -1301,7 +1301,7 @@ export async function createService(
 }
 
 export async function updateService(id: string, data: Partial<ServiceData>): Promise<ServiceData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().service.update({
         where: { id },
@@ -1341,7 +1341,7 @@ export async function updateService(id: string, data: Partial<ServiceData>): Pro
 }
 
 export async function deleteService(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().service.delete({ where: { id } });
       return true;
@@ -1361,7 +1361,7 @@ export async function deleteService(id: string): Promise<boolean> {
 // ============================================================================
 
 export async function getHomepageSections(): Promise<HomepageSectionData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().homepageSection.findMany({
         orderBy: { sortOrder: 'asc' },
@@ -1388,7 +1388,7 @@ export async function updateHomepageSection(
   sectionKey: string,
   data: Partial<HomepageSectionData>
 ): Promise<HomepageSectionData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().homepageSection.upsert({
         where: { sectionKey },
@@ -1436,7 +1436,7 @@ export async function updateHomepageSection(
 // ============================================================================
 
 export async function getContactMessages(): Promise<ContactMessageData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().contactMessage.findMany({
         orderBy: { createdAt: 'desc' },
@@ -1473,7 +1473,7 @@ export async function createContactMessage(
     isArchived: false,
     createdAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().contactMessage.create({
         data: {
@@ -1509,7 +1509,7 @@ export async function updateContactMessageStatus(
   id: string,
   status: { isRead?: boolean; isResolved?: boolean; isArchived?: boolean }
 ): Promise<ContactMessageData | null> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const updated = await getPrisma().contactMessage.update({
         where: { id },
@@ -1542,7 +1542,7 @@ export async function updateContactMessageStatus(
 }
 
 export async function deleteContactMessage(id: string): Promise<boolean> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().contactMessage.delete({ where: { id } });
       return true;
@@ -1562,7 +1562,7 @@ export async function deleteContactMessage(id: string): Promise<boolean> {
 // ============================================================================
 
 export async function getMediaList() {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().mediaItem.findMany({
         orderBy: { createdAt: 'desc' },
@@ -1608,7 +1608,7 @@ export async function createMediaRecord(data: {
     category: data.category || 'general',
     createdAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const created = await getPrisma().mediaItem.create({
         data: {
@@ -1637,7 +1637,7 @@ export async function createMediaRecord(data: {
 }
 
 export async function getSettings(): Promise<Record<string, string>> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().websiteSetting.findMany();
       if (items.length > 0) {
@@ -1655,7 +1655,7 @@ export async function getSettings(): Promise<Record<string, string>> {
 }
 
 export async function updateSettings(settings: Record<string, string>): Promise<Record<string, string>> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       for (const [key, value] of Object.entries(settings)) {
         await getPrisma().websiteSetting.upsert({
@@ -1678,7 +1678,7 @@ export async function updateSettings(settings: Record<string, string>): Promise<
 // ============================================================================
 
 export async function getAuditLogsList(limit = 100): Promise<AuditLogData[]> {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       const items = await getPrisma().auditLog.findMany({
         take: limit,
@@ -1708,7 +1708,7 @@ export async function recordAuditEntry(entry: Omit<AuditLogData, 'id' | 'created
     id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     createdAt: new Date().toISOString(),
   };
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
       await getPrisma().auditLog.create({
         data: {

@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { cookies } from 'next/headers';
-import { isDatabaseConfigured, getPrisma } from './db';
+import { isDatabaseConfigured, isDatabaseAvailable, withDbTimeout, getPrisma } from './db';
 
 export const SESSION_COOKIE_NAME = 'athrav_admin_session';
 export const SESSION_MAX_AGE_SECONDS = Number(process.env.SESSION_MAX_AGE_SECONDS) || 60 * 60 * 24 * 7; // 7 days
@@ -202,17 +202,19 @@ export async function createSession(
   const token = generateSessionToken();
   const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000);
 
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
-      await getPrisma().session.create({
-        data: {
-          sessionToken: token,
-          userId,
-          expiresAt,
-          ipAddress: meta?.ipAddress,
-          userAgent: meta?.userAgent,
-        },
-      });
+      await withDbTimeout(
+        getPrisma().session.create({
+          data: {
+            sessionToken: token,
+            userId,
+            expiresAt,
+            ipAddress: meta?.ipAddress,
+            userAgent: meta?.userAgent,
+          },
+        })
+      );
       return token;
     } catch (err) {
       console.warn('[Auth] Prisma session create error, fallback to memory:', err);
@@ -233,17 +235,19 @@ export async function createSession(
 export async function validateSessionToken(token: string) {
   if (!token) return null;
 
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
-      const session = await getPrisma().session.findUnique({
-        where: { sessionToken: token },
-        include: { user: true },
-      });
+      const session = await withDbTimeout(
+        getPrisma().session.findUnique({
+          where: { sessionToken: token },
+          include: { user: true },
+        })
+      );
 
       if (!session) return null;
 
       if (session.expiresAt < new Date()) {
-        await getPrisma().session.delete({ where: { id: session.id } });
+        await withDbTimeout(getPrisma().session.delete({ where: { id: session.id } }));
         return null;
       }
 
@@ -373,16 +377,18 @@ export async function clearSessionCookie(): Promise<void> {
 
 export async function findAdminByIdentifier(identifier: string) {
   const lower = identifier.trim().toLowerCase();
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
-      const user = await getPrisma().adminUser.findFirst({
-        where: {
-          OR: [
-            { email: { equals: lower, mode: 'insensitive' } },
-            { username: { equals: lower, mode: 'insensitive' } },
-          ],
-        },
-      });
+      const user = await withDbTimeout(
+        getPrisma().adminUser.findFirst({
+          where: {
+            OR: [
+              { email: { equals: lower, mode: 'insensitive' } },
+              { username: { equals: lower, mode: 'insensitive' } },
+            ],
+          },
+        })
+      );
       return user;
     } catch (err) {
       console.warn('[Auth] Prisma user lookup error:', err);
@@ -399,15 +405,17 @@ export async function findAdminByIdentifier(identifier: string) {
 export async function changeAdminPassword(userId: string, newPassword: string): Promise<boolean> {
   const newHash = await hashPassword(newPassword);
 
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
-      await getPrisma().adminUser.update({
-        where: { id: userId },
-        data: {
-          passwordHash: newHash,
-          mustChangePassword: false,
-        },
-      });
+      await withDbTimeout(
+        getPrisma().adminUser.update({
+          where: { id: userId },
+          data: {
+            passwordHash: newHash,
+            mustChangePassword: false,
+          },
+        })
+      );
       await invalidateAllUserSessions(userId);
       return true;
     } catch (err) {
@@ -425,20 +433,22 @@ export async function changeAdminPassword(userId: string, newPassword: string): 
 }
 
 export async function getAllAdminUsers() {
-  if (isDatabaseConfigured()) {
+  if (isDatabaseAvailable()) {
     try {
-      const users = await getPrisma().adminUser.findMany({
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          role: true,
-          status: true,
-          createdAt: true,
-          lastLoginAt: true,
-        },
-        orderBy: { createdAt: 'asc' },
-      });
+      const users = await withDbTimeout(
+        getPrisma().adminUser.findMany({
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            lastLoginAt: true,
+          },
+          orderBy: { createdAt: 'asc' },
+        })
+      );
       return users.map((u) => ({
         ...u,
         createdAt: u.createdAt.toISOString(),

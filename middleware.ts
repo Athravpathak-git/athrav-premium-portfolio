@@ -11,7 +11,8 @@ export function middleware(req: NextRequest) {
   if (pathname.startsWith('/admin')) {
     // If accessing the login page:
     if (pathname === '/admin/login') {
-      if (sessionToken) {
+      const fromParam = req.nextUrl.searchParams.get('from');
+      if (sessionToken && !fromParam) {
         // Already logged in, redirect to overview
         return NextResponse.redirect(new URL('/admin', req.url));
       }

@@ -45,15 +45,16 @@ const ADMIN_NAV = [
 
 export function AdminSidebar({ user }: { user: { username: string; email: string; role: string } }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const [loggingOut, setLoggingOut] = React.useState(false);
 
   const handleLogout = async () => {
+    setLoggingOut(true);
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
-      router.push('/admin/login');
-      router.refresh();
+      window.location.href = '/admin/login';
     } catch (err) {
       console.error('Logout error:', err);
+      window.location.href = '/admin/login';
     }
   };
 
@@ -101,15 +102,21 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
 
       {/* User profile & Logout */}
       <div className="p-4 border-t border-white/10 bg-zinc-900/40">
-        <div className="flex items-center justify-between mb-3">
-          <div className="overflow-hidden pr-2">
-            <p className="text-xs font-semibold text-white truncate">{user.username}</p>
-            <p className="text-[10px] font-mono text-zinc-400 truncate">{user.role}</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5 overflow-hidden pr-2">
+            <div className="w-8 h-8 rounded-lg bg-zinc-800 border border-white/15 flex items-center justify-center shrink-0 font-mono text-xs font-bold text-silver-300">
+              {user.username.substring(0, 2).toUpperCase()}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-xs font-semibold text-white truncate">{user.username}</p>
+              <p className="text-[10px] font-mono text-zinc-400 truncate">{user.role}</p>
+            </div>
           </div>
           <button
             type="button"
             onClick={handleLogout}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-zinc-900 transition-colors"
+            disabled={loggingOut}
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-red-400 hover:bg-zinc-900 transition-colors disabled:opacity-50"
             title="Sign Out"
           >
             <LogOut className="w-4 h-4" />

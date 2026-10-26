@@ -61,12 +61,41 @@ export const profileSchema = z.object({
   email: z.string().trim().email().max(150),
   location: z.string().trim().max(100).optional().nullable(),
   status: z.string().trim().max(150).optional().nullable(),
-  avatarUrl: z.string().trim().url().optional().nullable().or(z.literal('')),
+  avatarUrl: z
+    .string()
+    .trim()
+    .max(1000)
+    .refine(
+      (val) =>
+        !val ||
+        val.startsWith('/') ||
+        val.startsWith('http://') ||
+        val.startsWith('https://') ||
+        val.startsWith('data:image/'),
+      { message: 'Avatar URL must be a valid path or URL' }
+    )
+    .optional()
+    .nullable()
+    .or(z.literal('')),
   githubUrl: z.string().trim().url().optional().nullable().or(z.literal('')),
   linkedinUrl: z.string().trim().url().optional().nullable().or(z.literal('')),
   twitterUrl: z.string().trim().url().optional().nullable().or(z.literal('')),
   websiteUrl: z.string().trim().url().optional().nullable().or(z.literal('')),
-  resumeUrl: z.string().trim().url().optional().nullable().or(z.literal('')),
+  resumeUrl: z
+    .string()
+    .trim()
+    .max(1000)
+    .refine(
+      (val) =>
+        !val ||
+        val.startsWith('/') ||
+        val.startsWith('http://') ||
+        val.startsWith('https://'),
+      { message: 'Resume URL must be a valid path or URL' }
+    )
+    .optional()
+    .nullable()
+    .or(z.literal('')),
   resumePublished: z.boolean().default(false),
 });
 

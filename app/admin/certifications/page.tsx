@@ -27,9 +27,20 @@ export default function AdminCertificationsPage() {
 
   const fetchItems = () => {
     fetch('/api/admin/certifications')
-      .then((res) => res.json())
-      .then((data) => setItems(data.items || []))
-      .catch((err) => console.error(err))
+      .then((res) => {
+        if (res.status === 401) {
+          window.location.href = '/admin/login?from=' + encodeURIComponent(window.location.pathname);
+          return null;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data) setItems(data.items || []);
+      })
+      .catch((err) => {
+        console.error(err);
+        setStatusMsg({ type: 'error', text: 'Failed to retrieve certifications list.' });
+      })
       .finally(() => setLoading(false));
   };
 

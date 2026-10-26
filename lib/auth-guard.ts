@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
 import { getSessionCookie, validateSessionToken } from './auth';
 
 export async function getCurrentAdmin() {
   const token = await getSessionCookie();
   if (!token) return null;
   return await validateSessionToken(token);
+}
+
+export async function requireAdminPage() {
+  const current = await getCurrentAdmin();
+  if (!current) {
+    redirect('/admin/login');
+  }
+  return current;
 }
 
 export async function requireAdminApi() {

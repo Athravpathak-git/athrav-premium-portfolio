@@ -1,8 +1,10 @@
 import React from 'react';
+import { requireAdminPage } from '@/lib/auth-guard';
 import { getAuditLogsList } from '@/lib/data-service';
 import { ShieldAlert, ShieldCheck, Lock, Terminal, Clock } from 'lucide-react';
 
 export default async function AdminSecurityPage() {
+  await requireAdminPage();
   const logs = await getAuditLogsList(100);
 
   return (

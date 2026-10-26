@@ -1,8 +1,10 @@
 import React from 'react';
+import { requireAdminPage } from '@/lib/auth-guard';
 import { getAnalyticsSummary } from '@/lib/data-service';
 import { BarChart3, Database, Eye, Inbox, Layers, ShieldCheck } from 'lucide-react';
 
 export default async function AdminAnalyticsPage() {
+  await requireAdminPage();
   const analytics = await getAnalyticsSummary();
 
   return (

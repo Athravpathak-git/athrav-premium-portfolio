@@ -11,9 +11,20 @@ export default function AdminHomepageSectionsPage() {
 
   const fetchSections = () => {
     fetch('/api/admin/homepage')
-      .then((res) => res.json())
-      .then((data) => setSections(data.sections || []))
-      .catch((err) => console.error(err))
+      .then((res) => {
+        if (res.status === 401) {
+          window.location.href = '/admin/login?from=' + encodeURIComponent(window.location.pathname);
+          return null;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data) setSections(data.sections || []);
+      })
+      .catch((err) => {
+        console.error(err);
+        setStatusMsg({ type: 'error', text: 'Failed to retrieve homepage sections.' });
+      })
       .finally(() => setLoading(false));
   };
 

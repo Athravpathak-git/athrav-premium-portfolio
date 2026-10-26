@@ -21,11 +21,20 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     fetch('/api/admin/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.settings) setSettings(data.settings);
+      .then((res) => {
+        if (res.status === 401) {
+          window.location.href = '/admin/login?from=' + encodeURIComponent(window.location.pathname);
+          return null;
+        }
+        return res.json();
       })
-      .catch((err) => console.error(err))
+      .then((data) => {
+        if (data && data.settings) setSettings(data.settings);
+      })
+      .catch((err) => {
+        console.error(err);
+        setStatusMsg({ type: 'error', text: 'Failed to retrieve website settings.' });
+      })
       .finally(() => setLoading(false));
   }, []);
 

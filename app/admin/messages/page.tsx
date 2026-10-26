@@ -21,14 +21,25 @@ export default function AdminMessagesPage() {
 
   const fetchMessages = () => {
     fetch('/api/admin/messages')
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status === 401) {
+          window.location.href = '/admin/login?from=' + encodeURIComponent(window.location.pathname);
+          return null;
+        }
+        return res.json();
+      })
       .then((data) => {
-        setMessages(data.messages || []);
-        if (data.messages && data.messages.length > 0 && !selectedMsg) {
-          setSelectedMsg(data.messages[0]);
+        if (data) {
+          setMessages(data.messages || []);
+          if (data.messages && data.messages.length > 0 && !selectedMsg) {
+            setSelectedMsg(data.messages[0]);
+          }
         }
       })
-      .catch((err) => console.error(err))
+      .catch((err) => {
+        console.error(err);
+        setStatusMsg({ type: 'error', text: 'Failed to retrieve contact messages.' });
+      })
       .finally(() => setLoading(false));
   };
 
