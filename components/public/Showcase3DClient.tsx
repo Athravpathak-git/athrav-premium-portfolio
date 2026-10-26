@@ -7,7 +7,7 @@ const DynamicShowcase3D = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="w-full h-80 rounded-2xl bg-obsidian-900/60 border border-silver-500/10 flex items-center justify-center text-silver-400 font-mono text-sm">
+      <div className="w-full h-80 rounded-2xl bg-cream-50 dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 flex items-center justify-center text-charcoal/70 dark:text-cream/70 font-mono text-sm">
         Initializing 3D Visualizer...
       </div>
     ),

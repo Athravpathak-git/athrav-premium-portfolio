@@ -217,7 +217,7 @@ export default function AdminSkillsPage() {
                   type="checkbox"
                   checked={editingItem.isFeatured || false}
                   onChange={(e) => setEditingItem({ ...editingItem, isFeatured: e.target.checked })}
-                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 dark:bg-charcoal-700 accent-burgundy text-burgundy"
                 />
                 <span>Featured on Homepage</span>
               </label>
@@ -227,7 +227,7 @@ export default function AdminSkillsPage() {
                   type="checkbox"
                   checked={editingItem.isPublished ?? true}
                   onChange={(e) => setEditingItem({ ...editingItem, isPublished: e.target.checked })}
-                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 dark:bg-charcoal-700 accent-burgundy text-burgundy"
                 />
                 <span>Published</span>
               </label>
@@ -248,9 +248,9 @@ export default function AdminSkillsPage() {
       )}
 
       {/* Skills Table */}
-      <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
+          <thead className="bg-cream-100/70 dark:bg-charcoal-700 border-b border-border-soft dark:border-charcoal-600 font-mono text-charcoal/70 dark:text-cream/70 uppercase">
             <tr>
               <th className="p-4">Skill</th>
               <th className="p-4">Category</th>
@@ -260,12 +260,12 @@ export default function AdminSkillsPage() {
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-soft">
+          <tbody className="divide-y divide-border-soft dark:divide-charcoal-700">
             {items.map((item) => (
-              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
-                <td className="p-4 font-semibold text-burgundy">{item.name}</td>
-                <td className="p-4 text-charcoal/85 font-mono">{item.category}</td>
-                <td className="p-4 font-mono text-silver-300">{item.proficiency}</td>
+              <tr key={item.id} className="hover:bg-cream-50 dark:hover:bg-charcoal-700/50 transition-colors">
+                <td className="p-4 font-semibold text-burgundy dark:text-cream">{item.name}</td>
+                <td className="p-4 text-charcoal/85 dark:text-cream/85 font-mono">{item.category}</td>
+                <td className="p-4 font-mono text-charcoal/80 dark:text-cream/80">{item.proficiency}</td>
                 <td className="p-4">
                   {item.isFeatured ? (
                     <span className="text-amber-400 font-mono flex items-center gap-1">

@@ -33,7 +33,7 @@ export function Footer() {
 
           {/* Quick Links Column */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-rosegold mb-4 font-mono">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-rosegold-200 mb-4 font-mono">
               Navigation
             </h4>
             <ul className="space-y-2.5 text-sm text-blush-100">
@@ -67,7 +67,7 @@ export function Footer() {
 
           {/* Connect Column */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-rosegold mb-4 font-mono">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-rosegold-200 mb-4 font-mono">
               Channels & Connect
             </h4>
             <ul className="space-y-2.5 text-sm text-blush-100">
@@ -105,9 +105,9 @@ export function Footer() {
         </div>
 
         {/* Bottom copyright */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-blush-300">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-blush-200">
           <p>© {currentYear} Athrav Pathak. All rights reserved.</p>
-          <p className="text-rosegold-300">Curated with Burgundy & Soft Cream Luxury Editorial Design</p>
+          <p className="text-rosegold-200">Curated with Burgundy & Soft Cream Luxury Editorial Design</p>
         </div>
       </div>
     </footer>

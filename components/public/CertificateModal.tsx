@@ -71,7 +71,7 @@ export function CertificateModal({
               >
                 {title}
               </h2>
-              <p className="text-xs text-rosegold font-semibold truncate">{issuer}</p>
+              <p className="text-xs text-rosegold-700 dark:text-rosegold font-semibold truncate">{issuer}</p>
             </div>
           </div>
 

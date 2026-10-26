@@ -369,12 +369,12 @@ export default function AdminMediaPage() {
   return (
     <div className="space-y-8 max-w-6xl">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-soft">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-soft dark:border-charcoal-700">
         <div>
-          <h1 className="text-3xl font-serif font-extrabold tracking-tight text-burgundy">
+          <h1 className="text-3xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
             Media & Asset Library
           </h1>
-          <p className="text-xs font-mono text-rosegold font-semibold tracking-wider mt-1">
+          <p className="text-xs font-mono text-rosegold-700 dark:text-rosegold font-semibold tracking-wider mt-1">
             ATHRAV PATHAK PORTFOLIO CMS • CENTRALIZED DIGITAL ASSET REPOSITORY
           </p>
         </div>

@@ -218,7 +218,7 @@ export default function AdminEducationPage() {
                   type="checkbox"
                   checked={editingItem.isPublished ?? true}
                   onChange={(e) => setEditingItem({ ...editingItem, isPublished: e.target.checked })}
-                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 dark:bg-charcoal-700 accent-burgundy text-burgundy"
                 />
                 <span>Published on Website</span>
               </label>

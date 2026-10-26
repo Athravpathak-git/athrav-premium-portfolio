@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
           <h1 className="text-2xl sm:text-3xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
             Administrative Portal
           </h1>
-          <p className="text-xs font-mono text-rosegold font-semibold tracking-wider">
+          <p className="text-xs font-mono text-rosegold-700 dark:text-rosegold font-semibold tracking-wider">
             ATHRAV PATHAK PORTFOLIO CMS • SECURE ACCESS
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function AdminLoginPage() {
         <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 p-8 space-y-6 shadow-xl">
           {sessionExpiredNotice && (
             <div className="p-4 rounded-xl border border-rosegold/50 dark:border-rosegold/60 bg-rosegold-50 dark:bg-rosegold-900/40 text-burgundy dark:text-cream text-xs flex items-start gap-3 animate-fade-in shadow-sm">
-              <AlertCircle className="w-4 h-4 text-rosegold shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-rosegold-700 dark:text-rosegold shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold">Session Required</p>
                 <p className="text-charcoal/80 dark:text-cream/80 mt-0.5">Your administrative session has expired or is invalid. Please authenticate below to access the CMS.</p>
@@ -144,7 +144,7 @@ export default function AdminLoginPage() {
                   placeholder="Enter your username or email"
                   className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
                 />
-                <User className="w-4 h-4 text-rosegold absolute left-3.5 top-3" />
+                <User className="w-4 h-4 text-rosegold-700 dark:text-rosegold absolute left-3.5 top-3" />
               </div>
             </div>
 
@@ -166,7 +166,7 @@ export default function AdminLoginPage() {
                   placeholder="••••••••••••"
                   className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
                 />
-                <Lock className="w-4 h-4 text-rosegold absolute left-3.5 top-3" />
+                <Lock className="w-4 h-4 text-rosegold-700 dark:text-rosegold absolute left-3.5 top-3" />
               </div>
             </div>
 

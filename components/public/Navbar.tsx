@@ -67,7 +67,7 @@ export function Navbar() {
               <span className="text-base sm:text-lg font-serif font-bold tracking-tight text-burgundy dark:text-cream group-hover:text-burgundy-500 dark:group-hover:text-rosegold transition-colors">
                 ATHRAV PATHAK
               </span>
-              <span className="text-[10px] tracking-widest text-rosegold uppercase font-mono font-medium">
+              <span className="text-[10px] tracking-widest text-rosegold-700 dark:text-rosegold uppercase font-mono font-medium">
                 Creative Developer · AI & ML
               </span>
             </div>
@@ -144,7 +144,7 @@ export function Navbar() {
               );
             })}
             <div className="pt-3 mt-2 border-t border-border-soft dark:border-charcoal-800 flex items-center justify-between px-2">
-              <span className="text-xs font-mono text-rosegold">Administrative Console</span>
+              <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold">Administrative Console</span>
               <NextLink
                 href="/admin/login"
                 className="text-xs font-mono font-semibold text-burgundy dark:text-rosegold hover:underline"

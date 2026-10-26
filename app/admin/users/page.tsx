@@ -452,8 +452,8 @@ export default function AdminUsersPage() {
                         <span
                           className={`inline-flex items-center gap-1 text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${
                             isSuper
-                              ? 'bg-burgundy/10 border-burgundy/30 text-burgundy font-bold'
-                              : 'bg-zinc-100 border-zinc-200 text-charcoal'
+                              ? 'bg-burgundy/10 dark:bg-burgundy/30 border-burgundy/30 text-burgundy dark:text-cream font-bold'
+                              : 'bg-cream-100 dark:bg-charcoal-700 border-border-soft dark:border-charcoal-600 text-charcoal dark:text-cream'
                           }`}
                         >
                           <Shield className="w-3 h-3 text-rosegold" />
@@ -504,8 +504,8 @@ export default function AdminUsersPage() {
                             title={isCurrent ? 'Cannot delete your own logged in account' : 'Delete Administrator'}
                             className={`p-1.5 rounded-lg border transition-colors shadow-sm ${
                               isCurrent
-                                ? 'border-border-soft bg-zinc-100 text-zinc-300 cursor-not-allowed'
-                                : 'border-border-soft bg-white hover:bg-red-50 text-charcoal/60 hover:text-red-700 hover:border-red-200'
+                                ? 'border-border-soft dark:border-charcoal-700 bg-cream-100 dark:bg-charcoal-800 text-charcoal/30 dark:text-cream/30 cursor-not-allowed'
+                                : 'border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 hover:bg-red-50 dark:hover:bg-red-950/30 text-charcoal/60 dark:text-cream/60 hover:text-red-700 dark:hover:text-red-400 hover:border-red-200'
                             }`}
                           >
                             <Trash2 className="w-3.5 h-3.5" />

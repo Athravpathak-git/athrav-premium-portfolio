@@ -21,8 +21,8 @@ export default async function ProjectsPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="space-y-4 mb-16 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold shadow-sm">
-            <Layers className="w-3.5 h-3.5 text-rosegold" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold-700 dark:text-rosegold shadow-sm">
+            <Layers className="w-3.5 h-3.5 text-rosegold-700 dark:text-rosegold" />
             <span>Engineering Portfolio</span>
           </div>
           <h1 className="text-4xl sm:text-6xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">

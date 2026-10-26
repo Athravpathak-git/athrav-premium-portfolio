@@ -45,8 +45,8 @@ export default async function SkillsPage() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold shadow-sm">
-            <Cpu className="w-3.5 h-3.5 text-rosegold" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold-700 dark:text-rosegold shadow-sm">
+            <Cpu className="w-3.5 h-3.5 text-rosegold-700 dark:text-rosegold" />
             <span>Competency Matrix</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">

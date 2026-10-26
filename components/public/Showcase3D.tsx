@@ -60,7 +60,7 @@ export function Showcase3D() {
     <div className="relative rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 p-6 sm:p-8 overflow-hidden shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 relative z-10">
         <div>
-          <span className="text-xs font-mono font-medium text-rosegold uppercase tracking-wider">
+          <span className="text-xs font-mono font-medium text-rosegold-700 dark:text-rosegold uppercase tracking-wider">
             Interactive Architecture
           </span>
           <h3 className="text-xl font-serif font-bold text-burgundy dark:text-cream">Geometric Model Inspector</h3>

@@ -81,7 +81,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               {project.title}
             </h1>
             {project.subtitle && (
-              <p className="text-lg text-rosegold font-semibold">{project.subtitle}</p>
+              <p className="text-lg text-rosegold-700 dark:text-rosegold font-semibold">{project.subtitle}</p>
             )}
           </div>
 

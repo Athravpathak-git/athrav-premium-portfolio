@@ -71,7 +71,7 @@ export default async function CertificationDetailPage({ params }: CertPageProps)
             <h1 className="text-3xl sm:text-4xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
               {cert.title}
             </h1>
-            <p className="text-base text-rosegold font-semibold">{cert.issuer}</p>
+            <p className="text-base text-rosegold-700 dark:text-rosegold font-semibold">{cert.issuer}</p>
           </div>
 
           {/* Certificate Image Preview Section */}

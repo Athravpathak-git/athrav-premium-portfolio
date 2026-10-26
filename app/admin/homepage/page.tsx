@@ -63,10 +63,10 @@ export default function AdminHomepageSectionsPage() {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft dark:border-charcoal-700">
         <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Homepage Sections</h1>
-          <p className="text-xs font-mono text-charcoal/70 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy dark:text-cream">Homepage Sections</h1>
+          <p className="text-xs font-mono text-charcoal/70 dark:text-cream/70 mt-1">
             CONTROL SECTION VISIBILITY, HEADINGS & DISPLAY ORDER ACROSS THE HOMEPAGE
           </p>
         </div>
@@ -76,14 +76,14 @@ export default function AdminHomepageSectionsPage() {
         <div
           className={`p-4 rounded-xl border text-xs flex items-center gap-3 ${
             statusMsg.type === 'success'
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
-              : 'border-red-500/30 bg-red-500/10 text-red-200'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200'
+              : 'border-red-500/30 bg-red-500/10 text-red-800 dark:text-red-200'
           }`}
         >
           {statusMsg.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
           )}
           <span>{statusMsg.text}</span>
         </div>
@@ -93,14 +93,14 @@ export default function AdminHomepageSectionsPage() {
         {sections.map((sec) => (
           <div
             key={sec.sectionKey}
-            className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4"
+            className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-6 space-y-4"
           >
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border-soft">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-border-soft dark:border-charcoal-700">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-cream-50 border border-border-soft text-silver-300">
+                <span className="text-xs font-mono px-2.5 py-1 rounded-lg bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 text-burgundy dark:text-cream font-semibold">
                   {sec.sectionKey}
                 </span>
-                <span className="text-xs font-mono text-charcoal/70">
+                <span className="text-xs font-mono text-charcoal/70 dark:text-cream/70">
                   Order: #{sec.sortOrder}
                 </span>
               </div>
@@ -111,8 +111,8 @@ export default function AdminHomepageSectionsPage() {
                   onClick={() => handleToggleEnable(sec)}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono border transition-all ${
                     sec.isEnabled
-                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                      : 'border-zinc-700 bg-cream-50 text-charcoal/60'
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                      : 'border-border-soft dark:border-charcoal-700 bg-cream-50 dark:bg-charcoal-700 text-charcoal/70 dark:text-cream/70'
                   }`}
                 >
                   {sec.isEnabled ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -123,7 +123,7 @@ export default function AdminHomepageSectionsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-mono text-charcoal/85 mb-1">Section Title</label>
+                <label className="block text-xs font-mono text-charcoal/85 dark:text-cream/85 mb-1">Section Title</label>
                 <input
                   type="text"
                   value={sec.title || ''}
@@ -133,12 +133,12 @@ export default function AdminHomepageSectionsPage() {
                       sections.map((s) => (s.sectionKey === sec.sectionKey ? { ...s, title: val } : s))
                     );
                   }}
-                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
+                  className="w-full bg-cream-50 dark:bg-charcoal-700/60 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2 text-sm text-charcoal dark:text-cream"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-charcoal/85 mb-1">Subtitle / Eyebrow</label>
+                <label className="block text-xs font-mono text-charcoal/85 dark:text-cream/85 mb-1">Subtitle / Eyebrow</label>
                 <input
                   type="text"
                   value={sec.subtitle || ''}
@@ -150,13 +150,13 @@ export default function AdminHomepageSectionsPage() {
                       )
                     );
                   }}
-                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal"
+                  className="w-full bg-cream-50 dark:bg-charcoal-700/60 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2 text-sm text-charcoal dark:text-cream"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-charcoal/85 mb-1">Description</label>
+              <label className="block text-xs font-mono text-charcoal/85 dark:text-cream/85 mb-1">Description</label>
               <textarea
                 rows={2}
                 value={sec.description || ''}
@@ -168,7 +168,7 @@ export default function AdminHomepageSectionsPage() {
                     )
                   );
                 }}
-                className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-sm text-charcoal resize-y"
+                className="w-full bg-cream-50 dark:bg-charcoal-700/60 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2 text-sm text-charcoal dark:text-cream resize-y"
               />
             </div>
 
@@ -177,7 +177,7 @@ export default function AdminHomepageSectionsPage() {
                 type="button"
                 disabled={savingKey === sec.sectionKey}
                 onClick={() => handleUpdate(sec)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-cream font-bold text-xs transition-colors disabled:opacity-60"
               >
                 {savingKey === sec.sectionKey ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

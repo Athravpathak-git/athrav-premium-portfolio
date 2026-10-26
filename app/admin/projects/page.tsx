@@ -365,7 +365,7 @@ export default function AdminProjectsPage() {
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, isFeatured: e.target.checked })
                   }
-                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 dark:bg-charcoal-700 accent-burgundy text-burgundy"
                 />
                 <span>Featured Project (Homepage priority)</span>
               </label>
@@ -377,7 +377,7 @@ export default function AdminProjectsPage() {
                   onChange={(e) =>
                     setEditingItem({ ...editingItem, isPublished: e.target.checked })
                   }
-                  className="w-4 h-4 rounded bg-cream-50 text-silver-400"
+                  className="w-4 h-4 rounded bg-cream-50 dark:bg-charcoal-700 accent-burgundy text-burgundy"
                 />
                 <span>Published (Visible on Public Website)</span>
               </label>

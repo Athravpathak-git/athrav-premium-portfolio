@@ -75,7 +75,7 @@ export default async function HomePage() {
               <div className="space-y-3">
                 <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream leading-[1.05]">
                   Building ideas into{' '}
-                  <span className="italic font-normal text-rosegold">thoughtful digital experiences.</span>
+                  <span className="italic font-normal text-rosegold-700 dark:text-rosegold">thoughtful digital experiences.</span>
                 </h1>
                 <p className="text-xl sm:text-2xl font-serif text-charcoal/80 dark:text-cream/80 tracking-tight">
                   Athrav Pathak — Aspiring AI Engineer & Creative Developer
@@ -99,7 +99,7 @@ export default async function HomePage() {
                   />
                   <div>
                     <h4 className="text-sm font-serif font-bold text-burgundy dark:text-cream leading-tight">{profile.name}</h4>
-                    <p className="text-xs font-mono text-rosegold font-medium">BCA Undergraduate • Year 2</p>
+                    <p className="text-xs font-mono text-rosegold-700 dark:text-rosegold font-medium">BCA Undergraduate • Year 2</p>
                   </div>
                 </div>
               )}
@@ -153,7 +153,7 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div className="space-y-3">
-                <span className="text-xs font-mono text-rosegold uppercase tracking-wider font-semibold">
+                <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold uppercase tracking-wider font-semibold">
                   Selected Works & Prototypes
                 </span>
                 <h2 className="text-3xl sm:text-5xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
@@ -195,8 +195,8 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
               <div className="lg:col-span-5 space-y-5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold font-semibold">
-                  <Compass className="w-3.5 h-3.5 text-rosegold" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold-700 dark:text-rosegold font-semibold">
+                  <Compass className="w-3.5 h-3.5 text-rosegold-700 dark:text-rosegold" />
                   <span>Engineering Direction</span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
@@ -294,7 +294,7 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div className="space-y-3">
-                <span className="text-xs font-mono text-rosegold uppercase tracking-wider font-semibold">
+                <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold uppercase tracking-wider font-semibold">
                   Competencies & Stack
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
@@ -335,12 +335,12 @@ export default async function HomePage() {
                   <div className="w-10 h-10 rounded-xl bg-cream-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 flex items-center justify-center text-burgundy dark:text-rosegold">
                     <GraduationCap className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-mono text-rosegold uppercase font-semibold">Current Education</span>
+                  <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold uppercase font-semibold">Current Education</span>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-2xl font-serif font-bold text-burgundy dark:text-cream">{education[0].degree}</h3>
-                  <p className="text-sm font-semibold text-rosegold">{education[0].institution}</p>
+                  <p className="text-sm font-semibold text-rosegold-700 dark:text-rosegold">{education[0].institution}</p>
                   <div className="inline-block text-xs font-mono text-burgundy dark:text-cream bg-cream-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 px-2.5 py-1 rounded-full font-medium">
                     {education[0].status}
                   </div>
@@ -369,12 +369,12 @@ export default async function HomePage() {
                   <div className="w-10 h-10 rounded-xl bg-cream-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 flex items-center justify-center text-burgundy dark:text-rosegold">
                     <Briefcase className="w-5 h-5" />
                   </div>
-                  <span className="text-xs font-mono text-rosegold uppercase font-semibold">Internship Experience</span>
+                  <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold uppercase font-semibold">Internship Experience</span>
                 </div>
 
                 <div className="space-y-2">
                   <h3 className="text-2xl font-serif font-bold text-burgundy dark:text-cream">{experience[0].role}</h3>
-                  <p className="text-sm font-semibold text-rosegold">{experience[0].company}</p>
+                  <p className="text-sm font-semibold text-rosegold-700 dark:text-rosegold">{experience[0].company}</p>
                   <div className="inline-block text-xs font-mono text-burgundy dark:text-cream bg-cream-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 px-2.5 py-1 rounded-full font-medium">
                     {experience[0].employmentType} • {experience[0].workplaceType}
                   </div>
@@ -407,7 +407,7 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div className="space-y-3">
-                <span className="text-xs font-mono text-rosegold uppercase tracking-wider font-semibold">
+                <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold uppercase tracking-wider font-semibold">
                   Credentials & Training
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
@@ -442,7 +442,7 @@ export default async function HomePage() {
         <section className="py-24 border-t border-border-soft dark:border-charcoal-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-              <span className="text-xs font-mono text-rosegold uppercase tracking-wider font-semibold">
+              <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold uppercase tracking-wider font-semibold">
                 Capabilities
               </span>
               <h2 className="text-3xl sm:text-4xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">

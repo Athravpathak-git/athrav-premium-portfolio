@@ -65,16 +65,16 @@ export default function AdminSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-6 h-6 animate-spin text-silver-300" />
+        <Loader2 className="w-6 h-6 animate-spin text-rosegold-700 dark:text-rosegold" />
       </div>
     );
   }
 
   return (
     <div className="space-y-8 max-w-4xl">
-      <div className="pb-6 border-b border-border-soft">
-        <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">System Settings</h1>
-        <p className="text-xs font-mono text-charcoal/70 mt-1">
+      <div className="pb-6 border-b border-border-soft dark:border-charcoal-700">
+        <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy dark:text-cream">System Settings</h1>
+        <p className="text-xs font-mono text-charcoal/70 dark:text-cream/70 mt-1">
           GLOBAL SEO, EMAIL NOTIFICATIONS, DATABASE GUIDELINES & APPEARANCE
         </p>
       </div>
@@ -98,10 +98,10 @@ export default function AdminSettingsPage() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* SEO Configuration */}
-        <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
+        <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-6 space-y-4">
           <div className="flex items-center gap-2">
-            <Globe className="w-4 h-4 text-silver-300" />
-            <h3 className="text-sm font-semibold text-burgundy">Global SEO & Metadata</h3>
+            <Globe className="w-4 h-4 text-rosegold-700 dark:text-rosegold" />
+            <h3 className="text-sm font-semibold text-burgundy dark:text-cream">Global SEO & Metadata</h3>
           </div>
 
           <div className="space-y-4">
@@ -142,10 +142,10 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Email Notification Settings */}
-        <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
+        <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-6 space-y-4">
           <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-silver-300" />
-            <h3 className="text-sm font-semibold text-burgundy">Email Dispatch & Notifications</h3>
+            <Mail className="w-4 h-4 text-rosegold-700 dark:text-rosegold" />
+            <h3 className="text-sm font-semibold text-burgundy dark:text-cream">Email Dispatch & Notifications</h3>
           </div>
           <p className="text-xs text-charcoal/70 leading-relaxed">
             Configure the administrative recipient email for incoming inquiries. In development,
@@ -166,31 +166,31 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Theme Settings */}
-        <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
+        <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-6 space-y-4">
           <div className="flex items-center gap-2">
-            <SunMoon className="w-4 h-4 text-silver-300" />
-            <h3 className="text-sm font-semibold text-burgundy">Appearance & Theme Defaults</h3>
+            <SunMoon className="w-4 h-4 text-rosegold-700 dark:text-rosegold" />
+            <h3 className="text-sm font-semibold text-burgundy dark:text-cream">Appearance & Theme Defaults</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono text-charcoal/85 mb-1">Default Theme</label>
+              <label className="block text-xs font-mono text-charcoal/85 dark:text-cream/85 mb-1">Default Theme</label>
               <select
                 value={settings.themeDefault || 'dark'}
                 onChange={(e) => setSettings({ ...settings, themeDefault: e.target.value })}
-                className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
+                className="w-full bg-cream-50 dark:bg-charcoal-700/60 border border-border-soft dark:border-charcoal-600 rounded-xl px-3 py-2 text-sm text-charcoal dark:text-cream"
               >
-                <option value="dark">Dark (Apple Luxury Tech)</option>
-                <option value="light">Light (Silver Monochrome)</option>
+                <option value="dark">Dark (Burgundy & Rose Gold)</option>
+                <option value="light">Light (Burgundy & Soft Cream)</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-charcoal/85 mb-1">Theme Switcher</label>
+              <label className="block text-xs font-mono text-charcoal/85 dark:text-cream/85 mb-1">Theme Switcher</label>
               <select
                 value={settings.allowThemeToggle || 'true'}
                 onChange={(e) => setSettings({ ...settings, allowThemeToggle: e.target.value })}
-                className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2 text-sm text-charcoal"
+                className="w-full bg-cream-50 dark:bg-charcoal-700/60 border border-border-soft dark:border-charcoal-600 rounded-xl px-3 py-2 text-sm text-charcoal dark:text-cream"
               >
                 <option value="true">Enabled (Allow User Toggle)</option>
                 <option value="false">Enforce Dark Mode Only</option>
@@ -210,20 +210,20 @@ export default function AdminSettingsPage() {
       </form>
 
       {/* Manual Neon Database Connection Instructions */}
-      <div className="rounded-2xl border border-border-soft bg-white shadow-sm p-6 space-y-4">
+      <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-6 space-y-4">
         <div className="flex items-center gap-2">
-          <Database className="w-4 h-4 text-silver-300" />
-          <h3 className="text-sm font-semibold text-burgundy">Manual Neon PostgreSQL Integration Guide</h3>
+          <Database className="w-4 h-4 text-rosegold-700 dark:text-rosegold" />
+          <h3 className="text-sm font-semibold text-burgundy dark:text-cream">Manual Neon PostgreSQL Integration Guide</h3>
         </div>
-        <p className="text-xs text-charcoal/70 leading-relaxed">
+        <p className="text-xs text-charcoal/70 dark:text-cream/70 leading-relaxed">
           When you are ready to connect your production Neon PostgreSQL database:
         </p>
 
-        <ol className="space-y-2 text-xs font-mono text-charcoal/85 list-decimal list-inside leading-relaxed">
+        <ol className="space-y-2 text-xs font-mono text-charcoal/85 dark:text-cream/85 list-decimal list-inside leading-relaxed">
           <li>Create a project in your Neon console and copy the PostgreSQL connection strings.</li>
-          <li>Set <code className="text-silver-300 font-mono">DATABASE_URL</code> and <code className="text-silver-300 font-mono">DIRECT_URL</code> in your <code className="text-silver-300 font-mono">.env.local</code>.</li>
-          <li>Run <code className="text-silver-300 font-mono">npm run prisma:deploy</code> or <code className="text-silver-300 font-mono">npx prisma migrate deploy</code>.</li>
-          <li>Run <code className="text-silver-300 font-mono">npm run seed:admin</code> with your environment credentials to insert your super admin.</li>
+          <li>Set <code className="text-burgundy dark:text-rosegold bg-cream-100 dark:bg-charcoal-700 px-1 py-0.5 rounded font-mono">DATABASE_URL</code> and <code className="text-burgundy dark:text-rosegold bg-cream-100 dark:bg-charcoal-700 px-1 py-0.5 rounded font-mono">DIRECT_URL</code> in your <code className="text-burgundy dark:text-rosegold bg-cream-100 dark:bg-charcoal-700 px-1 py-0.5 rounded font-mono">.env.local</code>.</li>
+          <li>Run <code className="text-burgundy dark:text-rosegold bg-cream-100 dark:bg-charcoal-700 px-1 py-0.5 rounded font-mono">npm run prisma:deploy</code> or <code className="text-burgundy dark:text-rosegold bg-cream-100 dark:bg-charcoal-700 px-1 py-0.5 rounded font-mono">npx prisma migrate deploy</code>.</li>
+          <li>Run <code className="text-burgundy dark:text-rosegold bg-cream-100 dark:bg-charcoal-700 px-1 py-0.5 rounded font-mono">npm run seed:admin</code> with your environment credentials to insert your super admin.</li>
           <li>Restart Next.js. The app will immediately switch to live Neon PostgreSQL persistence!</li>
         </ol>
       </div>

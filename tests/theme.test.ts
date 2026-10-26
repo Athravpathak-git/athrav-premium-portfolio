@@ -67,4 +67,44 @@ describe('Theme System & Dark/Light Mode Integrity', () => {
     expect(toggleContent).not.toContain('text-zinc-700');
     expect(toggleContent).not.toContain('bg-zinc-900');
   });
+
+  it('verifies absence of obsolete monochrome tokens (silver, zinc, obsidian) in app/admin', () => {
+    const adminDir = path.join(rootDir, 'app', 'admin');
+    const files = fs.readdirSync(adminDir, { recursive: true }) as string[];
+
+    for (const file of files) {
+      if (typeof file === 'string' && (file.endsWith('.tsx') || file.endsWith('.ts'))) {
+        const filePath = path.join(adminDir, file);
+        if (fs.statSync(filePath).isFile()) {
+          const content = fs.readFileSync(filePath, 'utf-8');
+          expect(content).not.toMatch(/\btext-silver-\d+/);
+          expect(content).not.toMatch(/\bbg-zinc-\d+/);
+          expect(content).not.toMatch(/\btext-zinc-\d+/);
+          expect(content).not.toMatch(/\btext-obsidian-\d+/);
+        }
+      }
+    }
+  });
+
+  it('verifies contrast compliance: ensures no white text on light table cells or cards in admin', () => {
+    const analyticsPath = path.join(rootDir, 'app', 'admin', 'analytics', 'page.tsx');
+    const messagesPath = path.join(rootDir, 'app', 'admin', 'messages', 'page.tsx');
+
+    const analyticsContent = fs.readFileSync(analyticsPath, 'utf-8');
+    expect(analyticsContent).not.toContain('font-mono text-white');
+
+    const messagesContent = fs.readFileSync(messagesPath, 'utf-8');
+    expect(messagesContent).not.toContain('font-semibold text-white');
+    expect(messagesContent).not.toContain('From: <span className="text-white">');
+    expect(messagesContent).not.toContain('text-zinc-200');
+  });
+
+  it('verifies root CSS variables provide high-contrast text ratios', () => {
+    const globalsCssPath = path.join(rootDir, 'app', 'globals.css');
+    const content = fs.readFileSync(globalsCssPath, 'utf-8');
+
+    // High contrast muted text
+    expect(content).toContain('--text-muted: #574D54;');
+    expect(content).toContain('--text-muted: #C5BDC3;');
+  });
 });

@@ -20,8 +20,8 @@ export default async function AchievementsPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold shadow-sm">
-            <Trophy className="w-3.5 h-3.5 text-rosegold" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold-700 dark:text-rosegold shadow-sm">
+            <Trophy className="w-3.5 h-3.5 text-rosegold-700 dark:text-rosegold" />
             <span>Progression Record</span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
@@ -54,7 +54,7 @@ export default async function AchievementsPage() {
                 <div className="space-y-1">
                   <h2 className="text-xl font-serif font-bold text-burgundy dark:text-cream tracking-tight">{ach.title}</h2>
                   {ach.issuer && (
-                    <p className="text-xs font-semibold text-rosegold">{ach.issuer}</p>
+                    <p className="text-xs font-semibold text-rosegold-700 dark:text-rosegold">{ach.issuer}</p>
                   )}
                 </div>
 
@@ -69,20 +69,20 @@ export default async function AchievementsPage() {
         {/* Engineering Vision Callout */}
         <div className="mt-16 p-8 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 space-y-4 shadow-sm">
           <h3 className="text-xl font-serif font-bold text-burgundy dark:text-cream flex items-center gap-2">
-            <Target className="w-5 h-5 text-rosegold" />
+            <Target className="w-5 h-5 text-rosegold-700 dark:text-rosegold" />
             <span>Immediate Growth Objectives</span>
           </h3>
           <ul className="space-y-2 text-xs sm:text-sm text-charcoal/85 dark:text-cream/80">
             <li className="flex items-start gap-2">
-              <span className="text-rosegold font-mono font-bold">01.</span>
+              <span className="text-rosegold-700 dark:text-rosegold font-mono font-bold">01.</span>
               <span>Master transformer self-attention mechanisms and train mini-GPT models from scratch using PyTorch.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-rosegold font-mono font-bold">02.</span>
+              <span className="text-rosegold-700 dark:text-rosegold font-mono font-bold">02.</span>
               <span>Complete third-semester and fourth-semester BCA curriculum with strong conceptual rigor.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-rosegold font-mono font-bold">03.</span>
+              <span className="text-rosegold-700 dark:text-rosegold font-mono font-bold">03.</span>
               <span>Contribute to open-source developer tooling and machine learning repositories.</span>
             </li>
           </ul>

@@ -86,10 +86,10 @@ export default function AdminMessagesPage() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
+      <div className="flex items-center justify-between pb-6 border-b border-border-soft dark:border-charcoal-700">
         <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Contact Submissions</h1>
-          <p className="text-xs font-mono text-charcoal/70 mt-1">
+          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy dark:text-cream">Contact Submissions</h1>
+          <p className="text-xs font-mono text-charcoal/70 dark:text-cream/70 mt-1">
             REVIEW, MANAGE & RESOLVE INCOMING PORTFOLIO INQUIRIES
           </p>
         </div>
@@ -99,14 +99,14 @@ export default function AdminMessagesPage() {
         <div
           className={`p-4 rounded-xl border text-xs flex items-center gap-3 ${
             statusMsg.type === 'success'
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
-              : 'border-red-500/30 bg-red-500/10 text-red-200'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200'
+              : 'border-red-500/30 bg-red-500/10 text-red-800 dark:text-red-200'
           }`}
         >
           {statusMsg.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
           )}
           <span>{statusMsg.text}</span>
         </div>
@@ -115,7 +115,7 @@ export default function AdminMessagesPage() {
       {messages.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Messages List Sidebar */}
-          <div className="md:col-span-5 rounded-2xl border border-border-soft bg-white shadow-sm p-4 space-y-2 h-[600px] overflow-y-auto">
+          <div className="md:col-span-5 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-4 space-y-2 h-[600px] overflow-y-auto">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -125,21 +125,21 @@ export default function AdminMessagesPage() {
                 }}
                 className={`p-4 rounded-xl border transition-all cursor-pointer ${
                   selectedMsg?.id === msg.id
-                    ? 'border-border-soft bg-cream-50 shadow-md'
-                    : 'border-border-soft bg-cream-50 hover:bg-cream-100/70'
+                    ? 'border-rosegold-700/50 dark:border-rosegold/50 bg-cream-100 dark:bg-charcoal-700 shadow-sm'
+                    : 'border-border-soft dark:border-charcoal-700 bg-cream-50 dark:bg-charcoal-800/80 hover:bg-cream-100/70 dark:hover:bg-charcoal-700/60'
                 }`}
               >
                 <div className="flex items-center justify-between text-xs mb-1">
-                  <span className={`font-semibold ${!msg.isRead ? 'text-white' : 'text-charcoal/70'}`}>
+                  <span className={`font-semibold ${!msg.isRead ? 'text-burgundy dark:text-cream font-bold' : 'text-charcoal/80 dark:text-cream/80'}`}>
                     {msg.name}
                   </span>
                   {!msg.isRead && (
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                   )}
                 </div>
-                <h4 className="text-xs font-mono text-silver-300 truncate">{msg.subject}</h4>
-                <p className="text-xs text-charcoal/70 line-clamp-1 mt-1">{msg.message}</p>
-                <span className="text-[10px] font-mono text-charcoal/70 mt-2 block">
+                <h4 className="text-xs font-mono text-charcoal/80 dark:text-cream/80 truncate">{msg.subject}</h4>
+                <p className="text-xs text-charcoal/70 dark:text-cream/70 line-clamp-1 mt-1">{msg.message}</p>
+                <span className="text-[10px] font-mono text-charcoal/60 dark:text-cream/60 mt-2 block">
                   {new Date(msg.createdAt).toLocaleString()}
                 </span>
               </div>
@@ -147,17 +147,17 @@ export default function AdminMessagesPage() {
           </div>
 
           {/* Message Detail View */}
-          <div className="md:col-span-7 rounded-2xl border border-border-soft bg-white shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="md:col-span-7 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-6 sm:p-8 space-y-6">
             {selectedMsg ? (
               <div className="space-y-6">
-                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-border-soft">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-border-soft dark:border-charcoal-700">
                   <div className="space-y-1">
-                    <h3 className="text-xl font-bold text-burgundy">{selectedMsg.subject}</h3>
-                    <p className="text-xs font-mono text-charcoal/70">
-                      From: <span className="text-white">{selectedMsg.name}</span> &lt;
+                    <h3 className="text-xl font-bold text-burgundy dark:text-cream">{selectedMsg.subject}</h3>
+                    <p className="text-xs font-mono text-charcoal/70 dark:text-cream/70">
+                      From: <span className="text-burgundy dark:text-cream font-semibold">{selectedMsg.name}</span> &lt;
                       <a
                         href={`mailto:${selectedMsg.email}`}
-                        className="text-silver-300 hover:underline"
+                        className="text-rosegold-700 dark:text-rosegold hover:underline"
                       >
                         {selectedMsg.email}
                       </a>
@@ -173,8 +173,8 @@ export default function AdminMessagesPage() {
                       }
                       className={`text-xs font-mono px-3 py-1.5 rounded-lg border transition-all ${
                         selectedMsg.isResolved
-                          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-                          : 'border-border-soft bg-cream-50 text-charcoal/70 hover:text-burgundy'
+                          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                          : 'border-border-soft dark:border-charcoal-700 bg-cream-50 dark:bg-charcoal-700 text-charcoal/80 dark:text-cream/80 hover:text-burgundy dark:hover:text-cream'
                       }`}
                     >
                       {selectedMsg.isResolved ? 'Marked Resolved' : 'Mark Resolved'}
@@ -182,7 +182,7 @@ export default function AdminMessagesPage() {
                     <button
                       type="button"
                       onClick={() => handleDelete(selectedMsg.id)}
-                      className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
+                      className="p-1.5 rounded hover:bg-cream-100 dark:hover:bg-charcoal-700 text-charcoal/70 dark:text-cream/70 hover:text-red-500"
                       title="Delete Message"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -190,12 +190,12 @@ export default function AdminMessagesPage() {
                   </div>
                 </div>
 
-                <div className="text-xs font-mono text-charcoal/70 flex items-center gap-4">
+                <div className="text-xs font-mono text-charcoal/70 dark:text-cream/70 flex items-center gap-4">
                   <span>Received: {new Date(selectedMsg.createdAt).toLocaleString()}</span>
                   {selectedMsg.ipAddress && <span>IP: {selectedMsg.ipAddress}</span>}
                 </div>
 
-                <div className="p-5 rounded-xl bg-cream-100/60 border border-border-soft text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                <div className="p-5 rounded-xl bg-cream-100/60 dark:bg-charcoal-900/60 border border-border-soft dark:border-charcoal-700 text-sm text-charcoal dark:text-cream leading-relaxed whitespace-pre-wrap">
                   {selectedMsg.message}
                 </div>
 
@@ -204,7 +204,7 @@ export default function AdminMessagesPage() {
                     href={`mailto:${selectedMsg.email}?subject=Re: ${encodeURIComponent(
                       selectedMsg.subject
                     )}`}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-cream font-bold text-xs transition-colors"
                   >
                     <Mail className="w-4 h-4" />
                     <span>Reply via Email</span>
@@ -212,17 +212,17 @@ export default function AdminMessagesPage() {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-20 text-charcoal/70 text-xs font-mono">
+              <div className="text-center py-20 text-charcoal/70 dark:text-cream/70 text-xs font-mono">
                 Select a message on the left to read its contents.
               </div>
             )}
           </div>
         </div>
       ) : (
-        <div className="text-center py-24 rounded-2xl border border-border-soft bg-white shadow-sm p-8 space-y-3">
-          <Inbox className="w-10 h-10 text-zinc-600 mx-auto mb-2" />
-          <h3 className="text-base font-semibold text-burgundy">No Inquiries Received</h3>
-          <p className="text-xs text-charcoal/70 max-w-sm mx-auto">
+        <div className="text-center py-24 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-8 space-y-3">
+          <Inbox className="w-10 h-10 text-charcoal/40 dark:text-cream/40 mx-auto mb-2" />
+          <h3 className="text-base font-semibold text-burgundy dark:text-cream">No Inquiries Received</h3>
+          <p className="text-xs text-charcoal/70 dark:text-cream/70 max-w-sm mx-auto">
             When users submit the contact form on your portfolio website, messages will securely appear here.
           </p>
         </div>

@@ -58,7 +58,7 @@ export function CertificateCard({ cert }: { cert: CertificationData }) {
                 <span>{cert.title}</span>
                 <ArrowUpRight className="w-4 h-4 text-rosegold group-hover:text-burgundy dark:group-hover:text-rosegold group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
               </h3>
-              <p className="text-xs text-rosegold font-semibold mt-0.5">{cert.issuer}</p>
+              <p className="text-xs text-rosegold-700 dark:text-rosegold font-semibold mt-0.5">{cert.issuer}</p>
             </Link>
 
             {/* Issue Date & Credential ID metadata */}
@@ -127,7 +127,7 @@ export function CertificateCard({ cert }: { cert: CertificationData }) {
                 href={cert.credentialUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs text-rosegold hover:text-burgundy dark:hover:text-cream font-medium transition-colors p-1"
+                className="inline-flex items-center gap-1 text-xs text-rosegold-700 dark:text-rosegold hover:text-burgundy dark:hover:text-cream font-medium transition-colors p-1"
                 title="Verify Credential on Issuer Portal"
                 aria-label={`Verify credential for ${cert.title}`}
               >
