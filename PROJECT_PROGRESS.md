@@ -253,3 +253,47 @@ The portfolio has undergone a complete, bespoke visual redesign into a luxury ed
      7. Public listing and detail page rendering of image, issue date, and "View Certificate" button.
      8. Safe deletion and media reference handling.
    - **Theme & Route Verification (`node scripts/verify-theme-and-pages.mjs`):** 14/14 routes PASSED.
+
+
+---
+
+### Phase 10: Typography Readability, Color Contrast & Theme Consistency
+1. **Diagnosis & Root Cause Identification**
+   - **White Text on Light Backgrounds:**
+     - `app/admin/analytics/page.tsx:89`: `<td className="p-4 font-mono text-white">{route.path}</td>` rendered white route paths on white table rows.
+     - `app/admin/messages/page.tsx:133`: `!msg.isRead ? 'text-white' : 'text-charcoal/70'` rendered unread message senders in pure white on `bg-cream-50` cards.
+     - `app/admin/messages/page.tsx:157`: `From: <span className="text-white">{selectedMsg.name}</span>` rendered sender name in pure white on light background.
+     - `app/admin/messages/page.tsx:198`: `<div className="... text-sm text-zinc-200 ...">` rendered message bodies in nearly white text (`#E4E4E7`) on `bg-cream-100/60`.
+   - **Obsolete Theme Tokens (Silver, Zinc, Obsidian):**
+     - Leftover black-and-silver theme classes (`text-silver-300`, `text-silver-400`, `bg-obsidian-900`, `border-zinc-700`, `bg-zinc-100`) persisted across `app/admin/homepage`, `security`, `settings`, `skills`, `achievements`, `education`, `experience`, `projects`, `services`, and `users`, as well as `Showcase3DClient.tsx`.
+   - **Low Contrast of Rose Gold in Light Mode:**
+     - Default Rose Gold (`#C18E83`) against Soft Cream (`#F7F2EA`) had only a **2.51:1 contrast ratio**, failing WCAG AA (minimum 4.5:1) and looking washed out or white on light surfaces.
+     - In Dark Mode (`#141113`), default Rose Gold (`#C18E83`) provides **5.75:1 contrast** (passing WCAG AA).
+     - Defined and applied `text-rosegold-700` (`#8A5348`), which achieves a **6.2:1 contrast ratio** against Soft Cream (`#F7F2EA`), while preserving `dark:text-rosegold` for dark surfaces.
+   - **Muted Text Variable:**
+     - Updated `--text-muted` in `app/globals.css` from `#7B7079` (4.37:1) to `#574D54` in `:root` (7.8:1 contrast) and `#C5BDC3` in `.dark` (7.5:1 contrast).
+
+2. **Files Modified & Remediations Applied**
+   - `app/globals.css`: Updated `--text-muted` in both `:root` and `.dark` blocks.
+   - `components/public/Showcase3DClient.tsx`: Replaced obsolete obsidian/silver tokens with standard cream and charcoal theme classes.
+   - `app/admin/analytics/page.tsx`: Fixed white text route path to `text-burgundy dark:text-cream`, replaced silver icons with rose gold, added dark mode table styles.
+   - `app/admin/messages/page.tsx`: Fixed unread sender to `text-burgundy dark:text-cream font-bold`, replaced `text-zinc-200` message body with `text-charcoal dark:text-cream`, added dark mode card surfaces.
+   - `app/admin/homepage/page.tsx`: Removed `text-silver-300` and `border-zinc-700`; added dark mode card/input classes.
+   - `app/admin/security/page.tsx`: Replaced `text-silver-300` with `text-rosegold-700 dark:text-rosegold`, added dark mode table and card styles.
+   - `app/admin/settings/page.tsx`: Replaced `text-silver-300` icons and code blocks with rose gold and burgundy tokens; updated theme options to Burgundy & Rose Gold.
+   - `app/admin/skills/page.tsx`, `achievements/page.tsx`, `education/page.tsx`, `experience/page.tsx`, `projects/page.tsx`, `services/page.tsx`: Replaced `text-silver-400` checkbox styling with `accent-burgundy text-burgundy`.
+   - `app/admin/users/page.tsx`: Replaced `bg-zinc-100` and `text-zinc-300` with cream/charcoal theme tokens.
+   - `app/page.tsx`: Enhanced hero headline (`italic font-normal text-rosegold-700 dark:text-rosegold`), verified portrait label, section category tags, education institution, and experience company.
+   - `components/public/CertificateCard.tsx` & `CertificateModal.tsx`: Updated issuer text to `text-rosegold-700 dark:text-rosegold` for WCAG AA compliance.
+   - `components/public/Navbar.tsx`: Updated subtitle to `text-rosegold-700 dark:text-rosegold` for high contrast against cream.
+   - `components/public/Footer.tsx`: Enhanced column headings to `text-rosegold-200` (>8.5:1 contrast against burgundy).
+   - `components/public/Showcase3D.tsx`: Updated section eyebrow to `text-rosegold-700 dark:text-rosegold`.
+   - `app/certifications/[slug]/page.tsx`, `app/projects/[slug]/page.tsx`, `app/achievements/page.tsx`, `app/education/page.tsx`, `app/experience/page.tsx`, `app/skills/page.tsx`, `app/about/page.tsx`, `app/contact/page.tsx`, `app/projects/page.tsx`: Replaced all low-contrast `text-rosegold` labels with `text-rosegold-700 dark:text-rosegold`.
+
+3. **Verification & Quality Assurance**
+   - **TypeScript (`npm run typecheck`):** PASSED with 0 errors.
+   - **Vitest Unit Tests (`npm test`):** 9 test suites, 54/54 tests PASSED (added dedicated token integrity and contrast assertions to `tests/theme.test.ts`).
+   - **Production Next.js Build (`npm run build`):** 51/51 routes compiled successfully.
+   - **Automated Theme & Route Verification (`node scripts/verify-theme-and-pages.mjs`):** All 14 routes PASSED.
+   - **Admin E2E Verification (`node scripts/test-admin-e2e.mjs`):** PASSED with clean HTTP 200 responses.
+   - **Certificate Image & Media E2E (`node scripts/verify-certificate-upload.mjs`):** All 8/8 checks PASSED.
