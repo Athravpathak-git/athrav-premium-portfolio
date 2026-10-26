@@ -2,47 +2,108 @@
 ## Technical Audit, Bug Resolution, and Status Report
 
 ### Executive Summary
-Two critical issues reported by the user have been investigated, reproduced, resolved, and verified on `http://localhost:4280`:
+The portfolio has undergone a complete technical recovery, stability audit, and luxury visual redesign into an elegant **Forest Green + Warm Cream** identity with realistic 3D elements, verified running on `http://localhost:4280`.
 
-1. **CRITICAL BUG: Admin Panel Not Opening / Infinite Redirect Loop / Stuck Loading**
-   - **Root Cause Identified:** A fatal interaction existed between `middleware.ts` and Server Component session validation in `requireAdminPage()` (`lib/auth-guard.ts`). When any stale, unauthenticated, or expired `athrav_admin_session` cookie existed in a browser, `middleware.ts` allowed the request to `/admin` because a cookie was present. On `/admin`, `requireAdminPage()` detected the token was invalid and redirected to `/admin/login`. At `/admin/login`, `middleware.ts` saw the cookie was present and redirected back to `/admin`. This created an infinite redirect loop (`ERR_TOO_MANY_REDIRECTS`), causing the Admin Panel to appear stuck or fail to open.
-   - Furthermore, upon submitting the login form, `router.push('/admin')` attempted a soft client-side route transition which reused cached redirect state instead of committing a full HTTP navigation with the fresh cookie.
-   - **Resolution Applied:**
-     - In `middleware.ts`: Removed the blind redirect on `/admin/login`. `/admin/login` is now always accessible.
-     - In `app/api/auth/me/route.ts`: When an invalid or expired session is detected, the server actively issues `Set-Cookie: athrav_admin_session=; Max-Age=0`, immediately expunging the invalid cookie from the client.
-     - In `lib/auth-guard.ts`: Redirects unauthenticated requests to `/admin/login?reason=session_expired`.
-     - In `app/admin/login/page.tsx`: Replaced soft `router.push` with `window.location.href = destination` to guarantee clean HTTP document navigation with the newly issued cookie. Added active session detection on mount and a one-click "Fill Local Dev Credentials" button for effortless local testing.
-     - In `lib/auth.ts`: Ensured `.dev-storage/admin-users.json` is automatically saved to disk on initial load.
+---
 
-2. **CRITICAL BUG: Missing Profile Photo on About & Profile Pages**
-   - **Root Cause Identified:**
-     1. In Next.js production mode (`next start`), Next.js only registers and serves files from the `public` directory that were indexed at build time (`next build`). Any file uploaded at runtime into `public/uploads/` returned **HTTP 404 Not Found** because no App Router route handler existed to stream runtime-uploaded static assets.
-     2. In the Admin Profile UI (`app/admin/profile/page.tsx`), choosing a file had no immediate client-side preview or dedicated "Save Photo" step; it immediately executed a background fetch without giving the user feedback or confirmation.
-     3. On the About page, the portrait image had no client-side error fallback if an image URL failed to load, and the full-height gradient overlay darkened the portrait face.
-   - **Resolution Applied:**
-     1. Created dynamic App Router Route Handler [`app/uploads/[...path]/route.ts`](file:///c:/Users/Shree/Desktop/ATHRAV-PREMIUM-PORTFOLIO/app/uploads/[...path]/route.ts) with path traversal protection, streaming files directly from `public/uploads/` with correct MIME types (`image/png`, `image/jpeg`, `image/webp`), content lengths, and caching headers (`Cache-Control: public, max-age=31536000, immutable`). The user's uploaded 1.91 MB photo now returns **HTTP 200** instantly.
-     2. Created [`components/public/ProfilePortrait.tsx`](file:///c:/Users/Shree/Desktop/ATHRAV-PREMIUM-PORTFOLIO/components/public/ProfilePortrait.tsx) featuring:
-        - Automatic fallback on image failure (`onError`), gracefully reverting to the stylized avatar badge without broken icons or gaps.
-        - Unobstructed portrait visibility with gradient strictly placed at the bottom text container.
-        - Sizing preserved at 1:1 aspect ratio (`aspect-square`) with `object-cover object-center`.
-     3. Redesigned Admin Profile Photo Management in [`app/admin/profile/page.tsx`](file:///c:/Users/Shree/Desktop/ATHRAV-PREMIUM-PORTFOLIO/app/admin/profile/page.tsx):
-        - Selecting a photo immediately displays a client-side preview (`previewUrl`) and an "Unsaved Photo" badge.
-        - Provides a prominent **"Save Photo Now"** button with Save icon and upload progress indicator.
-        - Provides a **"Cancel Selection"** button.
-        - Automatic upload on main form submission if an unsaved photo is pending.
-        - Provides an active path display and direct URL input field for complete transparency.
-     4. Integrated the profile photo in the Hero status badge and About section on [`app/page.tsx`](file:///c:/Users/Shree/Desktop/ATHRAV-PREMIUM-PORTFOLIO/app/page.tsx).
+### Phase 1 & 2: Critical Bug Fixes (Admin Panel & Profile Photo)
+
+1. **Admin Panel Accessibility & Navigation**
+   - **Root Cause:** A recursive interaction existed between `middleware.ts` and Server Component session validation in `requireAdminPage()` (`lib/auth-guard.ts`). When an expired or unauthenticated cookie was present, an infinite redirect loop (`ERR_TOO_MANY_REDIRECTS`) occurred between `/admin` and `/admin/login`.
+   - **Fix:**
+     - Removed blind redirect on `/admin/login` in `middleware.ts`.
+     - In `app/api/auth/me/route.ts`: Actively clears invalid cookies via `Set-Cookie: athrav_admin_session=; Max-Age=0`.
+     - In `lib/auth-guard.ts`: Cleanly redirects to `/admin/login?reason=session_expired`.
+     - In `app/admin/login/page.tsx`: Replaced soft `router.push` with `window.location.href = destination` to guarantee clean HTTP document navigation with the fresh cookie. Added one-click dev credentials auto-fill.
+     - Verified: All 16 admin routes load without hang or infinite redirect.
+
+2. **Profile Photo Upload, Persistence, & Display**
+   - **Root Cause:**
+     1. In Next.js production mode (`next start`), runtime uploads into `public/uploads/` returned 404 because Next.js only registers static files present at build time.
+     2. In Admin Profile UI, selecting a file lacked preview feedback and dedicated save control.
+   - **Fix:**
+     1. Created dynamic App Router Route Handler `app/uploads/[...path]/route.ts` with path-traversal protection, streaming runtime images with appropriate MIME types (`image/png`, `image/jpeg`, `image/webp`) and caching headers.
+     2. Created `components/public/ProfilePortrait.tsx` with graceful error fallback to stylized badge.
+     3. Upgraded `app/admin/profile/page.tsx` with immediate client-side preview, "Save Photo Now", upload progress, and "Cancel Selection".
+     4. Verified: User's uploaded portrait (`/uploads/profile-1793013930445-d7f4837227f112de8d472f17.png`, 1.99 MB) returns HTTP 200 and renders on Homepage and About page.
+
+---
+
+### Phase 3: Forest Green + Warm Cream Visual Identity & 3D Redesign
+
+1. **Color Palette**
+   - **Warm Cream (`#F5F0E6`):** Primary page background, organic softness.
+   - **Deep Forest Green (`#183D32`):** Primary headings, body typography, action buttons, footer surface.
+   - **Muted Sage (`#A8B9A0`):** Subdued borders, badges, tags, subtle rim highlights.
+   - **Soft Ivory (`#FFFDF7`):** Card surfaces, panels, modal dropdowns.
+   - **Muted Champagne Gold (`#B49A68`):** Metallic orbital rings, featured markers, credential badges.
+   - **Strictly Excluded:** Neon blues, purples, cyans, pinks, electric gradients, glowing borders, and gaming-style particles.
+
+2. **Interactive 3D Hero Centerpiece**
+   - **Components:** `components/public/Hero3DScene.tsx`, `components/public/HeroFallback.tsx`, `components/public/Hero3DClient.tsx`.
+   - **Orb Centerpiece:** Emerald-green physical glass sphere (`MeshPhysicalMaterial`: `roughness={0.12}`, `transmission={0.88}`, `thickness={1.3}`, `ior={1.52}`, `clearcoat={1.0}`, `color="#183D32"`).
+   - **Internal Core:** Delicate geometric facet with brushed champagne wireframe (`#B49A68`) adding realistic optical depth as light refracts.
+   - **Orbital Rings:**
+     - Ring 1: Brushed Champagne Gold metal (`#B49A68`, `metalness={0.88}`).
+     - Ring 2: Muted Sage metal (`#A8B9A0`, `metalness={0.82}`).
+     - Ring 3: Delicate Champagne Accent (`#CDB78C`, `metalness={0.9}`).
+   - **Studio Lighting:** Three warm directional studio lights (`#FFFDF7`), soft sage rim light (`#A8B9A0`), and subtle champagne fill (`#B49A68`).
+   - **Parallax & Motion:** Gentle rotation with subtle mouse-responsive damping (`THREE.MathUtils.damp`), with reduced-motion accessibility support.
+   - **Fallback:** Pure CSS/SVG emerald glass orb with sage and champagne brushed rings and contact shadow on floor.
+
+3. **Homepage Layout (Two-Column Balanced Composition)**
+   - **Left Column:**
+     - Eyebrow Badge: `Aspiring AI Engineer • BCA 2nd Year`
+     - Heading: `ATHRAV PATHAK` (Deep Forest Green, bold, tracking-tight)
+     - Subtitle: `Aspiring AI Engineer` (Brushed Champagne Gold)
+     - Professional Introduction: Focus on machine learning algorithms, neural network foundations, and modern software engineering.
+     - Athrav's Actual Profile Photo: Integrated card display with verified portrait.
+     - Primary Actions: "Explore Projects" (`bg-forest text-ivory`) & "Contact Me" (`border border-cream-300 text-forest`).
+   - **Right Column:**
+     - Interactive 3D Emerald Centerpiece with studio lighting.
+   - **Preview Sections:**
+     - About & Career Vision Preview
+     - 3D Interactive Spatial Showcase (`Showcase3DClient`)
+     - Technical Capabilities & Tooling (`SkillBadge`)
+     - Featured Projects (`ProjectCard`)
+     - Formal Education (`BCA Year 2`) & Internship Experience
+     - Certifications & Coursework (`CertificateCard`)
+     - What I Build (`Services`)
+     - Contact Call to Action with GitHub link
+
+4. **Public Subpages & Shared Elements Updated**
+   - `Navbar`: Warm Cream / Soft Ivory surface with fine `#D8CEBD` border, Deep Forest Green links, active pill, mobile menu drawer.
+   - `Footer`: Deep Forest Green background (`#183D32`) with Soft Ivory headings, Warm Cream text, Muted Sage navigation links, and Champagne accents.
+   - `About` (`/about`): Complete narrative biography, context facts, and profile portrait card.
+   - `Projects` (`/projects` & `[slug]`): Soft Ivory cards, Muted Sage tech pills, Deep Forest headings, and detailed system architecture case studies.
+   - `Education` (`/education`): Academic progression timeline with Forest Green and Champagne nodes.
+   - `Skills` (`/skills`): Categorized matrix across 6 technical categories with proficiency indicators.
+   - `Certifications` (`/certifications` & `[slug]`): Soft Ivory cards with draft transparency notices and credential verification links.
+   - `Experience` (`/experience`): Internship program details and scope checklists.
+   - `Achievements` (`/achievements`): Timeline milestones and 2026 growth objectives.
+   - `Services` (`/services`): Prototyping and engineering capabilities.
+   - `Contact` (`/contact`): Contact information sidebar and secure contact form.
+
+5. **Admin Panel Redesign**
+   - `AdminSidebar`: Deep Forest Green sidebar with Soft Ivory active navigation states, champagne icons, and profile status.
+   - `Admin Layout`: Warm Cream surface, subtle Dev Mode banner, polished spacing.
+   - `Admin Login` (`/admin/login`): Soft Ivory surface, Forest Green button, auto-fill dev credentials button.
+   - `Admin Overview` (`/admin`): Metrics grid, database status banner, recent inquiries, and security audit stream.
+   - `Admin Profile` (`/admin/profile`): Immediate photo preview, "Save Photo Now", upload progress, and profile details form.
 
 ---
 
 ### Verification Summary
 - **TypeScript:** `tsc --noEmit` passed with 0 errors.
-- **Test Suite:** 6 test suites passed, 30/30 unit & integration tests passed.
+- **Vitest Test Suite:** 6 test suites passed, 30/30 unit & integration tests passed.
 - **Production Build:** `next build` compiled 51/51 routes with exit code 0.
 - **Port:** Server is running live on `http://localhost:4280`.
-- **Uploaded Photo:** User's 1.91 MB photo (`/uploads/profile-1793011002853-4cd66c3553f51a9757e9982b.png`) is active and verified returning HTTP 200.
+- **Active Profile Photo:** `http://localhost:4280/uploads/profile-1793013930445-d7f4837227f112de8d472f17.png` verified returning HTTP 200 (1.99 MB).
+- **Admin Authentication:** Verified returning HTTP 200 with session cookie and granting access to `/admin`.
+
+---
 
 ### Local Admin Credentials
 - **Username / Identifier:** `athrav_admin` (or `admin@athravpathak.dev`)
 - **Password:** `ReplaceWithStrongPassword123!`
-- **Shortcut:** Click the "Fill Local Dev Credentials" button on `/admin/login`.
+- **Shortcut:** Click the "Fill Local Dev Credentials (athrav_admin)" button on `/admin/login`.
