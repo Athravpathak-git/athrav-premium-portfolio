@@ -59,6 +59,7 @@ function getInitialDevStore() {
       url: string;
       storageProvider: string;
       altText?: string;
+      description?: string;
       category: string;
       createdAt: string;
     }[],
@@ -1594,6 +1595,7 @@ export async function createMediaRecord(data: {
   url: string;
   storageProvider?: string;
   altText?: string;
+  description?: string;
   category?: string;
 }) {
   const item = {
@@ -1605,6 +1607,7 @@ export async function createMediaRecord(data: {
     url: data.url,
     storageProvider: data.storageProvider || 'local',
     altText: data.altText,
+    description: data.description,
     category: data.category || 'general',
     createdAt: new Date().toISOString(),
   };
@@ -1634,6 +1637,191 @@ export async function createMediaRecord(data: {
   devStore.mediaItems.unshift(item);
   persistDevStore();
   return item;
+}
+
+export async function getMediaItemById(id: string) {
+  if (isDatabaseAvailable()) {
+    try {
+      const item = await getPrisma().mediaItem.findUnique({ where: { id } });
+      if (item) {
+        return {
+          id: item.id,
+          filename: item.filename,
+          originalName: item.originalName,
+          mimeType: item.mimeType,
+          sizeBytes: item.sizeBytes,
+          url: item.url,
+          storageProvider: item.storageProvider,
+          altText: item.altText || undefined,
+          category: item.category,
+          createdAt: item.createdAt.toISOString(),
+        };
+      }
+    } catch (err) {
+      console.warn('[DataService] Prisma getMediaItemById error:', err);
+    }
+  }
+  return devStore.mediaItems.find((m) => m.id === id) || null;
+}
+
+export async function updateMediaRecord(
+  id: string,
+  updates: {
+    originalName?: string;
+    altText?: string;
+    description?: string;
+    category?: string;
+    url?: string;
+    filename?: string;
+    mimeType?: string;
+    sizeBytes?: number;
+  }
+) {
+  if (isDatabaseAvailable()) {
+    try {
+      const dataToUpdate: any = {};
+      if (updates.originalName !== undefined) dataToUpdate.originalName = updates.originalName;
+      if (updates.altText !== undefined) dataToUpdate.altText = updates.altText;
+      if (updates.category !== undefined) dataToUpdate.category = updates.category;
+      if (updates.url !== undefined) dataToUpdate.url = updates.url;
+      if (updates.filename !== undefined) dataToUpdate.filename = updates.filename;
+      if (updates.mimeType !== undefined) dataToUpdate.mimeType = updates.mimeType;
+      if (updates.sizeBytes !== undefined) dataToUpdate.sizeBytes = updates.sizeBytes;
+
+      const updated = await getPrisma().mediaItem.update({
+        where: { id },
+        data: dataToUpdate,
+      });
+      return {
+        id: updated.id,
+        filename: updated.filename,
+        originalName: updated.originalName,
+        mimeType: updated.mimeType,
+        sizeBytes: updated.sizeBytes,
+        url: updated.url,
+        storageProvider: updated.storageProvider,
+        altText: updated.altText || undefined,
+        category: updated.category,
+        createdAt: updated.createdAt.toISOString(),
+      };
+    } catch (err) {
+      console.warn('[DataService] Prisma updateMediaRecord error:', err);
+    }
+  }
+
+  const idx = devStore.mediaItems.findIndex((m) => m.id === id);
+  if (idx === -1) {
+    throw new Error('Media asset not found.');
+  }
+
+  const current = devStore.mediaItems[idx];
+  const updated = {
+    ...current,
+    originalName: updates.originalName !== undefined ? updates.originalName : current.originalName,
+    altText: updates.altText !== undefined ? updates.altText : current.altText,
+    description: updates.description !== undefined ? updates.description : current.description,
+    category: updates.category !== undefined ? updates.category : current.category,
+    url: updates.url !== undefined ? updates.url : current.url,
+    filename: updates.filename !== undefined ? updates.filename : current.filename,
+    mimeType: updates.mimeType !== undefined ? updates.mimeType : current.mimeType,
+    sizeBytes: updates.sizeBytes !== undefined ? updates.sizeBytes : current.sizeBytes,
+  };
+
+  devStore.mediaItems[idx] = updated;
+  persistDevStore();
+  return updated;
+}
+
+export async function deleteMediaRecord(id: string) {
+  if (isDatabaseAvailable()) {
+    try {
+      await getPrisma().mediaItem.delete({ where: { id } });
+    } catch (err) {
+      console.warn('[DataService] Prisma deleteMediaRecord error:', err);
+    }
+  }
+
+  const idx = devStore.mediaItems.findIndex((m) => m.id === id);
+  if (idx !== -1) {
+    const deleted = devStore.mediaItems.splice(idx, 1)[0];
+    persistDevStore();
+    return { success: true, item: deleted };
+  }
+  return { success: true };
+}
+
+export interface MediaReference {
+  type: 'profile' | 'project' | 'certification';
+  title: string;
+  location: string;
+}
+
+export function checkMediaReferences(urlOrFilename: string): MediaReference[] {
+  if (!urlOrFilename) return [];
+
+  const clean = urlOrFilename.split('?')[0];
+  const filename = clean.split('/').pop() || clean;
+  const references: MediaReference[] = [];
+
+  // Check Profile
+  const avatar = devStore.profile.avatarUrl;
+  if (avatar && (avatar === clean || avatar.includes(filename))) {
+    references.push({
+      type: 'profile',
+      title: devStore.profile.name || 'Author Profile',
+      location: 'Primary Profile Photo / Avatar',
+    });
+  }
+
+  // Check Projects
+  for (const proj of devStore.projects) {
+    if (proj.imageUrl && (proj.imageUrl === clean || proj.imageUrl.includes(filename))) {
+      references.push({
+        type: 'project',
+        title: proj.title,
+        location: 'Project Featured Image',
+      });
+    }
+    if (Array.isArray(proj.screenshots)) {
+      for (const img of proj.screenshots) {
+        if (img === clean || img.includes(filename)) {
+          references.push({
+            type: 'project',
+            title: proj.title,
+            location: 'Project Screenshot Gallery',
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  // Check Certifications
+  for (const cert of devStore.certifications) {
+    if (cert.imageUrl && (cert.imageUrl === clean || cert.imageUrl.includes(filename))) {
+      references.push({
+        type: 'certification',
+        title: cert.title,
+        location: 'Certificate Badge Image',
+      });
+    }
+    if (cert.pdfUrl && (cert.pdfUrl === clean || cert.pdfUrl.includes(filename))) {
+      references.push({
+        type: 'certification',
+        title: cert.title,
+        location: 'Certificate PDF Document',
+      });
+    }
+    if (cert.credentialUrl && (cert.credentialUrl === clean || cert.credentialUrl.includes(filename))) {
+      references.push({
+        type: 'certification',
+        title: cert.title,
+        location: 'Credential Verification URL',
+      });
+    }
+  }
+
+  return references;
 }
 
 export async function getSettings(): Promise<Record<string, string>> {

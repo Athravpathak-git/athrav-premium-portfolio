@@ -18,12 +18,15 @@ const USERS_FILE = path.join(DEV_STORAGE_DIR, 'admin-users.json');
 // In-memory mock session and user store when database is not configured
 export interface MockAdmin {
   id: string;
+  name?: string;
   email: string;
   username: string;
   passwordHash: string;
   role: 'SUPER_ADMIN' | 'ADMIN';
   status: 'ACTIVE' | 'SUSPENDED';
   mustChangePassword?: boolean;
+  createdAt?: string;
+  lastLoginAt?: string | null;
 }
 
 interface StoredSession {
@@ -97,12 +100,14 @@ const defaultHash = crypto.scryptSync('ReplaceWithStrongPassword123!', defaultSa
 const initialMockAdminUsers: MockAdmin[] = [
   {
     id: 'admin-super-1',
+    name: 'Athrav Pathak',
     email: process.env.INITIAL_ADMIN_EMAIL || 'admin@athravpathak.dev',
     username: process.env.INITIAL_ADMIN_USERNAME || 'athrav_admin',
     passwordHash: `scrypt:${defaultSalt}:${defaultHash}`,
     role: 'SUPER_ADMIN',
     status: 'ACTIVE',
     mustChangePassword: false,
+    createdAt: '2025-01-01T00:00:00.000Z',
   },
 ];
 
@@ -434,6 +439,344 @@ export async function changeAdminPassword(userId: string, newPassword: string): 
   return true;
 }
 
+export function validatePasswordStrength(password: string): { valid: boolean; error?: string } {
+  if (!password || typeof password !== 'string') {
+    return { valid: false, error: 'Password is required.' };
+  }
+  if (password.length < 8) {
+    return { valid: false, error: 'Password must be at least 8 characters in length.' };
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, error: 'Password must include at least one uppercase letter (A-Z).' };
+  }
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, error: 'Password must include at least one lowercase letter (a-z).' };
+  }
+  if (!/[0-9]/.test(password) && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+    return { valid: false, error: 'Password must include at least one number (0-9) or symbol.' };
+  }
+  return { valid: true };
+}
+
+export async function createAdminUser(data: {
+  name?: string;
+  username: string;
+  email: string;
+  password: string;
+  role?: 'SUPER_ADMIN' | 'ADMIN';
+  status?: 'ACTIVE' | 'SUSPENDED';
+}) {
+  const cleanUsername = data.username.trim().toLowerCase();
+  const cleanEmail = data.email.trim().toLowerCase();
+  const cleanName = data.name?.trim() || cleanUsername;
+  const role = data.role === 'SUPER_ADMIN' ? 'SUPER_ADMIN' : 'ADMIN';
+  const status = data.status === 'SUSPENDED' ? 'SUSPENDED' : 'ACTIVE';
+
+  if (!cleanUsername || cleanUsername.length < 3) {
+    throw new Error('Username must be at least 3 characters long.');
+  }
+  if (!/^[a-zA-Z0-9_-]+$/.test(cleanUsername)) {
+    throw new Error('Username can only contain alphanumeric characters, underscores, and hyphens.');
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(cleanEmail)) {
+    throw new Error('A valid email address is required.');
+  }
+
+  const pwdCheck = validatePasswordStrength(data.password);
+  if (!pwdCheck.valid) {
+    throw new Error(pwdCheck.error || 'Password does not meet security requirements.');
+  }
+
+  // Uniqueness check
+  if (isDatabaseAvailable()) {
+    try {
+      const existing = await withDbTimeout(
+        getPrisma().adminUser.findFirst({
+          where: {
+            OR: [
+              { username: { equals: cleanUsername, mode: 'insensitive' } },
+              { email: { equals: cleanEmail, mode: 'insensitive' } },
+            ],
+          },
+        })
+      );
+      if (existing) {
+        if (existing.username.toLowerCase() === cleanUsername) {
+          throw new Error(`Username "${cleanUsername}" is already registered.`);
+        }
+        throw new Error(`Email "${cleanEmail}" is already registered.`);
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && (err.message.includes('already registered') || err.message.includes('unique'))) {
+        throw err;
+      }
+    }
+  }
+
+  const mockExisting = mockAdminUsers.find(
+    (u) => u.username.toLowerCase() === cleanUsername || u.email.toLowerCase() === cleanEmail
+  );
+  if (mockExisting) {
+    if (mockExisting.username.toLowerCase() === cleanUsername) {
+      throw new Error(`Username "${cleanUsername}" is already registered.`);
+    }
+    throw new Error(`Email "${cleanEmail}" is already registered.`);
+  }
+
+  const passwordHash = await hashPassword(data.password);
+  const newId = `admin-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+  const now = new Date().toISOString();
+
+  if (isDatabaseAvailable()) {
+    try {
+      const created = await withDbTimeout(
+        getPrisma().adminUser.create({
+          data: {
+            id: newId,
+            username: cleanUsername,
+            email: cleanEmail,
+            passwordHash,
+            role,
+            status,
+          },
+        })
+      );
+      return {
+        id: created.id,
+        name: cleanName,
+        username: created.username,
+        email: created.email,
+        role: created.role,
+        status: created.status,
+        createdAt: created.createdAt.toISOString(),
+        lastLoginAt: null,
+      };
+    } catch (err: unknown) {
+      console.warn('[Auth] Prisma create admin user error, falling back to local store:', err);
+      if (err instanceof Error && err.message.includes('already registered')) throw err;
+    }
+  }
+
+  const newUser: MockAdmin = {
+    id: newId,
+    name: cleanName,
+    username: cleanUsername,
+    email: cleanEmail,
+    passwordHash,
+    role,
+    status,
+    mustChangePassword: false,
+    createdAt: now,
+    lastLoginAt: null,
+  };
+
+  mockAdminUsers.push(newUser);
+  saveDevUsers(mockAdminUsers);
+
+  return {
+    id: newUser.id,
+    name: newUser.name,
+    username: newUser.username,
+    email: newUser.email,
+    role: newUser.role,
+    status: newUser.status,
+    createdAt: newUser.createdAt,
+    lastLoginAt: null,
+  };
+}
+
+export async function updateAdminUser(
+  id: string,
+  updates: {
+    name?: string;
+    username?: string;
+    email?: string;
+    role?: 'SUPER_ADMIN' | 'ADMIN';
+    status?: 'ACTIVE' | 'SUSPENDED';
+    password?: string;
+  },
+  requesterId?: string
+) {
+  let existingUser = mockAdminUsers.find((u) => u.id === id);
+
+  if (isDatabaseAvailable()) {
+    try {
+      const dbUser = await withDbTimeout(getPrisma().adminUser.findUnique({ where: { id } }));
+      if (dbUser) {
+        existingUser = {
+          id: dbUser.id,
+          name: existingUser?.name || dbUser.username,
+          username: dbUser.username,
+          email: dbUser.email,
+          passwordHash: dbUser.passwordHash,
+          role: dbUser.role as 'SUPER_ADMIN' | 'ADMIN',
+          status: dbUser.status as 'ACTIVE' | 'SUSPENDED',
+          mustChangePassword: dbUser.mustChangePassword,
+          createdAt: dbUser.createdAt.toISOString(),
+          lastLoginAt: dbUser.lastLoginAt?.toISOString() || null,
+        };
+      }
+    } catch (err) {
+      console.warn('[Auth] Prisma user lookup for update error:', err);
+    }
+  }
+
+  if (!existingUser) {
+    throw new Error('Administrator account not found.');
+  }
+
+  // Check username uniqueness if changed
+  if (updates.username && updates.username.trim().toLowerCase() !== existingUser.username.toLowerCase()) {
+    const cleanUsername = updates.username.trim().toLowerCase();
+    if (cleanUsername.length < 3 || !/^[a-zA-Z0-9_-]+$/.test(cleanUsername)) {
+      throw new Error('Username can only contain alphanumeric characters, underscores, and hyphens (min 3 chars).');
+    }
+    const duplicate = mockAdminUsers.find((u) => u.id !== id && u.username.toLowerCase() === cleanUsername);
+    if (duplicate) {
+      throw new Error(`Username "${cleanUsername}" is already taken.`);
+    }
+    existingUser.username = cleanUsername;
+  }
+
+  // Check email uniqueness if changed
+  if (updates.email && updates.email.trim().toLowerCase() !== existingUser.email.toLowerCase()) {
+    const cleanEmail = updates.email.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      throw new Error('A valid email address is required.');
+    }
+    const duplicate = mockAdminUsers.find((u) => u.id !== id && u.email.toLowerCase() === cleanEmail);
+    if (duplicate) {
+      throw new Error(`Email "${cleanEmail}" is already in use.`);
+    }
+    existingUser.email = cleanEmail;
+  }
+
+  if (updates.name !== undefined) {
+    existingUser.name = updates.name.trim();
+  }
+
+  // Safeguard: Check if attempting to deactivate or demote the last active super admin
+  if (
+    (updates.status === 'SUSPENDED' && existingUser.status === 'ACTIVE') ||
+    (updates.role === 'ADMIN' && existingUser.role === 'SUPER_ADMIN')
+  ) {
+    const activeSuperAdmins = mockAdminUsers.filter(
+      (u) => u.role === 'SUPER_ADMIN' && u.status === 'ACTIVE'
+    );
+    if (activeSuperAdmins.length <= 1 && activeSuperAdmins.some((u) => u.id === id)) {
+      throw new Error('Safety protection: Cannot demote or suspend the last active super administrator.');
+    }
+  }
+
+  if (updates.role) {
+    existingUser.role = updates.role;
+  }
+  if (updates.status) {
+    existingUser.status = updates.status;
+  }
+
+  let passwordChanged = false;
+  if (updates.password && updates.password.trim().length > 0) {
+    const pwdCheck = validatePasswordStrength(updates.password);
+    if (!pwdCheck.valid) {
+      throw new Error(pwdCheck.error || 'Password does not meet complexity requirements.');
+    }
+    existingUser.passwordHash = await hashPassword(updates.password);
+    passwordChanged = true;
+  }
+
+  if (isDatabaseAvailable()) {
+    try {
+      const dbData: any = {
+        username: existingUser.username,
+        email: existingUser.email,
+        role: existingUser.role,
+        status: existingUser.status,
+      };
+      if (passwordChanged) {
+        dbData.passwordHash = existingUser.passwordHash;
+      }
+      await withDbTimeout(
+        getPrisma().adminUser.update({
+          where: { id },
+          data: dbData,
+        })
+      );
+    } catch (err) {
+      console.warn('[Auth] Prisma user update error:', err);
+    }
+  }
+
+  const memIdx = mockAdminUsers.findIndex((u) => u.id === id);
+  if (memIdx !== -1) {
+    mockAdminUsers[memIdx] = { ...existingUser };
+  } else {
+    mockAdminUsers.push(existingUser);
+  }
+  saveDevUsers(mockAdminUsers);
+
+  if (passwordChanged) {
+    await invalidateAllUserSessions(id);
+  }
+
+  return {
+    id: existingUser.id,
+    name: existingUser.name || existingUser.username,
+    username: existingUser.username,
+    email: existingUser.email,
+    role: existingUser.role,
+    status: existingUser.status,
+    createdAt: existingUser.createdAt || new Date().toISOString(),
+    lastLoginAt: existingUser.lastLoginAt || null,
+  };
+}
+
+export async function deleteAdminUser(id: string, currentAdminId: string) {
+  if (id === currentAdminId) {
+    throw new Error('Self-deletion lockout: You cannot delete your own administrative account while logged in.');
+  }
+
+  const user = mockAdminUsers.find((u) => u.id === id);
+  if (!user) {
+    throw new Error('Administrator account not found.');
+  }
+
+  // Active admin check
+  const activeAdmins = mockAdminUsers.filter((u) => u.status === 'ACTIVE');
+  if (user.status === 'ACTIVE' && activeAdmins.length <= 1) {
+    throw new Error('Safety protection: Cannot delete the last active administrator.');
+  }
+
+  // Super admin check
+  if (user.role === 'SUPER_ADMIN') {
+    const activeSuperAdmins = mockAdminUsers.filter((u) => u.role === 'SUPER_ADMIN' && u.status === 'ACTIVE');
+    if (activeSuperAdmins.length <= 1) {
+      throw new Error('Safety protection: Cannot delete the last active super administrator.');
+    }
+  }
+
+  if (isDatabaseAvailable()) {
+    try {
+      await withDbTimeout(getPrisma().adminUser.delete({ where: { id } }));
+    } catch (err) {
+      console.warn('[Auth] Prisma user delete error:', err);
+    }
+  }
+
+  await invalidateAllUserSessions(id);
+
+  const idx = mockAdminUsers.findIndex((u) => u.id === id);
+  if (idx !== -1) {
+    mockAdminUsers.splice(idx, 1);
+    saveDevUsers(mockAdminUsers);
+  }
+
+  return { success: true };
+}
+
 export async function getAllAdminUsers() {
   if (isDatabaseAvailable()) {
     try {
@@ -451,11 +794,19 @@ export async function getAllAdminUsers() {
           orderBy: { createdAt: 'asc' },
         })
       );
-      return users.map((u) => ({
-        ...u,
-        createdAt: u.createdAt.toISOString(),
-        lastLoginAt: u.lastLoginAt?.toISOString() || null,
-      }));
+      return users.map((u) => {
+        const mem = mockAdminUsers.find((m) => m.id === u.id);
+        return {
+          id: u.id,
+          name: mem?.name || (u.username === 'athrav_admin' ? 'Athrav Pathak' : u.username),
+          email: u.email,
+          username: u.username,
+          role: u.role,
+          status: u.status,
+          createdAt: u.createdAt.toISOString(),
+          lastLoginAt: u.lastLoginAt?.toISOString() || null,
+        };
+      });
     } catch (err) {
       console.warn('[Auth] Prisma get all users error:', err);
     }
@@ -463,11 +814,12 @@ export async function getAllAdminUsers() {
 
   return mockAdminUsers.map((u) => ({
     id: u.id,
+    name: u.name || (u.username === 'athrav_admin' ? 'Athrav Pathak' : u.username),
     email: u.email,
     username: u.username,
     role: u.role,
     status: u.status,
-    createdAt: new Date().toISOString(),
-    lastLoginAt: null,
+    createdAt: u.createdAt || '2025-01-01T00:00:00.000Z',
+    lastLoginAt: u.lastLoginAt || null,
   }));
 }

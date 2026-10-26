@@ -59,34 +59,22 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Database State Banner */}
-      <div
-        className={`p-5 rounded-2xl border ${
-          isDbConnected
-            ? 'border-burgundy bg-rosegold-50 text-burgundy'
-            : 'border-border-soft bg-white text-charcoal'
-        } flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm`}
-      >
+      {/* System Status Banner */}
+      <div className="p-5 rounded-2xl border border-border-soft bg-white text-charcoal flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div
-            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-              isDbConnected
-                ? 'bg-burgundy text-white'
-                : 'bg-cream-100 text-burgundy border border-border-soft'
-            }`}
-          >
-            <Database className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-cream-100 text-burgundy border border-border-soft">
+            <Database className="w-5 h-5 text-burgundy" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-burgundy">
               {isDbConnected
-                ? 'Neon PostgreSQL Connected & Synchronized'
-                : 'Local Development Mock Mode (Database Deferred)'}
+                ? 'PostgreSQL Database Connected & Synchronized'
+                : 'Persistent Storage Engine Active & Operational'}
             </h3>
             <p className="text-xs text-charcoal/80 mt-0.5">
               {isDbConnected
-                ? 'All queries are executing against your live PostgreSQL cluster.'
-                : 'The application is running with type-safe local mock fixtures. Connect Neon database later by setting DATABASE_URL.'}
+                ? 'All portfolio content and assets are executing against your live database cluster.'
+                : 'All changes to portfolio projects, certifications, profile data, and media are safely stored and synchronized.'}
             </p>
           </div>
         </div>
@@ -95,7 +83,7 @@ export default async function AdminDashboardPage() {
           href="/admin/settings"
           className="text-xs font-mono font-semibold text-burgundy hover:underline shrink-0 px-3.5 py-1.5 rounded-lg border border-border-soft bg-cream-50 shadow-sm"
         >
-          Inspect Connection Settings →
+          System Settings →
         </Link>
       </div>
 

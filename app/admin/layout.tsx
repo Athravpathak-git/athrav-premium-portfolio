@@ -1,7 +1,6 @@
 import React from 'react';
 import { getCurrentAdmin } from '@/lib/auth-guard';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
-import { DevModeBanner } from '@/components/public/DevModeBanner';
 
 export default async function AdminLayout({
   children,
@@ -17,7 +16,6 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen bg-cream text-charcoal flex flex-col transition-colors">
-      <DevModeBanner />
       <div className="flex-1 flex">
         <AdminSidebar user={current.user} />
         <main className="flex-1 p-6 sm:p-10 overflow-y-auto max-w-7xl mx-auto w-full">

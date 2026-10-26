@@ -224,7 +224,7 @@ export default function AdminSettingsPage() {
           <li>Set <code className="text-silver-300 font-mono">DATABASE_URL</code> and <code className="text-silver-300 font-mono">DIRECT_URL</code> in your <code className="text-silver-300 font-mono">.env.local</code>.</li>
           <li>Run <code className="text-silver-300 font-mono">npm run prisma:deploy</code> or <code className="text-silver-300 font-mono">npx prisma migrate deploy</code>.</li>
           <li>Run <code className="text-silver-300 font-mono">npm run seed:admin</code> with your environment credentials to insert your super admin.</li>
-          <li>Restart Next.js. The app will immediately switch from dev mock mode to live Neon persistence!</li>
+          <li>Restart Next.js. The app will immediately switch to live Neon PostgreSQL persistence!</li>
         </ol>
       </div>
     </div>

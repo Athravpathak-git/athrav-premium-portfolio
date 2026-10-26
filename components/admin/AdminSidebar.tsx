@@ -37,7 +37,7 @@ const ADMIN_NAV = [
   { name: 'Homepage Sections', href: '/admin/homepage', icon: Sliders },
   { name: 'Media Library', href: '/admin/media', icon: Image },
   { name: 'Messages', href: '/admin/messages', icon: Inbox },
-  { name: 'Admin Users', href: '/admin/users', icon: Users },
+  { name: 'Admin Management', href: '/admin/users', icon: Users },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { name: 'Security Audit', href: '/admin/security', icon: ShieldAlert },
   { name: 'Settings', href: '/admin/settings', icon: Settings },

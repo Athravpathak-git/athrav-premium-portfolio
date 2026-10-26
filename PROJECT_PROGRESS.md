@@ -83,12 +83,69 @@ The portfolio has undergone a complete, bespoke visual redesign into a luxury ed
 
 ---
 
-### Phase 5: Verification & Testing Results
+### Phase 6: Admin UI Cleanup, Dedicated Admin Management & Enhanced Media Library
+1. **Unwanted Development Messages & Controls Removed**
+   - Removed `<DevModeBanner />` from `app/admin/layout.tsx`.
+   - Neutralized `components/public/DevModeBanner.tsx` to return `null`.
+   - Removed `fillDevCredentials` autofill shortcut button from `app/admin/login/page.tsx`.
+   - Removed hardcoded default credentials hints (`Default credentials: athrav_admin / ReplaceWithStrongPassword123!`).
+   - Cleaned up username input placeholder to `"Enter your username or email"`.
+   - Replaced database mock mode banner in `app/admin/page.tsx` with an executive System Status banner (`Storage System: Active & Operational`).
+   - Cleaned up setting instructions in `app/admin/settings/page.tsx`.
+   - Verified 0 remaining occurrences of `DEV MOCK MODE`, `Safe local JSON store active`, or `Default credentials` in any UI.
+
+2. **Dedicated Admin Management (`/admin/users`)**
+   - Added `Admin Management` navigation link in `components/admin/AdminSidebar.tsx`.
+   - Added backend API handlers (`GET`, `POST`, `PUT`, `DELETE`) in `app/api/admin/users/route.ts` and `app/api/admin/users/[id]/route.ts`.
+   - Password strength validation: enforces minimum 8 characters, uppercase, lowercase, and number/symbol.
+   - Secure server-side hashing with Argon2id and cryptographically secure scrypt fallback. Never exposes password hashes in any API responses.
+   - Uniqueness validation for username and email.
+   - Role management (`SUPER_ADMIN` and `ADMIN`) and account status (`ACTIVE` and `SUSPENDED`).
+   - Built complete `Admin Management` UI in `app/admin/users/page.tsx`:
+     - Metrics overview (Total Admins, Super Admins, Standard Admins).
+     - Search filter bar (by name, username, email, role).
+     - Responsive administrator table with role badges, status indicators, and actions.
+     - Add Administrator modal with client and server validation.
+     - Edit Administrator modal.
+     - Reset / Change Password modal with session invalidation.
+     - Delete Administrator confirmation dialog with critical safeguards:
+       - Self-deletion lockout prevention (cannot delete currently logged in account).
+       - Last active administrator protection (cannot delete last active admin or super admin).
+
+3. **Enhanced Media & Asset Library (`/admin/media`)**
+   - Redesigned `app/admin/media/page.tsx` with responsive asset grid and lightbox quick view.
+   - Multi-category filtering: `All`, `Profile`, `Project`, `Certification`, `General`.
+   - File type filtering: `All`, `Images Only`, `PDF / Documents`.
+   - Sorting by: Newest First, Oldest First, Alphabetical, File Size.
+   - Comprehensive asset cards:
+     - Visual preview with hover zoom and click-to-preview lightbox.
+     - Category pill and In-Use badge.
+     - Original filename, stored filename, formatted file size, and upload date.
+     - Active references listing (shows where each file is linked across portfolio).
+     - Action toolbar: Copy URL (with animated feedback), Edit Metadata, Open Original, Delete.
+   - Upload Media Modal:
+     - Drag-and-drop file upload with live preview and category/alt text/description inputs.
+     - External URL registration tab.
+     - Magic bytes validation and server-side file integrity checks.
+   - Edit Metadata Modal:
+     - Allows editing Title / Original Name, Category, Alt Text, and Caption.
+     - Includes "Replace Underlying File" action allowing replacement of assets while preserving portfolio references.
+   - Active Reference Safeguards:
+     - Backend reference checker (`checkMediaReferences`) scans profile photo, project thumbnails, project gallery images, certification badges, and credential documents.
+     - Delete modal displays high-visibility warning listing all referencing portfolio locations.
+     - Blocks accidental deletion with HTTP 409 Conflict unless explicit force confirmation is provided.
+     - Secure file deletion with path traversal protection.
+
+---
+
+### Phase 7: Verification & Testing Results
 - **TypeScript (`npm run typecheck`):** PASSED with 0 errors.
-- **Unit Tests (`vitest run`):** 6 test files, 30/30 tests PASSED.
-- **Production Build (`next build`):** 51/51 routes generated, PASSED with exit code 0.
-- **Automated Live Server Verification (`scripts/verify-redesign.js`):** 32/32 tests PASSED.
-  - Homepage HTTP 200 with required headlines and buttons.
-  - Real profile photo returns HTTP 200 (`image/png`, 1.99 MB).
-  - All public routes HTTP 200.
-  - Admin login API, session cookies, authenticated `/api/auth/me`, `/admin`, and `/admin/profile` all functional.
+- **Vitest Unit Tests (`npm run test`):** 7 test files, 38/38 tests PASSED with 100% success rate.
+  - Tests covering password strength, admin creation, uniqueness, self-deletion lockout, last admin protection, media reference checking, metadata updates, and safe deletion.
+- **Production Next.js Build (`npm run build`):** 51/51 routes compiled successfully.
+- **Live Server E2E Verification (`http://localhost:4280`):** 100% PASSED:
+  - All dev mock mode banners absent from login and dashboard.
+  - Admin login functional.
+  - Admin Management page and API CRUD verified.
+  - Self-deletion blocked.
+  - Media Library page and active profile reference protection verified (HTTP 409 on referenced assets).
