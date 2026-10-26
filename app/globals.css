@@ -3,15 +3,31 @@
 @tailwind utilities;
 
 :root {
-  --background: #000000;
-  --foreground: #f4f4f5;
-  --silver-glow: rgba(226, 232, 240, 0.15);
+  --background: #F5F0E6;
+  --secondary-bg: #EAE3D2;
+  --surface: #FFFDF7;
+  --surface-hover: #F8F4EC;
+  --foreground: #183D32;
+  --text-muted: #4B6359;
+  --border: #D8CEBD;
+  --border-subtle: #E8E1D3;
+  --accent-forest: #183D32;
+  --accent-sage: #A8B9A0;
+  --accent-champagne: #B49A68;
 }
 
-.light {
-  --background: #f8fafc;
-  --foreground: #09090b;
-  --silver-glow: rgba(15, 23, 42, 0.08);
+.dark {
+  --background: #0E261F;
+  --secondary-bg: #122D25;
+  --surface: #183D32;
+  --surface-hover: #225345;
+  --foreground: #FFFDF7;
+  --text-muted: #A8B9A0;
+  --border: #2A5A4C;
+  --border-subtle: #1F4539;
+  --accent-forest: #FFFDF7;
+  --accent-sage: #BDCEB7;
+  --accent-champagne: #D1BF96;
 }
 
 * {
@@ -33,44 +49,61 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom dark metallic scrollbar */
+/* Custom refined luxury scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #F5F0E6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 4px;
+  background: #A8B9A0;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #183D32;
 }
 
-/* Silver text highlight */
+/* Refined selection */
 ::selection {
-  background: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: rgba(180, 154, 104, 0.28);
+  color: #183D32;
 }
 
-/* Subtle glassmorphism card utilities */
+/* Luxury card styling */
+.luxury-card {
+  background: #FFFDF7;
+  border: 1px solid #D8CEBD;
+  border-radius: 1rem;
+}
+
+.luxury-card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.luxury-card-hover:hover {
+  background: #FFFFFF;
+  border-color: #B49A68;
+  box-shadow: 0 12px 30px -10px rgba(24, 61, 50, 0.08);
+  transform: translateY(-2px);
+}
+
 .glass-panel {
-  background: rgba(18, 19, 26, 0.65);
+  background: rgba(255, 253, 247, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid #D8CEBD;
 }
 
 .glass-panel-hover {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel-hover:hover {
-  background: rgba(24, 25, 34, 0.75);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: #B49A68;
   transform: translateY(-2px);
 }

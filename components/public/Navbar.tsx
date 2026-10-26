@@ -42,8 +42,8 @@ export function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-black/85 dark:bg-black/90 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/50 py-3'
-          : 'bg-black/40 backdrop-blur-md border-b border-white/5 py-4'
+          ? 'bg-cream-100/90 dark:bg-forest-950/90 backdrop-blur-xl border-b border-cream-300 dark:border-forest-800 shadow-md py-3'
+          : 'bg-cream-200/70 dark:bg-forest-900/60 backdrop-blur-md border-b border-cream-300/40 dark:border-forest-800/40 py-4'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,17 +51,17 @@ export function Navbar() {
           {/* Brand Logo */}
           <NextLink
             href="/"
-            className="group flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-silver-400 rounded-lg py-1 px-1.5"
+            className="group flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest rounded-lg py-1 px-1.5"
             aria-label="Athrav Pathak Homepage"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-700 via-zinc-900 to-black border border-white/20 flex items-center justify-center shadow-inner group-hover:border-white/50 transition-colors">
-              <Cpu className="w-4 h-4 text-silver-300 group-hover:text-white transition-colors" />
+            <div className="w-8 h-8 rounded-full bg-forest dark:bg-ivory border border-forest-600 dark:border-cream-300 flex items-center justify-center shadow-sm group-hover:scale-105 transition-all">
+              <Cpu className="w-4 h-4 text-ivory dark:text-forest" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold tracking-wider text-white group-hover:text-silver-200 transition-colors">
+              <span className="text-sm font-bold tracking-wider text-forest dark:text-ivory group-hover:text-forest-500 transition-colors">
                 ATHRAV PATHAK
               </span>
-              <span className="text-[10px] tracking-widest text-zinc-400 uppercase font-mono">
+              <span className="text-[10px] tracking-widest text-forest-600 dark:text-sage uppercase font-mono font-medium">
                 Aspiring AI Engineer
               </span>
             </div>
@@ -69,7 +69,7 @@ export function Navbar() {
 
           {/* Desktop Navigation Links */}
           <nav
-            className="hidden lg:flex items-center gap-0.5 bg-zinc-900/60 dark:bg-zinc-900/60 border border-white/10 rounded-full px-3 py-1.5 backdrop-blur-md shadow-inner"
+            className="hidden lg:flex items-center gap-1 bg-ivory/80 dark:bg-forest-900/80 border border-cream-300 dark:border-forest-800 rounded-full px-3 py-1.5 backdrop-blur-md shadow-sm"
             aria-label="Main Navigation"
           >
             {NAV_LINKS.map((link) => {
@@ -78,10 +78,10 @@ export function Navbar() {
                 <NextLink
                   key={link.href}
                   href={link.href}
-                  className={`text-[12px] font-medium px-2.5 py-1 rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-silver-400 ${
+                  className={`text-[12px] font-medium px-2.5 py-1 rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-forest ${
                     isActive
-                      ? 'text-white bg-white/20 shadow-sm font-semibold'
-                      : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                      ? 'text-ivory bg-forest shadow-sm font-semibold'
+                      : 'text-forest-700 dark:text-sage-100 hover:text-forest dark:hover:text-ivory hover:bg-cream-200/60 dark:hover:bg-forest-800'
                   }`}
                 >
                   {link.name}
@@ -97,7 +97,7 @@ export function Navbar() {
             {/* Admin Portal Shortcut */}
             <NextLink
               href="/admin/login"
-              className="hidden sm:inline-flex items-center gap-1 text-xs font-mono text-zinc-400 hover:text-white bg-zinc-900/60 hover:bg-zinc-800 border border-white/10 hover:border-white/20 px-3 py-1.5 rounded-full transition-all backdrop-blur-sm"
+              className="hidden sm:inline-flex items-center gap-1 text-xs font-mono text-forest dark:text-ivory bg-cream-50 dark:bg-forest-800 hover:bg-cream-200 border border-cream-300 dark:border-forest-700 px-3 py-1.5 rounded-full transition-all shadow-sm"
               title="Admin Portal"
             >
               <span>Admin</span>
@@ -108,7 +108,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg border border-white/10 bg-zinc-900/60 text-zinc-300 hover:text-white hover:border-white/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-silver-400"
+              className="lg:hidden p-2 rounded-lg border border-cream-300 dark:border-forest-800 bg-ivory dark:bg-forest-900 text-forest dark:text-ivory focus:outline-none focus-visible:ring-2 focus-visible:ring-forest"
               aria-label={mobileMenuOpen ? 'Close Navigation Menu' : 'Open Navigation Menu'}
               aria-expanded={mobileMenuOpen}
             >
@@ -120,7 +120,7 @@ export function Navbar() {
 
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-zinc-950/95 dark:bg-black/95 border-b border-white/15 px-4 pt-4 pb-6 mt-3 backdrop-blur-2xl animate-fade-in shadow-2xl">
+        <div className="lg:hidden bg-ivory dark:bg-forest-950 border-b border-cream-300 dark:border-forest-800 px-4 pt-4 pb-6 mt-3 shadow-xl animate-fade-in">
           <nav className="grid grid-cols-2 gap-2" aria-label="Mobile Navigation">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.href;
@@ -130,8 +130,8 @@ export function Navbar() {
                   href={link.href}
                   className={`text-sm px-3.5 py-2.5 rounded-xl font-medium transition-all ${
                     isActive
-                      ? 'bg-white/15 text-white font-semibold border border-white/20'
-                      : 'text-zinc-400 hover:text-white hover:bg-zinc-900 border border-transparent'
+                      ? 'bg-forest text-ivory font-semibold'
+                      : 'text-forest-700 dark:text-sage-100 hover:text-forest hover:bg-cream-200/80 dark:hover:bg-forest-900'
                   }`}
                 >
                   {link.name}
@@ -140,7 +140,7 @@ export function Navbar() {
             })}
             <NextLink
               href="/admin/login"
-              className="col-span-2 text-center text-xs font-mono text-zinc-400 hover:text-white bg-zinc-900 border border-white/10 py-2.5 rounded-xl mt-2 flex items-center justify-center gap-1.5"
+              className="col-span-2 text-center text-xs font-mono text-forest dark:text-ivory bg-cream-200 dark:bg-forest-900 border border-cream-300 dark:border-forest-800 py-2.5 rounded-xl mt-2 flex items-center justify-center gap-1.5"
             >
               <span>Admin Dashboard Portal</span>
               <ArrowUpRight className="w-3.5 h-3.5" />

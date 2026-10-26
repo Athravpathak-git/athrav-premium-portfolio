@@ -63,28 +63,28 @@ export function ContactForm() {
       </div>
 
       {status === 'success' && (
-        <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 text-sm flex items-start gap-3 animate-fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl border border-sage-500 bg-sage-50 dark:bg-forest-900 text-forest dark:text-ivory text-sm flex items-start gap-3 animate-fade-in shadow-sm">
+          <CheckCircle2 className="w-5 h-5 text-forest dark:text-sage-300 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-emerald-300">Message Delivered</p>
-            <p className="text-xs text-emerald-200/90 mt-0.5">{successMessage}</p>
+            <p className="font-bold">Message Delivered</p>
+            <p className="text-xs text-forest-700 dark:text-sage-100 mt-0.5">{successMessage}</p>
           </div>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-200 text-sm flex items-start gap-3 animate-fade-in">
-          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl border border-red-400 bg-red-50 text-red-900 text-sm flex items-start gap-3 animate-fade-in">
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-red-300">Submission Error</p>
-            <p className="text-xs text-red-200/90 mt-0.5">{errorMessage}</p>
+            <p className="font-bold">Submission Error</p>
+            <p className="text-xs text-red-700 mt-0.5">{errorMessage}</p>
           </div>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="contact_name" className="block text-xs font-mono text-zinc-300 mb-1.5">
+          <label htmlFor="contact_name" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
             Your Name *
           </label>
           <input
@@ -94,12 +94,12 @@ export function ContactForm() {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="e.g. Sarah Jenkins"
-            className="w-full bg-zinc-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-silver-400 focus:border-transparent transition-all"
+            className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
           />
         </div>
 
         <div>
-          <label htmlFor="contact_email" className="block text-xs font-mono text-zinc-300 mb-1.5">
+          <label htmlFor="contact_email" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
             Email Address *
           </label>
           <input
@@ -109,13 +109,13 @@ export function ContactForm() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="sarah@example.com"
-            className="w-full bg-zinc-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-silver-400 focus:border-transparent transition-all"
+            className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="contact_subject" className="block text-xs font-mono text-zinc-300 mb-1.5">
+        <label htmlFor="contact_subject" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
           Subject *
         </label>
         <input
@@ -125,12 +125,12 @@ export function ContactForm() {
           value={formData.subject}
           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
           placeholder="AI Internship Opportunity / Project Collaboration"
-          className="w-full bg-zinc-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-silver-400 focus:border-transparent transition-all"
+          className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
         />
       </div>
 
       <div>
-        <label htmlFor="contact_message" className="block text-xs font-mono text-zinc-300 mb-1.5">
+        <label htmlFor="contact_message" className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
           Message *
         </label>
         <textarea
@@ -140,14 +140,14 @@ export function ContactForm() {
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
           placeholder="Please share details about your inquiry, project scope, or opportunity..."
-          className="w-full bg-zinc-900/60 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-silver-400 focus:border-transparent transition-all resize-y"
+          className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all resize-y"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-gradient-to-r from-silver-100 via-silver-200 to-silver-300 hover:from-white hover:to-silver-100 text-zinc-950 font-semibold text-sm transition-all duration-200 shadow-lg shadow-white/10 disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl bg-forest hover:bg-forest-600 text-ivory font-bold text-sm transition-all duration-200 shadow-md hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {status === 'loading' ? (
           <>

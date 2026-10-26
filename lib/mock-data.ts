@@ -188,7 +188,7 @@ export const initialProfile: ProfileData = {
   email: 'athravpathak07@gmail.com',
   location: 'India',
   status: 'Open to AI & Software Internships',
-  avatarUrl: null,
+  avatarUrl: '/uploads/profile-1793013930445-d7f4837227f112de8d472f17.png',
   githubUrl: 'https://github.com/Athravpathak-git',
   linkedinUrl: null,
   twitterUrl: null,

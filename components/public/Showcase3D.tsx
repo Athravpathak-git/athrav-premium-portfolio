@@ -11,12 +11,12 @@ function InteractiveMesh({ mode }: { mode: 'solid' | 'wireframe' | 'hybrid' }) {
 
   useFrame((state, delta) => {
     if (meshRef.current) {
-      meshRef.current.rotation.x += delta * 0.4;
-      meshRef.current.rotation.y += delta * 0.6;
+      meshRef.current.rotation.x += delta * 0.35;
+      meshRef.current.rotation.y += delta * 0.5;
     }
     if (coreRef.current) {
-      coreRef.current.rotation.x -= delta * 0.5;
-      coreRef.current.rotation.z += delta * 0.5;
+      coreRef.current.rotation.x -= delta * 0.4;
+      coreRef.current.rotation.z += delta * 0.4;
     }
   });
 
@@ -25,26 +25,28 @@ function InteractiveMesh({ mode }: { mode: 'solid' | 'wireframe' | 'hybrid' }) {
       {/* Outer abstract geometric polyhedron */}
       <mesh ref={meshRef}>
         <icosahedronGeometry args={[1.5, 1]} />
-        <meshStandardMaterial
-          color="#e2e8f0"
-          metalness={0.9}
-          roughness={0.15}
+        <meshPhysicalMaterial
+          color="#183D32"
+          metalness={0.4}
+          roughness={0.2}
+          transmission={mode === 'solid' ? 0.4 : 0.8}
+          thickness={1.2}
           wireframe={mode === 'wireframe' || mode === 'hybrid'}
           transparent={mode === 'hybrid'}
-          opacity={mode === 'hybrid' ? 0.75 : 1}
+          opacity={mode === 'hybrid' ? 0.85 : 1}
         />
       </mesh>
 
-      {/* Internal energetic core */}
+      {/* Internal champagne golden core */}
       {(mode === 'hybrid' || mode === 'solid') && (
         <mesh ref={coreRef}>
-          <octahedronGeometry args={[0.8, 0]} />
+          <octahedronGeometry args={[0.85, 0]} />
           <meshStandardMaterial
-            color="#ffffff"
-            emissive="#cbd5e1"
-            emissiveIntensity={0.6}
-            metalness={0.95}
-            roughness={0.05}
+            color="#B49A68"
+            emissive="#998150"
+            emissiveIntensity={0.25}
+            metalness={0.85}
+            roughness={0.2}
           />
         </mesh>
       )}
@@ -54,93 +56,49 @@ function InteractiveMesh({ mode }: { mode: 'solid' | 'wireframe' | 'hybrid' }) {
 
 export function Showcase3D() {
   const [mode, setMode] = useState<'solid' | 'wireframe' | 'hybrid'>('hybrid');
-  const [renderError, setRenderError] = useState(false);
 
   return (
-    <div className="relative rounded-2xl border border-white/10 bg-zinc-950/80 backdrop-blur-xl p-6 sm:p-8 overflow-hidden shadow-2xl">
-      {/* Background radial gradient */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-silver-400/10 via-transparent to-transparent rounded-full blur-2xl pointer-events-none" />
-
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-        <div className="lg:max-w-md space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-white/10 bg-zinc-900/60 text-xs font-mono text-silver-300">
-            <Sparkles className="w-3.5 h-3.5 text-silver-300" />
-            <span>WebGL Real-Time Geometry</span>
-          </div>
-          <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-            Spatial 3D & Mathematical Rendering
-          </h3>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            Exploring multi-dimensional geometry, shader materials, and real-time GPU computation.
-            Interact with the geometry below by toggling rendering modes.
-          </p>
-
-          {/* Interactive Mode Switcher */}
-          <div className="pt-2 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setMode('hybrid')}
-              className={`text-xs font-mono px-3.5 py-1.5 rounded-lg border transition-all ${
-                mode === 'hybrid'
-                  ? 'border-silver-400 bg-white/15 text-white font-medium'
-                  : 'border-white/10 bg-zinc-900/60 text-zinc-400 hover:text-white'
-              }`}
-            >
-              Hybrid Wireframe
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('solid')}
-              className={`text-xs font-mono px-3.5 py-1.5 rounded-lg border transition-all ${
-                mode === 'solid'
-                  ? 'border-silver-400 bg-white/15 text-white font-medium'
-                  : 'border-white/10 bg-zinc-900/60 text-zinc-400 hover:text-white'
-              }`}
-            >
-              Metallic Solid
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('wireframe')}
-              className={`text-xs font-mono px-3.5 py-1.5 rounded-lg border transition-all ${
-                mode === 'wireframe'
-                  ? 'border-silver-400 bg-white/15 text-white font-medium'
-                  : 'border-white/10 bg-zinc-900/60 text-zinc-400 hover:text-white'
-              }`}
-            >
-              Lattice Only
-            </button>
-          </div>
+    <div className="relative rounded-2xl border border-cream-300 bg-ivory shadow-lg p-6 sm:p-8 overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 relative z-10">
+        <div>
+          <span className="text-xs font-mono text-forest-500 uppercase tracking-wider">
+            Interactive Architecture
+          </span>
+          <h3 className="text-xl font-bold text-forest">Geometric Model Inspector</h3>
         </div>
 
-        {/* 3D Canvas Box */}
-        <div className="w-full lg:w-96 h-72 sm:h-80 rounded-xl bg-black/60 border border-white/10 relative overflow-hidden flex items-center justify-center">
-          {!renderError ? (
-            <Canvas
-              camera={{ position: [0, 0, 4.5], fov: 45 }}
-              dpr={[1, 1.5]}
-              onError={() => setRenderError(true)}
+        {/* Mode Selector */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-cream-200 border border-cream-300 text-xs font-medium">
+          {(['hybrid', 'wireframe', 'solid'] as const).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              className={`px-3 py-1.5 rounded-lg capitalize transition-all ${
+                mode === m
+                  ? 'bg-forest text-ivory shadow-sm font-semibold'
+                  : 'text-forest-600 hover:text-forest hover:bg-cream-100'
+              }`}
             >
-              <ambientLight intensity={0.9} />
-              <directionalLight position={[4, 5, 4]} intensity={2.0} color="#ffffff" />
-              <pointLight position={[-3, -3, -2]} intensity={1.2} color="#94a3b8" />
-              <InteractiveMesh mode={mode} />
-            </Canvas>
-          ) : (
-            <div className="text-center p-6 space-y-2">
-              <Layers className="w-8 h-8 text-silver-400 mx-auto opacity-60" />
-              <p className="text-xs text-zinc-400 font-mono">
-                Hardware WebGL disabled. Fallback vector preview rendered.
-              </p>
-            </div>
-          )}
-
-          <div className="absolute bottom-2.5 right-3 text-[10px] font-mono text-zinc-400 flex items-center gap-1">
-            <RefreshCw className="w-2.5 h-2.5 animate-spin" />
-            <span>Interactive GPU Shaders</span>
-          </div>
+              {m}
+            </button>
+          ))}
         </div>
       </div>
+
+      <div className="w-full h-72 sm:h-80 relative rounded-xl overflow-hidden bg-cream-100/60 border border-cream-200">
+        <Canvas camera={{ position: [0, 0, 4.5], fov: 45 }}>
+          <ambientLight intensity={0.9} color="#FFFDF7" />
+          <directionalLight position={[4, 5, 4]} intensity={2.0} color="#FFFDF7" />
+          <directionalLight position={[-4, -3, -3]} intensity={1.0} color="#A8B9A0" />
+          <pointLight position={[0, 2, 2]} intensity={0.8} color="#B49A68" />
+          <InteractiveMesh mode={mode} />
+        </Canvas>
+      </div>
+
+      <p className="text-xs text-forest-600/80 mt-3 text-center font-mono">
+        Drag to inspect • Three-phase geometric state
+      </p>
     </div>
   );
 }

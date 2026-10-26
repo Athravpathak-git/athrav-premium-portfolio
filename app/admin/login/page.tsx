@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Shield, Lock, User, AlertCircle, Loader2, ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
+import { Shield, Lock, User, AlertCircle, Loader2, ArrowLeft, KeyRound } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const [identifier, setIdentifier] = useState('');
@@ -82,16 +82,13 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute w-96 h-96 rounded-full bg-silver-500/10 blur-3xl pointer-events-none -top-20" />
-
+    <div className="min-h-screen bg-cream dark:bg-forest-950 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
       <div className="max-w-md w-full space-y-8 relative z-10">
         {/* Back Link */}
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-forest-600 dark:text-sage hover:text-forest dark:hover:text-ivory transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Return to Portfolio</span>
@@ -100,35 +97,35 @@ export default function AdminLoginPage() {
 
         {/* Card Header */}
         <div className="text-center space-y-3">
-          <div className="w-14 h-14 rounded-2xl bg-zinc-900 border border-white/20 flex items-center justify-center mx-auto text-silver-300 shadow-xl shadow-black/80">
+          <div className="w-14 h-14 rounded-2xl bg-forest dark:bg-forest-900 border border-forest-600 dark:border-forest-700 flex items-center justify-center mx-auto text-champagne-300 shadow-md">
             <Shield className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-forest dark:text-ivory">
             Administrative Portal
           </h1>
-          <p className="text-xs font-mono text-zinc-400">
+          <p className="text-xs font-mono text-forest-600 dark:text-sage font-medium">
             ATHRAV PATHAK PORTFOLIO CMS • SECURE ACCESS
           </p>
         </div>
 
         {/* Login Form Box */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-950/80 backdrop-blur-2xl p-8 space-y-6 shadow-2xl">
+        <div className="rounded-2xl border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 p-8 space-y-6 shadow-xl">
           {sessionExpiredNotice && (
-            <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200 text-xs flex items-start gap-3 animate-fade-in">
-              <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl border border-champagne-400 bg-champagne-50 dark:bg-forest-800 text-forest dark:text-champagne-200 text-xs flex items-start gap-3 animate-fade-in shadow-sm">
+              <AlertCircle className="w-4 h-4 text-champagne-700 dark:text-champagne-400 shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-amber-300">Session Required</p>
-                <p className="text-amber-200/90 mt-0.5">Your administrative session has expired or is invalid. Please authenticate below to access the CMS.</p>
+                <p className="font-bold">Session Required</p>
+                <p className="text-forest-700 dark:text-sage-100 mt-0.5">Your administrative session has expired or is invalid. Please authenticate below to access the CMS.</p>
               </div>
             </div>
           )}
 
           {status === 'error' && (
-            <div className="p-4 rounded-xl border border-red-500/30 bg-red-500/10 text-red-200 text-xs flex items-start gap-3 animate-fade-in">
-              <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl border border-red-300 bg-red-50 text-red-900 text-xs flex items-start gap-3 animate-fade-in">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-red-300">Authentication Failed</p>
-                <p className="text-red-200/90 mt-0.5">{errorMessage}</p>
+                <p className="font-bold">Authentication Failed</p>
+                <p className="text-red-700 mt-0.5">{errorMessage}</p>
               </div>
             </div>
           )}
@@ -137,7 +134,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="admin_identifier"
-                className="block text-xs font-mono text-zinc-300 mb-1.5"
+                className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5"
               >
                 Username or Email
               </label>
@@ -151,16 +148,16 @@ export default function AdminLoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="admin@athravpathak.dev"
-                  className="w-full bg-zinc-900/70 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-silver-400 focus:border-transparent transition-all"
+                  className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 pl-10 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
                 />
-                <User className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" />
+                <User className="w-4 h-4 text-forest-500 dark:text-sage absolute left-3.5 top-3" />
               </div>
             </div>
 
             <div>
               <label
                 htmlFor="admin_password"
-                className="block text-xs font-mono text-zinc-300 mb-1.5"
+                className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5"
               >
                 Password
               </label>
@@ -173,16 +170,16 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-zinc-900/70 border border-white/10 rounded-xl px-4 py-2.5 pl-10 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-silver-400 focus:border-transparent transition-all"
+                  className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 pl-10 text-sm text-forest dark:text-ivory placeholder-forest-400/60 focus:outline-none focus:ring-2 focus:ring-champagne-500 transition-all"
                 />
-                <Lock className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3" />
+                <Lock className="w-4 h-4 text-forest-500 dark:text-sage absolute left-3.5 top-3" />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={status === 'loading' || status === 'checking'}
-              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-sm transition-all duration-200 shadow-xl shadow-white/10 disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+              className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-forest hover:bg-forest-600 text-ivory font-bold text-sm transition-all duration-200 shadow-md disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
               {status === 'loading' ? (
                 <>
@@ -205,17 +202,17 @@ export default function AdminLoginPage() {
             <button
               type="button"
               onClick={fillDevCredentials}
-              className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-dashed border-white/20 bg-zinc-900/50 hover:bg-zinc-900 text-silver-300 text-xs font-mono transition-colors"
+              className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg border border-dashed border-cream-400 dark:border-forest-600 bg-cream-100 dark:bg-forest-800 hover:bg-cream-200 text-forest dark:text-sage-100 text-xs font-mono transition-colors"
             >
-              <KeyRound className="w-3.5 h-3.5" />
+              <KeyRound className="w-3.5 h-3.5 text-champagne-600" />
               <span>Fill Local Dev Credentials (athrav_admin)</span>
             </button>
           </div>
 
           {/* Dev Mode Credentials Guide */}
-          <div className="pt-4 border-t border-white/10 text-center">
-            <p className="text-[11px] font-mono text-zinc-400">
-              Default credentials: <span className="text-silver-300 font-mono">athrav_admin</span> / <span className="text-silver-300 font-mono">ReplaceWithStrongPassword123!</span>
+          <div className="pt-4 border-t border-cream-300/60 dark:border-forest-800 text-center">
+            <p className="text-[11px] font-mono text-forest-600 dark:text-sage">
+              Default credentials: <span className="font-bold text-forest dark:text-champagne-300 font-mono">athrav_admin</span> / <span className="font-bold text-forest dark:text-champagne-300 font-mono">ReplaceWithStrongPassword123!</span>
             </p>
           </div>
         </div>

@@ -91,7 +91,7 @@ export default function AdminProfilePage() {
     setPreviewUrl(objectUrl);
     setStatusMsg({
       type: 'success',
-      text: `Photo selected: "${file.name}". Click "Save Photo" below to publish it to your profile.`,
+      text: `Photo selected: "${file.name}". Click "Save Photo Now" below to publish it to your profile.`,
     });
   };
 
@@ -105,25 +105,25 @@ export default function AdminProfilePage() {
     setStatusMsg(null);
   };
 
-  // Handle Photo Save (Upload to server and persist to profile)
+  // Handle Saving the Photo via Dedicated Avatar API
   const handleSavePhoto = async () => {
     if (!selectedFile) return;
 
     setUploadingPhoto(true);
-    setUploadProgress(25);
     setStatusMsg(null);
-
-    const formData = new FormData();
-    formData.append('file', selectedFile);
+    setUploadProgress(20);
 
     try {
-      setUploadProgress(60);
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      setUploadProgress(50);
       const res = await fetch('/api/admin/profile/avatar', {
         method: 'POST',
         body: formData,
       });
 
-      setUploadProgress(90);
+      setUploadProgress(80);
       const data = await res.json();
 
       if (!res.ok) {
@@ -131,12 +131,15 @@ export default function AdminProfilePage() {
       }
 
       setUploadProgress(100);
+
+      // Clean up object URL
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
       }
       setSelectedFile(null);
       setPreviewUrl(null);
 
+      // Update local profile state with new avatarUrl
       setProfile((prev: any) => ({
         ...prev,
         avatarUrl: data.avatarUrl,
@@ -144,27 +147,20 @@ export default function AdminProfilePage() {
 
       setStatusMsg({
         type: 'success',
-        text: 'Profile photo successfully uploaded, validated, and saved.',
+        text: 'Profile photo successfully uploaded and published across the website!',
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Photo upload failed.';
       setStatusMsg({ type: 'error', text: msg });
     } finally {
       setUploadingPhoto(false);
-      setTimeout(() => setUploadProgress(null), 1000);
+      setUploadProgress(null);
     }
   };
 
-  // Handle Photo Removal
+  // Handle Removing the Photo
   const handlePhotoRemove = async () => {
-    if (!profile?.avatarUrl && !selectedFile) return;
-
-    if (selectedFile) {
-      handleCancelPhotoSelect();
-      return;
-    }
-
-    if (!confirm('Are you sure you want to remove the current profile photo? The website will revert to the default stylized avatar.')) {
+    if (!confirm('Are you sure you want to remove your profile photo? The website will revert to the default stylized badge.')) {
       return;
     }
 
@@ -177,6 +173,7 @@ export default function AdminProfilePage() {
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         throw new Error(data.error || 'Failed to remove photo.');
       }
@@ -249,8 +246,8 @@ export default function AdminProfilePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-silver-300" />
-        <p className="text-xs font-mono text-zinc-400">Loading Profile Details...</p>
+        <Loader2 className="w-8 h-8 animate-spin text-forest dark:text-champagne-300" />
+        <p className="text-xs font-mono text-forest-600 dark:text-sage">Loading Profile Details...</p>
       </div>
     );
   }
@@ -258,10 +255,10 @@ export default function AdminProfilePage() {
   return (
     <div className="space-y-8 max-w-4xl pb-16">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-cream-300/70 dark:border-forest-800">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Public Profile & Bio</h1>
-          <p className="text-xs font-mono text-zinc-400 mt-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-forest dark:text-ivory">Public Profile & Bio</h1>
+          <p className="text-xs font-mono text-forest-600 dark:text-sage font-medium mt-1">
             MANAGE ATHRAV PATHAK PUBLIC IDENTITY, PORTRAIT PHOTO & SOCIAL METADATA
           </p>
         </div>
@@ -270,7 +267,7 @@ export default function AdminProfilePage() {
           href="/about"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-xs font-mono text-white transition-colors self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-ivory dark:bg-forest-900 hover:bg-cream-200 border border-cream-300 dark:border-forest-700 text-xs font-mono font-semibold text-forest dark:text-ivory transition-colors self-start sm:self-auto shadow-sm"
         >
           <span>View Public About Page</span>
           <ExternalLink className="w-3.5 h-3.5" />
@@ -280,31 +277,31 @@ export default function AdminProfilePage() {
       {/* Global Status Banner */}
       {statusMsg && (
         <div
-          className={`p-4 rounded-xl border text-xs flex items-center gap-3 transition-all ${
+          className={`p-4 rounded-xl border text-xs flex items-center gap-3 transition-all shadow-sm ${
             statusMsg.type === 'success'
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200'
-              : 'border-red-500/30 bg-red-500/10 text-red-200'
+              ? 'border-forest-500 bg-sage-50 dark:bg-forest-900 text-forest dark:text-ivory'
+              : 'border-red-300 bg-red-50 text-red-900'
           }`}
         >
           {statusMsg.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-forest dark:text-sage-300 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           )}
-          <span>{statusMsg.text}</span>
+          <span className="font-medium">{statusMsg.text}</span>
         </div>
       )}
 
       {/* ==================================================================== */}
       {/* 1. PROFILE PHOTO MANAGEMENT CARD                                     */}
       {/* ==================================================================== */}
-      <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8 space-y-6">
+      <div className="rounded-2xl border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 p-6 sm:p-8 space-y-6 shadow-sm">
         <div>
-          <h3 className="text-base font-semibold text-white flex items-center gap-2">
-            <Camera className="w-4 h-4 text-silver-300" />
+          <h3 className="text-base font-bold text-forest dark:text-ivory flex items-center gap-2">
+            <Camera className="w-4 h-4 text-champagne-600" />
             <span>Profile Photo & Portrait</span>
           </h3>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-xs text-forest-700/80 dark:text-sage-100 mt-1">
             Upload your authentic portrait photo. Displayed prominently on the About page and across the portfolio.
             Supports JPG, JPEG, PNG, and WebP (max 5MB).
           </p>
@@ -313,12 +310,12 @@ export default function AdminProfilePage() {
         <div className="flex flex-col sm:flex-row items-center gap-6 pt-2">
           {/* Avatar Preview Box */}
           <div className="relative group shrink-0">
-            <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl border-2 border-white/20 bg-gradient-to-br from-zinc-800 via-zinc-900 to-black overflow-hidden flex items-center justify-center shadow-xl shadow-black/80 relative">
+            <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl border-2 border-cream-300 dark:border-forest-700 bg-cream-100 dark:bg-forest-800 overflow-hidden flex items-center justify-center shadow-md relative">
               {previewUrl ? (
                 <img
                   src={previewUrl}
                   alt="Selected Photo Preview"
-                  className="w-full h-full object-cover object-center ring-2 ring-emerald-500/50"
+                  className="w-full h-full object-cover object-center ring-2 ring-champagne-500"
                 />
               ) : profile?.avatarUrl ? (
                 <img
@@ -327,16 +324,16 @@ export default function AdminProfilePage() {
                   className="w-full h-full object-cover object-center"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center p-4 text-center text-zinc-500">
-                  <User className="w-12 h-12 text-zinc-600 mb-1" />
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase">No Photo</span>
+                <div className="flex flex-col items-center justify-center p-4 text-center text-forest-400">
+                  <User className="w-12 h-12 text-forest-400 mb-1" />
+                  <span className="text-[10px] font-mono text-forest-500 uppercase">No Photo</span>
                 </div>
               )}
 
               {/* Uploading Overlay */}
               {uploadingPhoto && (
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center text-white space-y-2">
-                  <Loader2 className="w-6 h-6 animate-spin text-silver-300" />
+                <div className="absolute inset-0 bg-forest-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-ivory space-y-2">
+                  <Loader2 className="w-6 h-6 animate-spin text-champagne-300" />
                   <span className="text-[11px] font-mono">
                     {uploadProgress ? `${uploadProgress}%` : 'Processing...'}
                   </span>
@@ -345,12 +342,12 @@ export default function AdminProfilePage() {
             </div>
 
             {/* Status indicator badge */}
-            <div className={`absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-mono border backdrop-blur-md ${
+            <div className={`absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full text-[10px] font-mono border backdrop-blur-md shadow-sm ${
               selectedFile
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                ? 'bg-champagne-100 text-champagne-900 border-champagne-300 font-bold'
                 : profile?.avatarUrl
-                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                : 'bg-zinc-900/90 text-zinc-400 border-white/20'
+                ? 'bg-sage-100 text-forest border-sage-300 font-bold'
+                : 'bg-cream-200 text-forest-600 border-cream-300'
             }`}>
               {selectedFile ? 'Unsaved Photo' : profile?.avatarUrl ? 'Photo Active' : 'Default Avatar'}
             </div>
@@ -376,7 +373,7 @@ export default function AdminProfilePage() {
                     type="button"
                     onClick={handleSavePhoto}
                     disabled={uploadingPhoto || saving}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-forest hover:bg-forest-600 text-ivory font-bold text-xs transition-colors shadow-md disabled:opacity-50"
                   >
                     {uploadingPhoto ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -390,7 +387,7 @@ export default function AdminProfilePage() {
                     type="button"
                     onClick={handleCancelPhotoSelect}
                     disabled={uploadingPhoto || saving}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 font-medium text-xs transition-colors disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-cream-200 hover:bg-cream-300 text-forest border border-cream-300 font-semibold text-xs transition-colors disabled:opacity-50"
                   >
                     <span>Cancel Selection</span>
                   </button>
@@ -401,7 +398,7 @@ export default function AdminProfilePage() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingPhoto || saving}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors shadow-md shadow-white/10 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-forest hover:bg-forest-600 text-ivory font-bold text-xs transition-colors shadow-sm disabled:opacity-50"
                   >
                     {profile?.avatarUrl ? (
                       <>
@@ -421,7 +418,7 @@ export default function AdminProfilePage() {
                       type="button"
                       onClick={handlePhotoRemove}
                       disabled={uploadingPhoto || saving}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-red-950/60 text-zinc-400 hover:text-red-300 border border-white/10 hover:border-red-500/30 font-medium text-xs transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-cream-100 hover:bg-red-50 text-forest hover:text-red-700 border border-cream-300 hover:border-red-300 font-semibold text-xs transition-colors disabled:opacity-50"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Remove Photo</span>
@@ -433,20 +430,20 @@ export default function AdminProfilePage() {
 
             {/* Upload Progress Bar */}
             {uploadProgress !== null && (
-              <div className="w-full bg-zinc-900 rounded-full h-1.5 overflow-hidden border border-white/10">
+              <div className="w-full bg-cream-200 rounded-full h-1.5 overflow-hidden border border-cream-300">
                 <div
-                  className="bg-emerald-400 h-full transition-all duration-300 rounded-full"
+                  className="bg-forest h-full transition-all duration-300 rounded-full"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
             )}
 
-            <div className="text-[11px] text-zinc-400 font-mono space-y-1">
+            <div className="text-[11px] text-forest-700/80 dark:text-sage-100 font-mono space-y-1">
               <p>• Accepted extensions: .jpg, .jpeg, .png, .webp</p>
               <p>• Maximum file size: 5.00 MB (binary magic-bytes verified on server)</p>
               {profile?.avatarUrl && (
-                <p className="text-zinc-400 truncate">
-                  • Active saved path: <span className="text-silver-300 font-mono">{profile.avatarUrl}</span>
+                <p className="text-forest-600 dark:text-sage truncate">
+                  • Active saved path: <span className="font-bold text-forest dark:text-champagne-300 font-mono">{profile.avatarUrl}</span>
                 </p>
               )}
             </div>
@@ -458,33 +455,33 @@ export default function AdminProfilePage() {
       {/* 2. PROFILE DETAILS FORM                                              */}
       {/* ==================================================================== */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8 space-y-6">
+        <div className="rounded-2xl border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 p-6 sm:p-8 space-y-6 shadow-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1.5">Full Name *</label>
+              <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">Full Name *</label>
               <input
                 type="text"
                 required
                 value={profile?.name || ''}
                 onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+                className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1.5">Primary Contact Email *</label>
+              <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">Primary Contact Email *</label>
               <input
                 type="email"
                 required
                 value={profile?.email || ''}
                 onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+                className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-mono text-zinc-300 mb-1.5">
+            <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
               Professional Positioning Headline *
             </label>
             <input
@@ -492,12 +489,12 @@ export default function AdminProfilePage() {
               required
               value={profile?.headline || ''}
               onChange={(e) => setProfile({ ...profile, headline: e.target.value })}
-              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+              className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-mono text-zinc-300 mb-1.5">
+            <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">
               Detailed Biography *
             </label>
             <textarea
@@ -505,92 +502,92 @@ export default function AdminProfilePage() {
               required
               value={profile?.bio || ''}
               onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400 resize-y"
+              className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500 resize-y"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1.5">Location</label>
+              <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">Location</label>
               <input
                 type="text"
                 value={profile?.location || ''}
                 onChange={(e) => setProfile({ ...profile, location: e.target.value })}
                 placeholder="India"
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+                className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1.5">Availability Status Tag</label>
+              <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">Availability Status Tag</label>
               <input
                 type="text"
                 value={profile?.status || ''}
                 onChange={(e) => setProfile({ ...profile, status: e.target.value })}
                 placeholder="Available for AI Internships"
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+                className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-mono text-zinc-300 mb-1.5">Active Avatar Image URL / Path</label>
+            <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">Active Avatar Image URL / Path</label>
             <input
               type="text"
               value={profile?.avatarUrl || ''}
               onChange={(e) => setProfile({ ...profile, avatarUrl: e.target.value || null })}
               placeholder="/uploads/profile-... or https://..."
-              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+              className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-xs font-mono text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
             />
           </div>
         </div>
 
         {/* Social & External Profiles */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8 space-y-4">
-          <h3 className="text-base font-semibold text-white">Social Links & External Presence</h3>
+        <div className="rounded-2xl border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 p-6 sm:p-8 space-y-4 shadow-sm">
+          <h3 className="text-base font-bold text-forest dark:text-ivory">Social Links & External Presence</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1.5">GitHub Profile URL</label>
+              <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">GitHub Profile URL</label>
               <input
                 type="url"
                 value={profile?.githubUrl || ''}
                 onChange={(e) => setProfile({ ...profile, githubUrl: e.target.value })}
                 placeholder="https://github.com/Athravpathak-git"
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+                className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-mono text-zinc-300 mb-1.5">LinkedIn Profile URL</label>
+              <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">LinkedIn Profile URL</label>
               <input
                 type="url"
                 value={profile?.linkedinUrl || ''}
                 onChange={(e) => setProfile({ ...profile, linkedinUrl: e.target.value })}
                 placeholder="https://linkedin.com/in/..."
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+                className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
           </div>
         </div>
 
         {/* Resume Controls */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 sm:p-8 space-y-4">
-          <h3 className="text-base font-semibold text-white">Résumé / Curriculum Vitae Controls</h3>
-          <p className="text-xs text-zinc-400">
+        <div className="rounded-2xl border border-cream-300 dark:border-forest-700 bg-ivory dark:bg-forest-900 p-6 sm:p-8 space-y-4 shadow-sm">
+          <h3 className="text-base font-bold text-forest dark:text-ivory">Résumé / Curriculum Vitae Controls</h3>
+          <p className="text-xs text-forest-700/80 dark:text-sage-100">
             Per project specifications, the résumé is unpublished and hidden on public pages by default.
             You can specify a document URL or path and toggle visibility here when ready.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-mono text-zinc-300 mb-1.5">Résumé Document URL / Path</label>
+              <label className="block text-xs font-mono font-medium text-forest-700 dark:text-sage mb-1.5">Résumé Document URL / Path</label>
               <input
                 type="text"
                 value={profile?.resumeUrl || ''}
                 onChange={(e) => setProfile({ ...profile, resumeUrl: e.target.value })}
                 placeholder="/uploads/... or https://..."
-                className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+                className="w-full bg-cream-50 dark:bg-forest-950 border border-cream-300 dark:border-forest-700 rounded-xl px-4 py-2.5 text-sm text-forest dark:text-ivory focus:outline-none focus:ring-2 focus:ring-champagne-500"
               />
             </div>
 
@@ -600,9 +597,9 @@ export default function AdminProfilePage() {
                 id="resume_published_check"
                 checked={profile?.resumePublished || false}
                 onChange={(e) => setProfile({ ...profile, resumePublished: e.target.checked })}
-                className="w-4 h-4 rounded bg-zinc-900 border-white/20 text-silver-400 focus:ring-silver-400"
+                className="w-4 h-4 rounded bg-cream-50 border-cream-300 text-forest focus:ring-champagne-500"
               />
-              <label htmlFor="resume_published_check" className="text-xs font-mono text-zinc-200 cursor-pointer">
+              <label htmlFor="resume_published_check" className="text-xs font-mono font-semibold text-forest dark:text-ivory cursor-pointer">
                 Publish on Website
               </label>
             </div>
@@ -612,7 +609,7 @@ export default function AdminProfilePage() {
         <button
           type="submit"
           disabled={saving || uploadingPhoto}
-          className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors shadow-lg shadow-white/10 disabled:opacity-60"
+          className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-forest hover:bg-forest-600 text-ivory font-bold text-xs transition-colors shadow-md disabled:opacity-60"
         >
           {saving ? (
             <>
