@@ -8,12 +8,14 @@ interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
+  mounted: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'light',
   setTheme: () => {},
   toggleTheme: () => {},
+  mounted: false,
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -23,16 +25,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem('athrav_theme') as Theme | null;
+    let initialTheme: Theme = 'light';
     if (stored === 'light' || stored === 'dark') {
-      setThemeState(stored);
-      document.documentElement.classList.toggle('dark', stored === 'dark');
-      document.documentElement.classList.toggle('light', stored === 'light');
-    } else {
-      // Default to light warm cream aesthetic
-      setThemeState('light');
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
+      initialTheme = stored;
+    } else if (document.documentElement.classList.contains('dark')) {
+      initialTheme = 'dark';
+    } else if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      initialTheme = 'dark';
     }
+
+    setThemeState(initialTheme);
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+    document.documentElement.classList.toggle('light', initialTheme === 'light');
+    document.documentElement.style.colorScheme = initialTheme;
   }, []);
 
   const setTheme = (newTheme: Theme) => {
@@ -40,6 +45,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('athrav_theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
     document.documentElement.classList.toggle('light', newTheme === 'light');
+    document.documentElement.style.colorScheme = newTheme;
   };
 
   const toggleTheme = () => {
@@ -47,8 +53,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-      <div className={mounted ? '' : ''}>{children}</div>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, mounted }}>
+      {children}
     </ThemeContext.Provider>
   );
 }

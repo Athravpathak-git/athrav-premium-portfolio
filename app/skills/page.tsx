@@ -14,12 +14,12 @@ export const metadata: Metadata = constructMetadata({
 });
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  Programming: <Code2 className="w-4 h-4 text-burgundy" />,
-  'Web Development': <Globe className="w-4 h-4 text-burgundy" />,
-  Databases: <Database className="w-4 h-4 text-burgundy" />,
-  'Artificial Intelligence': <Brain className="w-4 h-4 text-burgundy" />,
-  'Machine Learning': <Cpu className="w-4 h-4 text-burgundy" />,
-  'Tools and Platforms': <Wrench className="w-4 h-4 text-burgundy" />,
+  Programming: <Code2 className="w-4 h-4 text-burgundy dark:text-rosegold" />,
+  'Web Development': <Globe className="w-4 h-4 text-burgundy dark:text-rosegold" />,
+  Databases: <Database className="w-4 h-4 text-burgundy dark:text-rosegold" />,
+  'Artificial Intelligence': <Brain className="w-4 h-4 text-burgundy dark:text-rosegold" />,
+  'Machine Learning': <Cpu className="w-4 h-4 text-burgundy dark:text-rosegold" />,
+  'Tools and Platforms': <Wrench className="w-4 h-4 text-burgundy dark:text-rosegold" />,
 };
 
 export default async function SkillsPage() {
@@ -41,32 +41,32 @@ export default async function SkillsPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-cream text-charcoal pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-cream dark:bg-charcoal-900 text-charcoal dark:text-cream pt-32 pb-24 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft bg-white text-xs font-mono text-rosegold shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-xs font-mono text-rosegold shadow-sm">
             <Cpu className="w-3.5 h-3.5 text-rosegold" />
             <span>Competency Matrix</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-serif font-extrabold tracking-tight text-burgundy">
+          <h1 className="text-4xl sm:text-5xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
             Technical Stack & Tooling
           </h1>
-          <p className="text-base text-charcoal/80 max-w-2xl leading-relaxed font-normal">
+          <p className="text-base text-charcoal/80 dark:text-cream/80 max-w-2xl leading-relaxed font-normal">
             Disciplined overview of programming languages, modern web frameworks, data persistence layers,
             and artificial intelligence tools currently in active practice and coursework.
           </p>
 
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-mono">
-            <span className="text-charcoal font-semibold">Proficiency Indicators:</span>
-            <span className="px-2.5 py-1 rounded-full border border-rosegold/40 bg-rosegold-50 text-burgundy font-medium">
+            <span className="text-charcoal dark:text-cream font-semibold">Proficiency Indicators:</span>
+            <span className="px-2.5 py-1 rounded-full border border-rosegold/40 dark:border-rosegold/50 bg-rosegold-50 dark:bg-rosegold-900/30 text-burgundy dark:text-rosegold font-medium">
               Proficient (Solid implementation capability)
             </span>
-            <span className="px-2.5 py-1 rounded-full border border-border-soft bg-cream-100 text-charcoal font-medium">
+            <span className="px-2.5 py-1 rounded-full border border-border-soft dark:border-charcoal-600 bg-cream-100 dark:bg-charcoal-700 text-charcoal dark:text-cream font-medium">
               Intermediate (Active project usage)
             </span>
-            <span className="px-2.5 py-1 rounded-full border border-border-soft bg-white text-charcoal/70 font-medium">
+            <span className="px-2.5 py-1 rounded-full border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 text-charcoal/70 dark:text-cream/70 font-medium">
               Exploring (Academic depth)
             </span>
           </div>
@@ -78,14 +78,14 @@ export default async function SkillsPage() {
             if (group.items.length === 0) return null;
             return (
               <div key={group.name} className="space-y-5">
-                <div className="flex items-center gap-2.5 pb-2 border-b border-border-soft">
-                  <div className="w-8 h-8 rounded-lg bg-white border border-border-soft flex items-center justify-center shadow-sm">
-                    {CATEGORY_ICONS[group.name] || <Code2 className="w-4 h-4 text-burgundy" />}
+                <div className="flex items-center gap-2.5 pb-2 border-b border-border-soft dark:border-charcoal-700">
+                  <div className="w-8 h-8 rounded-lg bg-white dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 flex items-center justify-center shadow-sm">
+                    {CATEGORY_ICONS[group.name] || <Code2 className="w-4 h-4 text-burgundy dark:text-rosegold" />}
                   </div>
-                  <h2 className="text-xl font-serif font-bold text-burgundy tracking-tight">
+                  <h2 className="text-xl font-serif font-bold text-burgundy dark:text-cream tracking-tight">
                     {group.name}
                   </h2>
-                  <span className="text-xs font-mono text-charcoal/70 ml-auto font-medium">
+                  <span className="text-xs font-mono text-charcoal/70 dark:text-cream/70 ml-auto font-medium">
                     {group.items.length} skills
                   </span>
                 </div>
@@ -101,16 +101,16 @@ export default async function SkillsPage() {
         </div>
 
         {/* Navigation Footer */}
-        <div className="mt-20 pt-8 border-t border-border-soft flex justify-between items-center">
+        <div className="mt-20 pt-8 border-t border-border-soft dark:border-charcoal-700 flex justify-between items-center">
           <Link
             href="/education"
-            className="text-xs font-mono font-medium text-charcoal/70 hover:text-burgundy transition-colors"
+            className="text-xs font-mono font-medium text-charcoal/70 dark:text-cream/70 hover:text-burgundy dark:hover:text-rosegold transition-colors"
           >
             ← Academic Path (BCA)
           </Link>
           <Link
             href="/projects"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-burgundy hover:text-rosegold transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-burgundy dark:text-rosegold hover:text-rosegold dark:hover:text-cream transition-colors"
           >
             <span>Explore Projects Built With These Skills</span>
             <ArrowRight className="w-3.5 h-3.5" />

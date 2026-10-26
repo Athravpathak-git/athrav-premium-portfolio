@@ -3,8 +3,8 @@ import React from 'react';
 export function HeroFallback() {
   return (
     <div className="relative w-full h-[400px] sm:h-[480px] flex items-center justify-center select-none pointer-events-none">
-      {/* Studio Contact Shadow on Cream Ground */}
-      <div className="absolute bottom-10 w-56 h-8 rounded-full bg-charcoal/10 blur-xl" />
+      {/* Studio Contact Shadow on Cream or Dark Ground */}
+      <div className="absolute bottom-10 w-56 h-8 rounded-full bg-charcoal/10 dark:bg-black/50 blur-xl" />
 
       {/* Stylized Burgundy Glass Ribbon Graphic with Rose Gold Trim */}
       <div className="relative w-64 h-64 sm:w-80 sm:h-80 flex items-center justify-center">

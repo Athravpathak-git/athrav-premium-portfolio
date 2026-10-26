@@ -46,11 +46,17 @@ export default function RootLayout({
     >
       <head>
         <script
+          id="theme-initializer"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('athrav_theme');var d=t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');document.documentElement.classList.remove('light');document.documentElement.style.colorScheme='dark';}else{document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');document.documentElement.style.colorScheme='light';}}catch(e){}})();`,
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="font-sans bg-cream text-charcoal antialiased selection:bg-burgundy/15 selection:text-burgundy">
+      <body className="font-sans bg-cream dark:bg-charcoal-900 text-charcoal dark:text-cream antialiased selection:bg-burgundy/15 selection:text-burgundy dark:selection:bg-rosegold/20 dark:selection:text-rosegold transition-colors duration-200">
         <ThemeProvider>
           <div className="flex flex-col min-h-screen">
             <Navbar />

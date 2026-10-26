@@ -63,28 +63,28 @@ export function ContactForm() {
       </div>
 
       {status === 'success' && (
-        <div className="p-4 rounded-xl border border-rosegold/50 bg-rosegold-50 text-burgundy text-sm flex items-start gap-3 animate-fade-in shadow-sm">
-          <CheckCircle2 className="w-5 h-5 text-burgundy shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl border border-rosegold/50 dark:border-rosegold/60 bg-rosegold-50 dark:bg-rosegold-900/30 text-burgundy dark:text-cream text-sm flex items-start gap-3 animate-fade-in shadow-sm">
+          <CheckCircle2 className="w-5 h-5 text-burgundy dark:text-rosegold shrink-0 mt-0.5" />
           <div>
             <p className="font-bold">Message Delivered</p>
-            <p className="text-xs text-charcoal/80 mt-0.5">{successMessage}</p>
+            <p className="text-xs text-charcoal/80 dark:text-cream/80 mt-0.5">{successMessage}</p>
           </div>
         </div>
       )}
 
       {status === 'error' && (
-        <div className="p-4 rounded-xl border border-red-300 bg-red-50 text-red-900 text-sm flex items-start gap-3 animate-fade-in">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-200 text-sm flex items-start gap-3 animate-fade-in">
+          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
           <div>
             <p className="font-bold">Submission Error</p>
-            <p className="text-xs text-red-700 mt-0.5">{errorMessage}</p>
+            <p className="text-xs text-red-700 dark:text-red-300 mt-0.5">{errorMessage}</p>
           </div>
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="contact_name" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
+          <label htmlFor="contact_name" className="block text-xs font-mono font-medium text-charcoal/80 dark:text-cream/80 mb-1.5">
             Your Name *
           </label>
           <input
@@ -94,12 +94,12 @@ export function ContactForm() {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="e.g. Sarah Jenkins"
-            className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
+            className="w-full bg-cream-50 dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 rounded-xl px-4 py-2.5 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/35 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
           />
         </div>
 
         <div>
-          <label htmlFor="contact_email" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
+          <label htmlFor="contact_email" className="block text-xs font-mono font-medium text-charcoal/80 dark:text-cream/80 mb-1.5">
             Your Email *
           </label>
           <input
@@ -109,13 +109,13 @@ export function ContactForm() {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="e.g. sarah@example.com"
-            className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
+            className="w-full bg-cream-50 dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 rounded-xl px-4 py-2.5 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/35 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
           />
         </div>
       </div>
 
       <div>
-        <label htmlFor="contact_subject" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
+        <label htmlFor="contact_subject" className="block text-xs font-mono font-medium text-charcoal/80 dark:text-cream/80 mb-1.5">
           Subject *
         </label>
         <input
@@ -125,12 +125,12 @@ export function ContactForm() {
           value={formData.subject}
           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
           placeholder="e.g. Internship Inquiry / Collaboration"
-          className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
+          className="w-full bg-cream-50 dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 rounded-xl px-4 py-2.5 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/35 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
         />
       </div>
 
       <div>
-        <label htmlFor="contact_message" className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5">
+        <label htmlFor="contact_message" className="block text-xs font-mono font-medium text-charcoal/80 dark:text-cream/80 mb-1.5">
           Message *
         </label>
         <textarea
@@ -140,14 +140,14 @@ export function ContactForm() {
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
           placeholder="Describe your inquiry, project scope, or opportunity..."
-          className="w-full bg-cream-50 border border-border-soft rounded-xl p-4 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all resize-y"
+          className="w-full bg-cream-50 dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 rounded-xl p-4 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/35 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all resize-y"
         />
       </div>
 
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-60 shadow-md"
+        className="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-burgundy hover:bg-burgundy-500 dark:bg-burgundy dark:hover:bg-burgundy-500 text-white font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-60 shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-burgundy dark:focus-visible:ring-rosegold"
       >
         {status === 'loading' ? (
           <>

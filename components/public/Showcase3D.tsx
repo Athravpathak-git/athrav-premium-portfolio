@@ -57,17 +57,17 @@ export function Showcase3D() {
   const [mode, setMode] = useState<'solid' | 'wireframe' | 'hybrid'>('hybrid');
 
   return (
-    <div className="relative rounded-2xl border border-border-soft bg-white p-6 sm:p-8 overflow-hidden shadow-sm">
+    <div className="relative rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 p-6 sm:p-8 overflow-hidden shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 relative z-10">
         <div>
           <span className="text-xs font-mono font-medium text-rosegold uppercase tracking-wider">
             Interactive Architecture
           </span>
-          <h3 className="text-xl font-serif font-bold text-burgundy">Geometric Model Inspector</h3>
+          <h3 className="text-xl font-serif font-bold text-burgundy dark:text-cream">Geometric Model Inspector</h3>
         </div>
 
         {/* Mode Selector */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-cream-100 border border-border-soft text-xs font-medium">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-cream-100 dark:bg-charcoal-900/80 border border-border-soft dark:border-charcoal-700 text-xs font-medium">
           {(['hybrid', 'wireframe', 'solid'] as const).map((m) => (
             <button
               key={m}
@@ -76,7 +76,7 @@ export function Showcase3D() {
               className={`px-3 py-1.5 rounded-lg capitalize transition-all ${
                 mode === m
                   ? 'bg-burgundy text-white shadow-sm font-semibold'
-                  : 'text-charcoal/70 hover:text-burgundy hover:bg-white'
+                  : 'text-charcoal/70 dark:text-cream/70 hover:text-burgundy dark:hover:text-cream hover:bg-white dark:hover:bg-charcoal-800'
               }`}
             >
               {m}
@@ -85,7 +85,7 @@ export function Showcase3D() {
         </div>
       </div>
 
-      <div className="w-full h-72 sm:h-80 relative rounded-xl overflow-hidden bg-cream-50 border border-border-soft">
+      <div className="w-full h-72 sm:h-80 relative rounded-xl overflow-hidden bg-cream-50 dark:bg-charcoal-900/70 border border-border-soft dark:border-charcoal-700">
         <Canvas camera={{ position: [0, 0, 4.5], fov: 45 }}>
           <ambientLight intensity={1.1} color="#F7F2EA" />
           <directionalLight position={[4, 5, 4]} intensity={2.5} color="#FFFFFF" />
@@ -95,7 +95,7 @@ export function Showcase3D() {
         </Canvas>
       </div>
 
-      <p className="text-xs text-charcoal/60 mt-3 text-center font-mono">
+      <p className="text-xs text-charcoal/60 dark:text-cream/60 mt-3 text-center font-mono">
         Drag to inspect • Multi-phase geometric renderer
       </p>
     </div>

@@ -27,9 +27,9 @@ export function ProfilePortrait({
   if (!hasError && effectiveUrl) {
     return (
       <div className={`space-y-4 ${className}`}>
-        <div className="relative rounded-2xl border border-border-soft bg-white p-2.5 shadow-sm overflow-hidden group">
+        <div className="relative rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 p-2.5 shadow-sm overflow-hidden group">
           {/* Main portrait image container with clean editorial framing */}
-          <div className="w-full aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden relative bg-cream-100">
+          <div className="w-full aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden relative bg-cream-100 dark:bg-charcoal-700">
             <img
               src={effectiveUrl}
               alt={name}
@@ -43,7 +43,7 @@ export function ProfilePortrait({
             />
 
             {/* Subtle bottom scrim only for text contrast */}
-            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-charcoal/70 to-transparent pointer-events-none" />
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-charcoal/80 to-transparent pointer-events-none" />
 
             {/* Overlay label */}
             <div className="absolute bottom-3 left-3 right-3 text-white pointer-events-none">
@@ -55,9 +55,9 @@ export function ProfilePortrait({
 
         {/* Status indicator below portrait */}
         {status && (
-          <div className="px-4 py-2.5 rounded-xl bg-white border border-border-soft flex items-center justify-between text-xs shadow-sm">
-            <span className="font-mono text-charcoal/70">Status:</span>
-            <span className="font-mono font-semibold text-burgundy flex items-center gap-1.5">
+          <div className="px-4 py-2.5 rounded-xl bg-white dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 flex items-center justify-between text-xs shadow-sm">
+            <span className="font-mono text-charcoal/70 dark:text-cream/70">Status:</span>
+            <span className="font-mono font-semibold text-burgundy dark:text-rosegold flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-rosegold animate-pulse" />
               {status}
             </span>
@@ -70,14 +70,14 @@ export function ProfilePortrait({
   // Graceful fallback if image is not accessible
   return (
     <div className={`space-y-4 ${className}`}>
-      <div className="w-full aspect-[4/5] sm:aspect-square rounded-2xl bg-white border border-border-soft flex flex-col items-center justify-center p-8 text-center shadow-sm">
-        <div className="w-20 h-20 rounded-full bg-cream-100 border border-border-soft flex items-center justify-center mb-4 text-burgundy">
+      <div className="w-full aspect-[4/5] sm:aspect-square rounded-2xl bg-white dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 flex flex-col items-center justify-center p-8 text-center shadow-sm">
+        <div className="w-20 h-20 rounded-full bg-cream-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 flex items-center justify-center mb-4 text-burgundy dark:text-rosegold">
           <User className="w-10 h-10" />
         </div>
-        <h2 className="text-xl font-serif font-bold text-burgundy">{name}</h2>
-        <p className="text-xs font-mono text-charcoal/70 mt-1">{headline}</p>
+        <h2 className="text-xl font-serif font-bold text-burgundy dark:text-cream">{name}</h2>
+        <p className="text-xs font-mono text-charcoal/70 dark:text-cream/70 mt-1">{headline}</p>
         {status && (
-          <div className="mt-4 px-3 py-1 rounded-full bg-blush-100 border border-border-soft text-burgundy text-xs font-mono font-medium">
+          <div className="mt-4 px-3 py-1 rounded-full bg-blush-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 text-burgundy dark:text-rosegold text-xs font-mono font-medium">
             {status}
           </div>
         )}

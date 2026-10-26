@@ -264,8 +264,8 @@ export function Hero3DScene() {
         <BurgundyGlassRibbon reducedMotion={reducedMotion} />
       </Canvas>
 
-      {/* Gentle Studio Floor Contact Shadow against Cream Background */}
-      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3/4 max-w-[320px] h-6 bg-charcoal/10 rounded-full blur-xl pointer-events-none" />
+      {/* Gentle Studio Floor Contact Shadow against Cream or Dark Background */}
+      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3/4 max-w-[320px] h-6 bg-charcoal/10 dark:bg-black/50 rounded-full blur-xl pointer-events-none" />
     </div>
   );
 }

@@ -76,13 +76,13 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
+    <div className="min-h-screen bg-cream dark:bg-charcoal-900 flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-200">
       <div className="max-w-md w-full space-y-8 relative z-10">
         {/* Back Link */}
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-charcoal/70 hover:text-burgundy transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-charcoal/70 dark:text-cream/70 hover:text-burgundy dark:hover:text-rosegold transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Return to Portfolio</span>
@@ -94,7 +94,7 @@ export default function AdminLoginPage() {
           <div className="w-14 h-14 rounded-2xl bg-burgundy border border-burgundy-700 flex items-center justify-center mx-auto text-rosegold shadow-md">
             <Shield className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-extrabold tracking-tight text-burgundy">
+          <h1 className="text-2xl sm:text-3xl font-serif font-extrabold tracking-tight text-burgundy dark:text-cream">
             Administrative Portal
           </h1>
           <p className="text-xs font-mono text-rosegold font-semibold tracking-wider">
@@ -103,23 +103,23 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Login Form Box */}
-        <div className="rounded-2xl border border-border-soft bg-white p-8 space-y-6 shadow-xl">
+        <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 p-8 space-y-6 shadow-xl">
           {sessionExpiredNotice && (
-            <div className="p-4 rounded-xl border border-rosegold/50 bg-rosegold-50 text-burgundy text-xs flex items-start gap-3 animate-fade-in shadow-sm">
+            <div className="p-4 rounded-xl border border-rosegold/50 dark:border-rosegold/60 bg-rosegold-50 dark:bg-rosegold-900/40 text-burgundy dark:text-cream text-xs flex items-start gap-3 animate-fade-in shadow-sm">
               <AlertCircle className="w-4 h-4 text-rosegold shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold">Session Required</p>
-                <p className="text-charcoal/80 mt-0.5">Your administrative session has expired or is invalid. Please authenticate below to access the CMS.</p>
+                <p className="text-charcoal/80 dark:text-cream/80 mt-0.5">Your administrative session has expired or is invalid. Please authenticate below to access the CMS.</p>
               </div>
             </div>
           )}
 
           {status === 'error' && (
-            <div className="p-4 rounded-xl border border-red-300 bg-red-50 text-red-900 text-xs flex items-start gap-3 animate-fade-in">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-900 dark:text-red-200 text-xs flex items-start gap-3 animate-fade-in">
+              <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold">Authentication Failed</p>
-                <p className="text-red-700 mt-0.5">{errorMessage}</p>
+                <p className="text-red-700 dark:text-red-300 mt-0.5">{errorMessage}</p>
               </div>
             </div>
           )}
@@ -128,7 +128,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="admin_identifier"
-                className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5"
+                className="block text-xs font-mono font-medium text-charcoal/80 dark:text-cream/80 mb-1.5"
               >
                 Username or Email
               </label>
@@ -142,7 +142,7 @@ export default function AdminLoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="Enter your username or email"
-                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
+                  className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
                 />
                 <User className="w-4 h-4 text-rosegold absolute left-3.5 top-3" />
               </div>
@@ -151,7 +151,7 @@ export default function AdminLoginPage() {
             <div>
               <label
                 htmlFor="admin_password"
-                className="block text-xs font-mono font-medium text-charcoal/80 mb-1.5"
+                className="block text-xs font-mono font-medium text-charcoal/80 dark:text-cream/80 mb-1.5"
               >
                 Password
               </label>
@@ -164,7 +164,7 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-cream-50 border border-border-soft rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal placeholder-charcoal/40 focus:outline-none focus:ring-2 focus:ring-burgundy focus:border-burgundy transition-all"
+                  className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
                 />
                 <Lock className="w-4 h-4 text-rosegold absolute left-3.5 top-3" />
               </div>

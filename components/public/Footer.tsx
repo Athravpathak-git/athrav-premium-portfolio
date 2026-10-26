@@ -6,7 +6,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-burgundy-800 bg-burgundy text-cream py-16 relative overflow-hidden">
+    <footer className="border-t border-burgundy-800 dark:border-burgundy-950/80 bg-burgundy dark:bg-[#12070A] text-cream py-16 relative overflow-hidden transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12 border-b border-burgundy-700/60">
           {/* Identity column */}

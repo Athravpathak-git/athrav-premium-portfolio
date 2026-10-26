@@ -72,9 +72,9 @@ const config: Config = {
           500: '#B6847D',
         },
         border: {
-          soft: '#E5DCD4',
-          DEFAULT: '#E5DCD4',
-          light: '#E5DCD4',
+          soft: 'var(--border)',
+          DEFAULT: 'var(--border)',
+          light: 'var(--border-subtle)',
         },
         // Compatibility aliases for smooth transition
         teal: {

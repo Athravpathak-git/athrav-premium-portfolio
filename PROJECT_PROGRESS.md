@@ -149,3 +149,42 @@ The portfolio has undergone a complete, bespoke visual redesign into a luxury ed
   - Admin Management page and API CRUD verified.
   - Self-deletion blocked.
   - Media Library page and active profile reference protection verified (HTTP 409 on referenced assets).
+
+---
+
+### Phase 8: Complete Dark Mode / Light Mode Theme Implementation & Verification
+1. **Root Cause Analysis of Prior Theme State**
+   - In `app/globals.css`, the `.dark` class variables were identical copies of the light theme (`--background: #F7F2EA; --surface: #FFFFFF;`).
+   - In `app/layout.tsx` and public pages, hardcoded light background utilities (`bg-cream text-charcoal`) were present without corresponding `dark:` alternatives.
+   - In `components/public/ThemeToggle.tsx`, legacy colors (`bg-zinc-900/60`, `text-zinc-700`) were leftover from a prior black-and-silver template, rendering dark buttons and poor contrast.
+   - Theme switching lacked an inline blocking script in `<head>`, causing potential initial theme flashes prior to hydration.
+
+2. **Luxury Editorial Dark Theme Architecture**
+   - **Deep Charcoal Obsidian Background:** `--background: #141113;`
+   - **Warm Dark Surface:** `--surface: #1F1A1D;` and `--surface-hover: #292126;`
+   - **Luminous Soft Cream Text:** `--foreground: #F7F2EA;`
+   - **Muted Silver-Charcoal Text:** `--text-muted: #B4ABB2;`
+   - **Warm Dark Borders:** `--border: #3A2D35;` and `--border-subtle: #2A2127;`
+   - **Accent Highlights:** `--accent-burgundy: #D5A7B1;` and `--accent-rosegold: #C18E83;`
+   - **Selection:** `.dark ::selection { background: rgba(193, 142, 131, 0.25); color: #F7F2EA; }`
+   - **Dynamic Tailwind Config Border Binding:** Configured `border.soft: 'var(--border)'` and `border.DEFAULT: 'var(--border)'` in `tailwind.config.ts`, enabling all `border-border-soft` utilities to automatically adapt to the active theme.
+
+3. **Zero-Flash Hydration & Persistence Strategy**
+   - Inserted an inline synchronous script in `app/layout.tsx` (`<head>`) that parses `localStorage.getItem('athrav_theme')` and `matchMedia('(prefers-color-scheme: dark)')` immediately before first layout paint.
+   - Updated `<html>` with `suppressHydrationWarning` and `<body>` with `font-sans bg-cream dark:bg-charcoal-900 text-charcoal dark:text-cream transition-colors duration-200`.
+   - Updated `components/public/ThemeProvider.tsx` to keep state in sync and set `document.documentElement.style.colorScheme`.
+
+4. **Public Components & Pages Theme Harmonization**
+   - **ThemeToggle (`components/public/ThemeToggle.tsx`):** Redesigned with Deep Burgundy, Soft Cream, and Rose Gold aesthetic. Luminous Rose Gold sun in dark mode and Deep Burgundy moon in light mode. Includes accessible aria labels, tooltips, and zero-layout-shift SSR mounting fallback.
+   - **Navbar (`components/public/Navbar.tsx`):** Glassmorphic blurred header (`bg-cream/95 dark:bg-charcoal-900/95`), desktop navigation capsule (`dark:bg-charcoal-800/90 dark:border-charcoal-700`), active route pills, and responsive mobile drawer.
+   - **Footer (`components/public/Footer.tsx`):** Rich dark plum footer (`dark:bg-[#12070A] dark:border-burgundy-950/80`).
+   - **Cards & Elements (`ProjectCard.tsx`, `CertificateCard.tsx`, `SkillBadge.tsx`, `ProfilePortrait.tsx`, `ContactForm.tsx`):** Complete surface, typography, tag pill, border, and input styling across both themes.
+   - **3D Scenes (`Hero3DScene.tsx`, `Showcase3D.tsx`, `HeroFallback.tsx`):** Contrast lighting with refined dark contact shadows (`dark:bg-black/50`).
+   - **All Public Routes:** `app/page.tsx`, `app/about/page.tsx`, `app/projects/page.tsx`, `app/projects/[slug]/page.tsx`, `app/education/page.tsx`, `app/skills/page.tsx`, `app/certifications/page.tsx`, `app/certifications/[slug]/page.tsx`, `app/experience/page.tsx`, `app/achievements/page.tsx`, `app/services/page.tsx`, `app/contact/page.tsx`, `app/not-found.tsx`, and `app/admin/login/page.tsx`.
+
+5. **Theme Verification & Quality Assurance**
+   - **TypeScript (`npm run typecheck`):** PASSED with 0 errors.
+   - **Unit Tests (`npm test`):** 8 test suites, 42/42 tests PASSED (including dedicated `tests/theme.test.ts`).
+   - **Production Next.js Build (`npm run build`):** 51/51 routes compiled cleanly.
+   - **Automated HTTP & DOM Verification (`node scripts/verify-theme-and-pages.mjs`):** 14/14 public and error routes passed with inline theme-initializer, proper dark mode classes, and zero-flash attributes.
+   - **Admin E2E Verification (`node scripts/test-admin-e2e.mjs`):** Authenticated session and dashboard access verified (HTTP 200).
