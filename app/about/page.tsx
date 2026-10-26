@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getProfile } from '@/lib/data-service';
 import { constructMetadata } from '@/lib/seo';
+import { ProfilePortrait } from '@/components/public/ProfilePortrait';
 import {
   Brain,
   GraduationCap,
@@ -48,40 +49,12 @@ export default async function AboutPage() {
         <div className="md:col-span-5 space-y-6">
           <div className="rounded-2xl border border-white/10 bg-zinc-950/80 p-6 backdrop-blur-xl space-y-6">
             {/* Portrait / Fallback Avatar */}
-            {profile.avatarUrl ? (
-              <div className="space-y-4">
-                <div className="w-full aspect-square rounded-2xl border border-white/20 bg-zinc-900 overflow-hidden relative shadow-2xl shadow-black/80 group">
-                  <img
-                    src={profile.avatarUrl}
-                    alt={profile.name}
-                    className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <h2 className="text-xl font-bold text-white drop-shadow-md">{profile.name}</h2>
-                    <p className="text-xs font-mono text-silver-300 drop-shadow">BCA Undergraduate • Year 2</p>
-                  </div>
-                </div>
-
-                <div className="px-3.5 py-2 rounded-xl bg-zinc-900/80 border border-white/10 flex items-center justify-between">
-                  <span className="text-xs font-mono text-zinc-400">Current Status:</span>
-                  <span className="text-xs font-mono text-emerald-400 font-medium">
-                    {profile.status || 'Open to Opportunities'}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="w-full aspect-square rounded-2xl bg-gradient-to-br from-zinc-800 via-zinc-900 to-black border border-white/15 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden shadow-inner">
-                <div className="w-20 h-20 rounded-full bg-zinc-800 border border-white/20 flex items-center justify-center mb-3 text-silver-300">
-                  <Brain className="w-10 h-10" />
-                </div>
-                <h2 className="text-lg font-semibold text-white">{profile.name}</h2>
-                <p className="text-xs font-mono text-zinc-400 mt-0.5">BCA Undergraduate • Year 2</p>
-                <div className="mt-3 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-mono text-emerald-400">
-                  {profile.status || 'Open to Opportunities'}
-                </div>
-              </div>
-            )}
+            <ProfilePortrait
+              avatarUrl={profile.avatarUrl}
+              name={profile.name}
+              status={profile.status}
+              headline="BCA Undergraduate • Year 2"
+            />
 
             {/* Quick Context Facts */}
             <div className="space-y-3 text-xs font-mono">

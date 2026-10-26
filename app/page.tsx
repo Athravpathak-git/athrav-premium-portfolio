@@ -72,7 +72,15 @@ export default async function HomePage() {
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-7">
           {/* Status Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/15 bg-zinc-900/60 backdrop-blur-xl text-xs font-mono text-silver-300 shadow-xl">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            {profile.avatarUrl ? (
+              <img
+                src={profile.avatarUrl}
+                alt={profile.name}
+                className="w-5 h-5 rounded-full object-cover border border-emerald-400 shrink-0"
+              />
+            ) : (
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            )}
             <span>Aspiring AI Engineer • BCA 2nd Year</span>
           </div>
 

@@ -19,6 +19,8 @@ export default function AdminProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(
@@ -52,8 +54,8 @@ export default function AdminProfilePage() {
     fetchProfile();
   }, []);
 
-  // Handle Photo File Selection & Upload
-  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle Photo File Selection -> Shows immediate preview
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -80,22 +82,48 @@ export default function AdminProfilePage() {
       return;
     }
 
-    // Begin upload
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setSelectedFile(file);
+    setPreviewUrl(objectUrl);
+    setStatusMsg({
+      type: 'success',
+      text: `Photo selected: "${file.name}". Click "Save Photo" below to publish it to your profile.`,
+    });
+  };
+
+  // Handle Discarding Selected Photo
+  const handleCancelPhotoSelect = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setStatusMsg(null);
+  };
+
+  // Handle Photo Save (Upload to server and persist to profile)
+  const handleSavePhoto = async () => {
+    if (!selectedFile) return;
+
     setUploadingPhoto(true);
-    setUploadProgress(20);
+    setUploadProgress(25);
     setStatusMsg(null);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', selectedFile);
 
     try {
-      setUploadProgress(50);
+      setUploadProgress(60);
       const res = await fetch('/api/admin/profile/avatar', {
         method: 'POST',
         body: formData,
       });
 
-      setUploadProgress(85);
+      setUploadProgress(90);
       const data = await res.json();
 
       if (!res.ok) {
@@ -103,6 +131,12 @@ export default function AdminProfilePage() {
       }
 
       setUploadProgress(100);
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+      setSelectedFile(null);
+      setPreviewUrl(null);
+
       setProfile((prev: any) => ({
         ...prev,
         avatarUrl: data.avatarUrl,
@@ -123,7 +157,13 @@ export default function AdminProfilePage() {
 
   // Handle Photo Removal
   const handlePhotoRemove = async () => {
-    if (!profile?.avatarUrl) return;
+    if (!profile?.avatarUrl && !selectedFile) return;
+
+    if (selectedFile) {
+      handleCancelPhotoSelect();
+      return;
+    }
+
     if (!confirm('Are you sure you want to remove the current profile photo? The website will revert to the default stylized avatar.')) {
       return;
     }
@@ -165,6 +205,23 @@ export default function AdminProfilePage() {
     setStatusMsg(null);
 
     try {
+      // If there is an unsaved photo selected, save it first
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        const avatarRes = await fetch('/api/admin/profile/avatar', {
+          method: 'POST',
+          body: formData,
+        });
+        const avatarData = await avatarRes.json();
+        if (avatarRes.ok && avatarData.avatarUrl) {
+          if (previewUrl) URL.revokeObjectURL(previewUrl);
+          setSelectedFile(null);
+          setPreviewUrl(null);
+          profile.avatarUrl = avatarData.avatarUrl;
+        }
+      }
+
       const res = await fetch('/api/admin/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -254,10 +311,16 @@ export default function AdminProfilePage() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-6 pt-2">
-          {/* Avatar Preview */}
+          {/* Avatar Preview Box */}
           <div className="relative group shrink-0">
-            <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl border-2 border-white/15 bg-gradient-to-br from-zinc-800 via-zinc-900 to-black overflow-hidden flex items-center justify-center shadow-xl shadow-black/80 relative">
-              {profile?.avatarUrl ? (
+            <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl border-2 border-white/20 bg-gradient-to-br from-zinc-800 via-zinc-900 to-black overflow-hidden flex items-center justify-center shadow-xl shadow-black/80 relative">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Selected Photo Preview"
+                  className="w-full h-full object-cover object-center ring-2 ring-emerald-500/50"
+                />
+              ) : profile?.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
                   alt={profile?.name || 'Athrav Pathak'}
@@ -272,7 +335,7 @@ export default function AdminProfilePage() {
 
               {/* Uploading Overlay */}
               {uploadingPhoto && (
-                <div className="absolute inset-0 bg-black/75 backdrop-blur-sm flex flex-col items-center justify-center text-white space-y-2">
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center text-white space-y-2">
                   <Loader2 className="w-6 h-6 animate-spin text-silver-300" />
                   <span className="text-[11px] font-mono">
                     {uploadProgress ? `${uploadProgress}%` : 'Processing...'}
@@ -282,8 +345,14 @@ export default function AdminProfilePage() {
             </div>
 
             {/* Status indicator badge */}
-            <div className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-mono border backdrop-blur-md bg-zinc-900/90 text-zinc-300 border-white/20">
-              {profile?.avatarUrl ? 'Photo Active' : 'Default Avatar'}
+            <div className={`absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-mono border backdrop-blur-md ${
+              selectedFile
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                : profile?.avatarUrl
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                : 'bg-zinc-900/90 text-zinc-400 border-white/20'
+            }`}>
+              {selectedFile ? 'Unsaved Photo' : profile?.avatarUrl ? 'Photo Active' : 'Default Avatar'}
             </div>
           </div>
 
@@ -300,35 +369,65 @@ export default function AdminProfilePage() {
                 disabled={uploadingPhoto || saving}
               />
 
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploadingPhoto || saving}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors shadow-md shadow-white/10 disabled:opacity-50"
-              >
-                {profile?.avatarUrl ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    <span>Replace Photo</span>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Choose Photo from Computer</span>
-                  </>
-                )}
-              </button>
+              {/* Save Photo button (Visible when a file is selected) */}
+              {selectedFile ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleSavePhoto}
+                    disabled={uploadingPhoto || saving}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+                  >
+                    {uploadingPhoto ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Save className="w-3.5 h-3.5" />
+                    )}
+                    <span>Save Photo Now</span>
+                  </button>
 
-              {profile?.avatarUrl && (
-                <button
-                  type="button"
-                  onClick={handlePhotoRemove}
-                  disabled={uploadingPhoto || saving}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-red-950/60 text-zinc-400 hover:text-red-300 border border-white/10 hover:border-red-500/30 font-medium text-xs transition-colors disabled:opacity-50"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Remove Photo</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleCancelPhotoSelect}
+                    disabled={uploadingPhoto || saving}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 font-medium text-xs transition-colors disabled:opacity-50"
+                  >
+                    <span>Cancel Selection</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingPhoto || saving}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-silver-100 text-zinc-950 font-semibold text-xs transition-colors shadow-md shadow-white/10 disabled:opacity-50"
+                  >
+                    {profile?.avatarUrl ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        <span>Replace Photo</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Choose Photo from Computer</span>
+                      </>
+                    )}
+                  </button>
+
+                  {profile?.avatarUrl && (
+                    <button
+                      type="button"
+                      onClick={handlePhotoRemove}
+                      disabled={uploadingPhoto || saving}
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-red-950/60 text-zinc-400 hover:text-red-300 border border-white/10 hover:border-red-500/30 font-medium text-xs transition-colors disabled:opacity-50"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Remove Photo</span>
+                    </button>
+                  )}
+                </>
               )}
             </div>
 
@@ -336,7 +435,7 @@ export default function AdminProfilePage() {
             {uploadProgress !== null && (
               <div className="w-full bg-zinc-900 rounded-full h-1.5 overflow-hidden border border-white/10">
                 <div
-                  className="bg-silver-300 h-full transition-all duration-300 rounded-full"
+                  className="bg-emerald-400 h-full transition-all duration-300 rounded-full"
                   style={{ width: `${uploadProgress}%` }}
                 />
               </div>
@@ -347,7 +446,7 @@ export default function AdminProfilePage() {
               <p>• Maximum file size: 5.00 MB (binary magic-bytes verified on server)</p>
               {profile?.avatarUrl && (
                 <p className="text-zinc-400 truncate">
-                  • File path: <span className="text-silver-300">{profile.avatarUrl}</span>
+                  • Active saved path: <span className="text-silver-300 font-mono">{profile.avatarUrl}</span>
                 </p>
               )}
             </div>
@@ -432,6 +531,17 @@ export default function AdminProfilePage() {
                 className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-mono text-zinc-300 mb-1.5">Active Avatar Image URL / Path</label>
+            <input
+              type="text"
+              value={profile?.avatarUrl || ''}
+              onChange={(e) => setProfile({ ...profile, avatarUrl: e.target.value || null })}
+              placeholder="/uploads/profile-... or https://..."
+              className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-mono text-white focus:outline-none focus:ring-2 focus:ring-silver-400"
+            />
           </div>
         </div>
 
