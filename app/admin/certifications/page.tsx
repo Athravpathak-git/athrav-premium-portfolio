@@ -18,6 +18,9 @@ import {
   Image as ImageIcon,
   Calendar,
   Hash,
+  Tags,
+  Check,
+  Layers,
 } from 'lucide-react';
 
 export default function AdminCertificationsPage() {
@@ -28,6 +31,18 @@ export default function AdminCertificationsPage() {
   const [saving, setSaving] = useState(false);
   const [skillsInput, setSkillsInput] = useState('');
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Dynamic category management states
+  const [categories, setCategories] = useState<any[]>([]);
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [editingCategoryName, setEditingCategoryName] = useState('');
+  const [deletingCategory, setDeletingCategory] = useState<any | null>(null);
+  const [reassignTargetId, setReassignTargetId] = useState<string>('');
+  const [savingCategory, setSavingCategory] = useState(false);
 
   // Certificate image upload states
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -54,8 +69,26 @@ export default function AdminCertificationsPage() {
       .finally(() => setLoading(false));
   };
 
+  const fetchCategories = () => {
+    fetch('/api/admin/certifications/categories')
+      .then((res) => {
+        if (res.status === 401) return null;
+        return res.json();
+      })
+      .then((data) => {
+        if (data?.categories) {
+          setCategories(data.categories);
+          setCategoryCounts(data.usageCounts || {});
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to retrieve categories', err);
+      });
+  };
+
   useEffect(() => {
     fetchItems();
+    fetchCategories();
   }, []);
 
   const handleOpenEditor = (item?: any) => {
@@ -66,11 +99,12 @@ export default function AdminCertificationsPage() {
       setSkillsInput(item.relatedSkills?.join(', ') || '');
       setIsCreating(false);
     } else {
+      const defaultCategory = categories.length > 0 ? categories[0].name : 'Machine Learning';
       setEditingItem({
         title: '',
         slug: '',
         issuer: '',
-        category: 'Machine Learning',
+        category: defaultCategory,
         issueDate: '',
         credentialId: '',
         credentialUrl: '',
@@ -229,6 +263,113 @@ export default function AdminCertificationsPage() {
     }
   };
 
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newCategoryName.trim();
+    if (!trimmed) return;
+    setSavingCategory(true);
+    setCategoryError(null);
+
+    try {
+      const res = await fetch('/api/admin/certifications/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create category.');
+
+      setNewCategoryName('');
+      setStatusMsg({ type: 'success', text: `Category "${trimmed}" added.` });
+      fetchCategories();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to create category.';
+      setCategoryError(msg);
+    } finally {
+      setSavingCategory(false);
+    }
+  };
+
+  const handleStartEditCategory = (cat: any) => {
+    setEditingCategoryId(cat.id);
+    setEditingCategoryName(cat.name);
+    setCategoryError(null);
+  };
+
+  const handleSaveEditCategory = async (id: string) => {
+    const trimmed = editingCategoryName.trim();
+    if (!trimmed) {
+      setCategoryError('Category name cannot be empty.');
+      return;
+    }
+    setSavingCategory(true);
+    setCategoryError(null);
+
+    try {
+      const res = await fetch('/api/admin/certifications/categories', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, name: trimmed }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update category.');
+
+      setEditingCategoryId(null);
+      setEditingCategoryName('');
+      setStatusMsg({ type: 'success', text: `Category renamed to "${trimmed}".` });
+      fetchCategories();
+      fetchItems();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to update category.';
+      setCategoryError(msg);
+    } finally {
+      setSavingCategory(false);
+    }
+  };
+
+  const handleStartDeleteCategory = (cat: any) => {
+    setCategoryError(null);
+    const count = categoryCounts[cat.name] || 0;
+    if (count === 0) {
+      if (!confirm(`Are you sure you want to delete category "${cat.name}"?`)) return;
+      executeDeleteCategory(cat.id);
+    } else {
+      const otherCats = categories.filter((c) => c.id !== cat.id);
+      if (otherCats.length === 0) {
+        alert(
+          `Cannot delete the only existing category while it has ${count} assigned certificate(s). Please create another category first.`
+        );
+        return;
+      }
+      setDeletingCategory(cat);
+      setReassignTargetId(otherCats[0].id);
+    }
+  };
+
+  const executeDeleteCategory = async (id: string, reassignToId?: string) => {
+    setSavingCategory(true);
+    setCategoryError(null);
+    try {
+      const query = `/api/admin/certifications/categories?id=${encodeURIComponent(id)}${
+        reassignToId ? `&reassignToId=${encodeURIComponent(reassignToId)}` : ''
+      }`;
+      const res = await fetch(query, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete category.');
+
+      setDeletingCategory(null);
+      setReassignTargetId('');
+      setStatusMsg({ type: 'success', text: data.message || 'Category deleted successfully.' });
+      fetchCategories();
+      fetchItems();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete category.';
+      setCategoryError(msg);
+    } finally {
+      setSavingCategory(false);
+    }
+  };
+
   return (
     <div className="space-y-8 max-w-6xl">
       <div className="flex items-center justify-between pb-6 border-b border-border-soft">
@@ -238,14 +379,27 @@ export default function AdminCertificationsPage() {
             MANAGE COURSEWORK CREDENTIALS, CERTIFICATE IMAGES & ISSUER METADATA
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => handleOpenEditor()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Credential Record</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => {
+              setCategoryError(null);
+              setShowCategoryModal(true);
+            }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-border-soft hover:border-burgundy text-charcoal hover:text-burgundy bg-white font-semibold text-xs transition-colors shadow-xs"
+          >
+            <Tags className="w-4 h-4 text-burgundy" />
+            <span>Manage Categories</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOpenEditor()}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-sm"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Credential Record</span>
+          </button>
+        </div>
       </div>
 
       {statusMsg && (
@@ -346,16 +500,34 @@ export default function AdminCertificationsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-mono text-charcoal/85 mb-1 font-semibold">Category</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-mono text-charcoal/85 font-semibold">Category *</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategoryError(null);
+                      setShowCategoryModal(true);
+                    }}
+                    className="text-xs text-burgundy hover:text-burgundy-700 underline font-mono flex items-center gap-1"
+                  >
+                    <Tags className="w-3 h-3" />
+                    <span>Manage Categories</span>
+                  </button>
+                </div>
                 <select
-                  value={editingItem.category || 'Machine Learning'}
+                  value={editingItem.category || (categories[0]?.name ?? 'Machine Learning')}
                   onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
                   className="w-full bg-cream-50 border border-border-soft rounded-xl px-3 py-2.5 text-sm text-charcoal focus:outline-hidden focus:border-burgundy"
                 >
-                  <option value="Machine Learning">Machine Learning</option>
-                  <option value="Data Analytics">Data Analytics</option>
-                  <option value="Software Engineering">Software Engineering</option>
-                  <option value="Artificial Intelligence">Artificial Intelligence</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </option>
+                  ))}
+                  {editingItem.category &&
+                    !categories.some((c) => c.name === editingItem.category) && (
+                      <option value={editingItem.category}>{editingItem.category}</option>
+                    )}
                 </select>
               </div>
             </div>
@@ -702,6 +874,205 @@ export default function AdminCertificationsPage() {
           </tbody>
         </table>
       </div>
+
+      {/* MANAGE CATEGORIES MODAL */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-50 bg-charcoal-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-border-soft max-w-xl w-full p-6 space-y-6 shadow-2xl animate-fade-in max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between pb-4 border-b border-border-soft shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-cream-100 flex items-center justify-center text-burgundy">
+                  <Tags className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-serif font-bold text-burgundy">Manage Certificate Categories</h3>
+                  <p className="text-[11px] font-mono text-charcoal/60">
+                    Add, rename, or reassign coursework & credential categories
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCategoryModal(false);
+                  setEditingCategoryId(null);
+                  setDeletingCategory(null);
+                  setCategoryError(null);
+                }}
+                className="p-1.5 rounded-lg text-charcoal/60 hover:text-burgundy hover:bg-cream-100 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {categoryError && (
+              <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-700 text-xs flex items-center gap-2 shrink-0">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
+                <span>{categoryError}</span>
+              </div>
+            )}
+
+            {/* Add New Category Form */}
+            <form onSubmit={handleCreateCategory} className="flex gap-2 shrink-0">
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="New category name (e.g. Cloud Computing)..."
+                className="flex-1 bg-cream-50 border border-border-soft rounded-xl px-4 py-2 text-xs text-charcoal focus:outline-hidden focus:border-burgundy"
+              />
+              <button
+                type="submit"
+                disabled={savingCategory || !newCategoryName.trim()}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-xs disabled:opacity-50 shrink-0"
+              >
+                {savingCategory ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                <span>Add</span>
+              </button>
+            </form>
+
+            {/* Categories List */}
+            <div className="overflow-y-auto space-y-2 flex-1 pr-1">
+              {categories.length === 0 ? (
+                <div className="text-center py-8 text-xs font-mono text-charcoal/50">
+                  No categories found. Add one above.
+                </div>
+              ) : (
+                categories.map((cat) => {
+                  const count = categoryCounts[cat.name] || 0;
+                  const isEditingThis = editingCategoryId === cat.id;
+
+                  return (
+                    <div
+                      key={cat.id}
+                      className="flex items-center justify-between p-3 rounded-xl border border-border-soft bg-cream-50/50 hover:bg-cream-50 transition-colors gap-3"
+                    >
+                      {isEditingThis ? (
+                        <div className="flex-1 flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={editingCategoryName}
+                            onChange={(e) => setEditingCategoryName(e.target.value)}
+                            className="flex-1 bg-white border border-burgundy rounded-lg px-3 py-1.5 text-xs text-charcoal focus:outline-hidden"
+                            autoFocus
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleSaveEditCategory(cat.id)}
+                            disabled={savingCategory}
+                            className="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"
+                            title="Save Rename"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingCategoryId(null)}
+                            className="p-1.5 rounded-lg border border-border-soft hover:bg-white text-charcoal/60 transition-colors"
+                            title="Cancel"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className="font-semibold text-xs text-charcoal truncate">{cat.name}</span>
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white border border-border-soft text-charcoal/70 shrink-0">
+                              {count} {count === 1 ? 'credential' : 'credentials'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => handleStartEditCategory(cat)}
+                              className="p-1.5 rounded-lg hover:bg-white text-charcoal/70 hover:text-burgundy transition-colors"
+                              title="Rename Category"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleStartDeleteCategory(cat)}
+                              className="p-1.5 rounded-lg hover:bg-white text-charcoal/70 hover:text-red-600 transition-colors"
+                              title="Delete Category"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Reassign Dialog when deleting category with certificates */}
+            {deletingCategory && (
+              <div className="p-4 rounded-xl border border-amber-300 bg-amber-50/80 space-y-3 shrink-0">
+                <div className="flex items-start gap-2 text-xs text-amber-900 font-semibold">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <span>
+                    Category &quot;{deletingCategory.name}&quot; is assigned to{' '}
+                    {categoryCounts[deletingCategory.name] || 0} certificate(s).
+                  </span>
+                </div>
+                <p className="text-[11px] text-amber-800">
+                  Select which category these certificates should be reassigned to before deleting:
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <select
+                    value={reassignTargetId}
+                    onChange={(e) => setReassignTargetId(e.target.value)}
+                    className="flex-1 bg-white border border-amber-300 rounded-lg px-3 py-1.5 text-xs text-charcoal focus:outline-hidden"
+                  >
+                    {categories
+                      .filter((c) => c.id !== deletingCategory.id)
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                  </select>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={savingCategory || !reassignTargetId}
+                      onClick={() => executeDeleteCategory(deletingCategory.id, reassignTargetId)}
+                      className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors disabled:opacity-50"
+                    >
+                      {savingCategory ? 'Reassigning...' : 'Reassign & Delete'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeletingCategory(null)}
+                      className="px-3 py-1.5 rounded-lg border border-border-soft bg-white text-xs text-charcoal"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="pt-2 border-t border-border-soft flex justify-end shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCategoryModal(false);
+                  setEditingCategoryId(null);
+                  setDeletingCategory(null);
+                  setCategoryError(null);
+                }}
+                className="px-4 py-2 rounded-xl bg-cream-100 hover:bg-cream-200 text-charcoal text-xs font-semibold transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

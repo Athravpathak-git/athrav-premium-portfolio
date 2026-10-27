@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { validateUploadedFile, validateFileMagicBytes } from '@/lib/storage';
+import {
+  validateUploadedFile,
+  validateFileMagicBytes,
+  isBlobStorageConfigured,
+  getStorageProvider,
+  deleteUploadedFile,
+} from '@/lib/storage';
 
 describe('Storage & File Upload Security Validation', () => {
   it('accepts legitimate JPEG, PNG, and PDF files within size limits', () => {
@@ -68,5 +74,86 @@ describe('Storage & File Upload Security Validation', () => {
     const fakeCheck = validateFileMagicBytes(fakePngBuffer);
     expect(fakeCheck.valid).toBe(false);
     expect(fakeCheck.error).toContain('Unrecognized or unsafe binary file format');
+  });
+
+  it('correctly reports storage provider based on BLOB_STORE_ID (OIDC) or BLOB_READ_WRITE_TOKEN environment', () => {
+    const originalToken = process.env.BLOB_READ_WRITE_TOKEN;
+    const originalStoreId = process.env.BLOB_STORE_ID;
+    try {
+      delete process.env.BLOB_READ_WRITE_TOKEN;
+      delete process.env.BLOB_STORE_ID;
+      expect(isBlobStorageConfigured()).toBe(false);
+      expect(getStorageProvider()).toBe('local');
+
+      // Static token authentication
+      process.env.BLOB_READ_WRITE_TOKEN = 'vercel_blob_rw_testtoken123';
+      expect(isBlobStorageConfigured()).toBe(true);
+      expect(getStorageProvider()).toBe('vercel-blob');
+
+      delete process.env.BLOB_READ_WRITE_TOKEN;
+
+      // Vercel OIDC authentication
+      process.env.BLOB_STORE_ID = 'store_test_abc123';
+      expect(isBlobStorageConfigured()).toBe(true);
+      expect(getStorageProvider()).toBe('vercel-blob');
+    } finally {
+      if (originalToken) {
+        process.env.BLOB_READ_WRITE_TOKEN = originalToken;
+      } else {
+        delete process.env.BLOB_READ_WRITE_TOKEN;
+      }
+      if (originalStoreId) {
+        process.env.BLOB_STORE_ID = originalStoreId;
+      } else {
+        delete process.env.BLOB_STORE_ID;
+      }
+    }
+  });
+
+  it('safely handles path traversal attempts in deleteUploadedFile', async () => {
+    const maliciousAttempt = await deleteUploadedFile('../../etc/passwd');
+    expect(maliciousAttempt).toBe(false);
+
+    const emptyAttempt = await deleteUploadedFile('');
+    expect(emptyAttempt).toBe(false);
+  });
+
+  it('strictly blocks fallback to public/uploads when in production or on Vercel without blob configuration', async () => {
+    const { saveUploadedFile, saveCertificateImage } = await import('@/lib/storage');
+    const originalVercel = process.env.VERCEL;
+    const originalToken = process.env.BLOB_READ_WRITE_TOKEN;
+    const originalStoreId = process.env.BLOB_STORE_ID;
+
+    try {
+      process.env.VERCEL = '1';
+      delete process.env.BLOB_READ_WRITE_TOKEN;
+      delete process.env.BLOB_STORE_ID;
+
+      const validPng = new File(
+        [Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d])],
+        'photo.png',
+        { type: 'image/png' }
+      );
+
+      await expect(saveUploadedFile(validPng, true)).rejects.toThrow(
+        /Vercel Blob storage is not configured for production deployment/
+      );
+
+      await expect(saveCertificateImage(validPng)).rejects.toThrow(
+        /Vercel Blob storage is not configured for production deployment/
+      );
+    } finally {
+      if (originalVercel !== undefined) {
+        process.env.VERCEL = originalVercel;
+      } else {
+        delete process.env.VERCEL;
+      }
+      if (originalToken) {
+        process.env.BLOB_READ_WRITE_TOKEN = originalToken;
+      }
+      if (originalStoreId) {
+        process.env.BLOB_STORE_ID = originalStoreId;
+      }
+    }
   });
 });

@@ -24,6 +24,13 @@ export function CertificateModal({
   credentialId,
   credentialUrl,
 }: CertificateModalProps) {
+  const [imageError, setImageError] = React.useState(false);
+
+  // Reset image error on modal open/URL change
+  React.useEffect(() => {
+    setImageError(false);
+  }, [imageUrl, isOpen]);
+
   // Handle ESC key press
   useEffect(() => {
     if (!isOpen) return;
@@ -87,12 +94,34 @@ export function CertificateModal({
 
         {/* Certificate Image View */}
         <div className="relative flex-1 overflow-auto bg-cream-100/50 dark:bg-charcoal-950 flex items-center justify-center p-4 sm:p-6 min-h-[300px] max-h-[65vh]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={imageUrl}
-            alt={`${title} Certificate Document`}
-            className="max-h-full max-w-full object-contain rounded-lg shadow-lg border border-border-soft/60 dark:border-charcoal-700"
-          />
+          {imageError ? (
+            <div className="text-center p-8 space-y-3">
+              <div className="w-14 h-14 rounded-full bg-cream-100 dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 flex items-center justify-center text-rosegold mx-auto">
+                <Award className="w-7 h-7" />
+              </div>
+              <p className="text-sm font-semibold text-charcoal dark:text-cream">Certificate Document Preview</p>
+              <p className="text-xs font-mono text-charcoal/60 dark:text-cream/60 max-w-sm mx-auto">
+                The image document could not be rendered directly in this modal frame.
+              </p>
+              <a
+                href={imageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white text-xs font-bold transition-colors shadow-sm"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>Open Image Directly</span>
+              </a>
+            </div>
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={imageUrl}
+              alt={`${title} Certificate Document`}
+              onError={() => setImageError(true)}
+              className="max-h-full max-w-full object-contain rounded-lg shadow-lg border border-border-soft/60 dark:border-charcoal-700"
+            />
+          )}
         </div>
 
         {/* Footer / Metadata Bar */}

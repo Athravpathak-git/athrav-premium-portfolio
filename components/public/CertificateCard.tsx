@@ -8,6 +8,7 @@ import { CertificateModal } from './CertificateModal';
 
 export function CertificateCard({ cert }: { cert: CertificationData }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
   const isDraftRecord = !cert.credentialId && !cert.credentialUrl;
 
   return (
@@ -32,7 +33,7 @@ export function CertificateCard({ cert }: { cert: CertificationData }) {
           </div>
 
           {/* Certificate Image Thumbnail (if uploaded) */}
-          {cert.imageUrl ? (
+          {cert.imageUrl && !imageLoadError ? (
             <div
               onClick={() => setIsModalOpen(true)}
               className="relative w-full h-44 rounded-xl overflow-hidden border border-border-soft dark:border-charcoal-700 bg-cream-100/60 dark:bg-charcoal-900 cursor-pointer group/img transition-all"
@@ -42,6 +43,7 @@ export function CertificateCard({ cert }: { cert: CertificationData }) {
               <img
                 src={cert.imageUrl}
                 alt={`${cert.title} Certificate`}
+                onError={() => setImageLoadError(true)}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-105"
               />
               <div className="absolute inset-0 bg-burgundy/40 dark:bg-charcoal-950/50 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-mono font-semibold backdrop-blur-[2px]">

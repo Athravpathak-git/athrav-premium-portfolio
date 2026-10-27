@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAdminApi } from '@/lib/auth-guard';
-import { saveCertificateImage } from '@/lib/storage';
+import { saveCertificateImage, getStorageProvider } from '@/lib/storage';
 import { createMediaRecord } from '@/lib/data-service';
 import { logAuditEvent } from '@/lib/audit';
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         mimeType: storageResult.mimeType,
         sizeBytes: storageResult.sizeBytes,
         url: storageResult.url,
-        storageProvider: 'local',
+        storageProvider: getStorageProvider(),
         altText: certTitle ? `${certTitle} Certificate` : storageResult.originalName,
         category: 'certification',
       });

@@ -94,13 +94,24 @@ export function getPrisma(): PrismaClient {
 
   if (process.env.NODE_ENV === 'production') {
     if (!prismaInstance) {
-      prismaInstance = new PrismaClient();
+      prismaInstance = new PrismaClient({
+        datasources: {
+          db: {
+            url: process.env.DATABASE_URL,
+          },
+        },
+      });
     }
     return prismaInstance;
   }
 
   if (!global.prismaGlobal) {
     global.prismaGlobal = new PrismaClient({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
       log: ['error', 'warn'],
     });
   }

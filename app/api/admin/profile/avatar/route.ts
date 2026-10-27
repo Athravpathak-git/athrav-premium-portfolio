@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAdminApi } from '@/lib/auth-guard';
 import { getProfile, updateProfile, createMediaRecord } from '@/lib/data-service';
-import { saveUploadedFile, deleteUploadedFile } from '@/lib/storage';
+import { saveUploadedFile, deleteUploadedFile, getStorageProvider } from '@/lib/storage';
 import { logAuditEvent } from '@/lib/audit';
 
 export async function POST(req: Request) {
@@ -29,7 +29,11 @@ export async function POST(req: Request) {
 
     // Retrieve current profile to clean up old uploaded photo if exists
     const currentProfile = await getProfile();
-    if (currentProfile?.avatarUrl && currentProfile.avatarUrl.startsWith('/uploads/')) {
+    if (
+      currentProfile?.avatarUrl &&
+      (currentProfile.avatarUrl.startsWith('/uploads/') ||
+        currentProfile.avatarUrl.includes('blob.vercel-storage.com'))
+    ) {
       await deleteUploadedFile(currentProfile.avatarUrl);
     }
 
@@ -47,7 +51,7 @@ export async function POST(req: Request) {
         mimeType: storageResult.mimeType,
         sizeBytes: storageResult.sizeBytes,
         url: storageResult.url,
-        storageProvider: 'local',
+        storageProvider: getStorageProvider(),
         altText: 'Athrav Pathak Profile Photo',
         category: 'profile',
       });
@@ -83,7 +87,11 @@ export async function DELETE(req: Request) {
 
   try {
     const currentProfile = await getProfile();
-    if (currentProfile?.avatarUrl && currentProfile.avatarUrl.startsWith('/uploads/')) {
+    if (
+      currentProfile?.avatarUrl &&
+      (currentProfile.avatarUrl.startsWith('/uploads/') ||
+        currentProfile.avatarUrl.includes('blob.vercel-storage.com'))
+    ) {
       await deleteUploadedFile(currentProfile.avatarUrl);
     }
 

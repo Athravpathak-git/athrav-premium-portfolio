@@ -11,11 +11,13 @@ import {
   initialAchievements,
   initialServices,
   initialHomepageSections,
+  initialCertificateCategories,
   ProfileData,
   EducationData,
   SkillData,
   ProjectData,
   CertificationData,
+  CertificateCategoryData,
   ExperienceData,
   AchievementData,
   ServiceData,
@@ -44,6 +46,7 @@ function getInitialDevStore() {
     skills: [...initialSkills],
     projects: [...initialProjects],
     certifications: [...initialCertifications],
+    certificateCategories: [...initialCertificateCategories],
     experience: [...initialExperience],
     achievements: [...initialAchievements],
     services: [...initialServices],
@@ -87,6 +90,10 @@ function loadDevStore(): DevStoreType {
         return {
           ...getInitialDevStore(),
           ...parsed,
+          certificateCategories:
+            Array.isArray(parsed.certificateCategories) && parsed.certificateCategories.length > 0
+              ? parsed.certificateCategories
+              : [...initialCertificateCategories],
         };
       }
     }
@@ -126,7 +133,30 @@ function persistDevStore() {
 export async function getProfile(): Promise<ProfileData> {
   if (isDatabaseAvailable()) {
     try {
-      const p = await getPrisma().profile.findFirst();
+      let p = await getPrisma().profile.findFirst();
+      if (!p) {
+        try {
+          p = await getPrisma().profile.create({
+            data: {
+              name: initialProfile.name,
+              headline: initialProfile.headline,
+              bio: initialProfile.bio,
+              email: initialProfile.email,
+              location: initialProfile.location,
+              status: initialProfile.status,
+              avatarUrl: initialProfile.avatarUrl,
+              githubUrl: initialProfile.githubUrl,
+              linkedinUrl: initialProfile.linkedinUrl,
+              twitterUrl: initialProfile.twitterUrl,
+              websiteUrl: initialProfile.websiteUrl,
+              resumeUrl: initialProfile.resumeUrl,
+              resumePublished: initialProfile.resumePublished,
+            },
+          });
+        } catch (createErr) {
+          console.warn('[DataService] Prisma initial profile seed skipped:', createErr);
+        }
+      }
       if (p) {
         return {
           id: p.id,
@@ -173,6 +203,32 @@ export async function updateProfile(data: Partial<ProfileData>): Promise<Profile
           githubUrl: updated.githubUrl || '',
           createdAt: updated.createdAt.toISOString(),
           updatedAt: updated.updatedAt.toISOString(),
+        };
+      } else {
+        const created = await getPrisma().profile.create({
+          data: {
+            name: data.name || initialProfile.name,
+            headline: data.headline || initialProfile.headline,
+            bio: data.bio || initialProfile.bio,
+            email: data.email || initialProfile.email,
+            location: data.location || initialProfile.location,
+            status: data.status || initialProfile.status,
+            avatarUrl: data.avatarUrl !== undefined ? data.avatarUrl : initialProfile.avatarUrl,
+            githubUrl: data.githubUrl || initialProfile.githubUrl,
+            linkedinUrl: data.linkedinUrl !== undefined ? data.linkedinUrl : initialProfile.linkedinUrl,
+            twitterUrl: data.twitterUrl !== undefined ? data.twitterUrl : initialProfile.twitterUrl,
+            websiteUrl: data.websiteUrl !== undefined ? data.websiteUrl : initialProfile.websiteUrl,
+            resumeUrl: data.resumeUrl !== undefined ? data.resumeUrl : initialProfile.resumeUrl,
+            resumePublished: data.resumePublished !== undefined ? data.resumePublished : false,
+          },
+        });
+        return {
+          ...created,
+          location: created.location || '',
+          status: created.status || '',
+          githubUrl: created.githubUrl || '',
+          createdAt: created.createdAt.toISOString(),
+          updatedAt: created.updatedAt.toISOString(),
         };
       }
     } catch (err) {
@@ -926,6 +982,364 @@ export async function deleteCertification(id: string): Promise<boolean> {
   devStore.certifications.splice(idx, 1);
   persistDevStore();
   return true;
+}
+
+// ============================================================================
+// CERTIFICATE CATEGORIES SERVICE
+// ============================================================================
+
+function generateCategorySlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '') || `cat-${Date.now()}`;
+}
+
+export async function getCertificateCategoriesList(): Promise<CertificateCategoryData[]> {
+  if (isDatabaseAvailable()) {
+    try {
+      let categories = await getPrisma().certificateCategory.findMany({
+        orderBy: { sortOrder: 'asc' },
+      });
+
+      // Auto-seed initial default categories if the table is empty
+      if (categories.length === 0) {
+        try {
+          await getPrisma().certificateCategory.createMany({
+            data: initialCertificateCategories.map((c) => ({
+              id: c.id,
+              name: c.name,
+              slug: c.slug,
+              sortOrder: c.sortOrder,
+            })),
+            skipDuplicates: true,
+          });
+          categories = await getPrisma().certificateCategory.findMany({
+            orderBy: { sortOrder: 'asc' },
+          });
+        } catch (seedErr) {
+          console.warn('[DataService] Auto-seed certificate categories skipped:', seedErr);
+        }
+      }
+
+      if (categories.length > 0) {
+        return categories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          sortOrder: c.sortOrder,
+          createdAt: c.createdAt.toISOString(),
+          updatedAt: c.updatedAt.toISOString(),
+        }));
+      }
+    } catch (err) {
+      console.warn('[DataService] Prisma getCertificateCategories error:', err);
+    }
+  }
+
+  return [...devStore.certificateCategories].sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+export async function getCertificateCategoryUsageCounts(): Promise<Record<string, number>> {
+  const counts: Record<string, number> = {};
+
+  if (isDatabaseAvailable()) {
+    try {
+      const certs = await getPrisma().certification.findMany({
+        select: { category: true },
+      });
+      for (const cert of certs) {
+        const cat = cert.category || 'Uncategorized';
+        counts[cat] = (counts[cat] || 0) + 1;
+      }
+      return counts;
+    } catch (err) {
+      console.warn('[DataService] Prisma cert category counts error:', err);
+    }
+  }
+
+  for (const cert of devStore.certifications) {
+    const cat = cert.category || 'Uncategorized';
+    counts[cat] = (counts[cat] || 0) + 1;
+  }
+  return counts;
+}
+
+export async function createCertificateCategory(data: {
+  name: string;
+  sortOrder?: number;
+}): Promise<CertificateCategoryData> {
+  const trimmedName = data.name ? data.name.trim() : '';
+  if (!trimmedName) {
+    throw new Error('Category name cannot be empty.');
+  }
+
+  const slug = generateCategorySlug(trimmedName);
+
+  if (isDatabaseAvailable()) {
+    try {
+      const existing = await getPrisma().certificateCategory.findFirst({
+        where: {
+          OR: [
+            { name: { equals: trimmedName, mode: 'insensitive' } },
+            { slug: { equals: slug, mode: 'insensitive' } },
+          ],
+        },
+      });
+
+      if (existing) {
+        throw new Error(`A category with name "${trimmedName}" already exists.`);
+      }
+
+      const count = await getPrisma().certificateCategory.count();
+      const sortOrder = typeof data.sortOrder === 'number' ? data.sortOrder : count + 1;
+
+      const created = await getPrisma().certificateCategory.create({
+        data: {
+          name: trimmedName,
+          slug,
+          sortOrder,
+        },
+      });
+
+      return {
+        id: created.id,
+        name: created.name,
+        slug: created.slug,
+        sortOrder: created.sortOrder,
+        createdAt: created.createdAt.toISOString(),
+        updatedAt: created.updatedAt.toISOString(),
+      };
+    } catch (err: any) {
+      if (err.message?.includes('already exists')) throw err;
+      console.warn('[DataService] Prisma createCertificateCategory error:', err);
+    }
+  }
+
+  // DevStore fallback
+  const existingDev = devStore.certificateCategories.find(
+    (c) => c.name.toLowerCase() === trimmedName.toLowerCase() || c.slug.toLowerCase() === slug.toLowerCase()
+  );
+  if (existingDev) {
+    throw new Error(`A category with name "${trimmedName}" already exists.`);
+  }
+
+  const sortOrder =
+    typeof data.sortOrder === 'number' ? data.sortOrder : devStore.certificateCategories.length + 1;
+
+  const newItem: CertificateCategoryData = {
+    id: `cat-${Date.now()}`,
+    name: trimmedName,
+    slug,
+    sortOrder,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  devStore.certificateCategories.push(newItem);
+  persistDevStore();
+  return newItem;
+}
+
+export async function updateCertificateCategory(
+  id: string,
+  data: { name?: string; sortOrder?: number }
+): Promise<CertificateCategoryData> {
+  const trimmedName = data.name !== undefined ? data.name.trim() : undefined;
+  if (trimmedName !== undefined && !trimmedName) {
+    throw new Error('Category name cannot be empty.');
+  }
+
+  const slug = trimmedName ? generateCategorySlug(trimmedName) : undefined;
+
+  if (isDatabaseAvailable()) {
+    try {
+      const current = await getPrisma().certificateCategory.findUnique({ where: { id } });
+      if (!current) {
+        throw new Error('Category not found.');
+      }
+
+      if (trimmedName && trimmedName.toLowerCase() !== current.name.toLowerCase()) {
+        const existing = await getPrisma().certificateCategory.findFirst({
+          where: {
+            id: { not: id },
+            OR: [
+              { name: { equals: trimmedName, mode: 'insensitive' } },
+              { slug: { equals: slug, mode: 'insensitive' } },
+            ],
+          },
+        });
+        if (existing) {
+          throw new Error(`A category with name "${trimmedName}" already exists.`);
+        }
+      }
+
+      const updated = await getPrisma().certificateCategory.update({
+        where: { id },
+        data: {
+          name: trimmedName !== undefined ? trimmedName : undefined,
+          slug: slug !== undefined ? slug : undefined,
+          sortOrder: typeof data.sortOrder === 'number' ? data.sortOrder : undefined,
+        },
+      });
+
+      // If category name was renamed, cascade update to all certifications referencing old name
+      if (trimmedName && current.name !== trimmedName) {
+        try {
+          await getPrisma().certification.updateMany({
+            where: { category: current.name },
+            data: { category: trimmedName },
+          });
+        } catch (cascadeErr) {
+          console.warn('[DataService] Cascade category rename error:', cascadeErr);
+        }
+      }
+
+      return {
+        id: updated.id,
+        name: updated.name,
+        slug: updated.slug,
+        sortOrder: updated.sortOrder,
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.updatedAt.toISOString(),
+      };
+    } catch (err: any) {
+      if (err.message?.includes('already exists') || err.message?.includes('not found')) throw err;
+      console.warn('[DataService] Prisma updateCertificateCategory error:', err);
+    }
+  }
+
+  // DevStore fallback
+  const idx = devStore.certificateCategories.findIndex((c) => c.id === id);
+  if (idx === -1) {
+    throw new Error('Category not found.');
+  }
+
+  const current = devStore.certificateCategories[idx];
+  if (trimmedName && trimmedName.toLowerCase() !== current.name.toLowerCase()) {
+    const existing = devStore.certificateCategories.find(
+      (c) =>
+        c.id !== id &&
+        (c.name.toLowerCase() === trimmedName.toLowerCase() ||
+          (slug && c.slug.toLowerCase() === slug.toLowerCase()))
+    );
+    if (existing) {
+      throw new Error(`A category with name "${trimmedName}" already exists.`);
+    }
+  }
+
+  const updatedCat: CertificateCategoryData = {
+    ...current,
+    name: trimmedName !== undefined ? trimmedName : current.name,
+    slug: slug !== undefined ? slug : current.slug,
+    sortOrder: typeof data.sortOrder === 'number' ? data.sortOrder : current.sortOrder,
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (trimmedName && current.name !== trimmedName) {
+    for (const cert of devStore.certifications) {
+      if (cert.category === current.name) {
+        cert.category = trimmedName;
+        cert.updatedAt = new Date().toISOString();
+      }
+    }
+  }
+
+  devStore.certificateCategories[idx] = updatedCat;
+  persistDevStore();
+  return updatedCat;
+}
+
+export async function deleteCertificateCategory(
+  id: string,
+  reassignToId?: string
+): Promise<{ success: boolean; reassignedCount: number }> {
+  if (isDatabaseAvailable()) {
+    try {
+      const categoryToDelete = await getPrisma().certificateCategory.findUnique({ where: { id } });
+      if (!categoryToDelete) {
+        throw new Error('Category not found.');
+      }
+
+      const assignedCertCount = await getPrisma().certification.count({
+        where: { category: categoryToDelete.name },
+      });
+
+      let reassignedCount = 0;
+
+      if (assignedCertCount > 0) {
+        if (!reassignToId) {
+          throw new Error(
+            `Cannot delete category "${categoryToDelete.name}" because it is currently assigned to ${assignedCertCount} certificate(s). Please choose another category to reassign them to before deleting.`
+          );
+        }
+
+        if (reassignToId === id) {
+          throw new Error('Cannot reassign certificates to the category being deleted.');
+        }
+
+        const targetCategory = await getPrisma().certificateCategory.findUnique({
+          where: { id: reassignToId },
+        });
+
+        if (!targetCategory) {
+          throw new Error('The target category for reassignment was not found.');
+        }
+
+        const updateResult = await getPrisma().certification.updateMany({
+          where: { category: categoryToDelete.name },
+          data: { category: targetCategory.name },
+        });
+        reassignedCount = updateResult.count;
+      }
+
+      await getPrisma().certificateCategory.delete({ where: { id } });
+      return { success: true, reassignedCount };
+    } catch (err: any) {
+      if (err.message?.includes('Cannot delete') || err.message?.includes('not found') || err.message?.includes('Cannot reassign')) {
+        throw err;
+      }
+      console.warn('[DataService] Prisma deleteCertificateCategory error:', err);
+    }
+  }
+
+  // DevStore fallback
+  const idx = devStore.certificateCategories.findIndex((c) => c.id === id);
+  if (idx === -1) {
+    throw new Error('Category not found.');
+  }
+
+  const categoryToDelete = devStore.certificateCategories[idx];
+  const assignedCerts = devStore.certifications.filter((c) => c.category === categoryToDelete.name);
+  let reassignedCount = 0;
+
+  if (assignedCerts.length > 0) {
+    if (!reassignToId) {
+      throw new Error(
+        `Cannot delete category "${categoryToDelete.name}" because it is currently assigned to ${assignedCerts.length} certificate(s). Please choose another category to reassign them to before deleting.`
+      );
+    }
+
+    if (reassignToId === id) {
+      throw new Error('Cannot reassign certificates to the category being deleted.');
+    }
+
+    const targetCategory = devStore.certificateCategories.find((c) => c.id === reassignToId);
+    if (!targetCategory) {
+      throw new Error('The target category for reassignment was not found.');
+    }
+
+    for (const cert of assignedCerts) {
+      cert.category = targetCategory.name;
+      cert.updatedAt = new Date().toISOString();
+      reassignedCount++;
+    }
+  }
+
+  devStore.certificateCategories.splice(idx, 1);
+  persistDevStore();
+  return { success: true, reassignedCount };
 }
 
 // ============================================================================

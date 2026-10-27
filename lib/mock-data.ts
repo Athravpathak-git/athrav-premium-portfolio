@@ -97,6 +97,15 @@ export interface CertificationData {
   updatedAt: string;
 }
 
+export interface CertificateCategoryData {
+  id: string;
+  name: string;
+  slug: string;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ExperienceData {
   id: string;
   slug: string;
@@ -799,5 +808,88 @@ export const initialHomepageSections: HomepageSectionData[] = [
       'Have an inquiry or opportunity? Send a direct message through the secure contact channel.',
     isEnabled: true,
     sortOrder: 11,
+  },
+];
+
+export const initialCertificateCategories: CertificateCategoryData[] = [
+  {
+    id: 'cat-1',
+    name: 'Machine Learning',
+    slug: 'machine-learning',
+    sortOrder: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-2',
+    name: 'Artificial Intelligence',
+    slug: 'artificial-intelligence',
+    sortOrder: 2,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-3',
+    name: 'Data Science',
+    slug: 'data-science',
+    sortOrder: 3,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-4',
+    name: 'Data Analytics',
+    slug: 'data-analytics',
+    sortOrder: 4,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-5',
+    name: 'Generative AI',
+    slug: 'generative-ai',
+    sortOrder: 5,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-6',
+    name: 'Software Engineering',
+    slug: 'software-engineering',
+    sortOrder: 6,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-7',
+    name: 'Web Development',
+    slug: 'web-development',
+    sortOrder: 7,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-8',
+    name: 'Internships',
+    slug: 'internships',
+    sortOrder: 8,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-9',
+    name: 'Job Simulations',
+    slug: 'job-simulations',
+    sortOrder: 9,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'cat-10',
+    name: 'Other',
+    slug: 'other',
+    sortOrder: 10,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
 ];

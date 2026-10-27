@@ -77,7 +77,7 @@ export async function PUT(req: Request) {
       validation.data.imageUrl !== undefined &&
       validation.data.imageUrl !== current.imageUrl &&
       current.imageUrl &&
-      current.imageUrl.startsWith('/uploads/')
+      (current.imageUrl.startsWith('/uploads/') || current.imageUrl.includes('blob.vercel-storage.com'))
     ) {
       const references = checkMediaReferences(current.imageUrl);
       const otherReferences = references.filter(
@@ -118,8 +118,11 @@ export async function DELETE(req: Request) {
     const current = await getCertificationById(id);
     if (!current) return NextResponse.json({ error: 'Certification not found.' }, { status: 404 });
 
-    // Clean up uploaded image if it was a local upload and not referenced elsewhere
-    if (current.imageUrl && current.imageUrl.startsWith('/uploads/')) {
+    // Clean up uploaded image if not referenced elsewhere
+    if (
+      current.imageUrl &&
+      (current.imageUrl.startsWith('/uploads/') || current.imageUrl.includes('blob.vercel-storage.com'))
+    ) {
       const references = checkMediaReferences(current.imageUrl);
       const otherReferences = references.filter(
         (ref) => !(ref.type === 'certification' && ref.title === current.title)

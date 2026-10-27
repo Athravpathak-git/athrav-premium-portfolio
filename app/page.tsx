@@ -90,19 +90,24 @@ export default async function HomePage() {
               </p>
 
               {/* Verified Portrait Preview Pill */}
-              {profile.avatarUrl && (
-                <div className="inline-flex items-center gap-3.5 p-2 pr-5 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white/95 dark:bg-charcoal-800/95 shadow-sm backdrop-blur-sm">
+              <div className="inline-flex items-center gap-3.5 p-2 pr-5 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white/95 dark:bg-charcoal-800/95 shadow-sm backdrop-blur-sm">
+                {profile.avatarUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={profile.avatarUrl}
                     alt={profile.name}
                     className="w-12 h-12 rounded-xl object-cover object-top border border-border-soft dark:border-charcoal-600 shadow-sm shrink-0"
                   />
-                  <div>
-                    <h4 className="text-sm font-serif font-bold text-burgundy dark:text-cream leading-tight">{profile.name}</h4>
-                    <p className="text-xs font-mono text-rosegold-700 dark:text-rosegold font-medium">BCA Undergraduate • Year 2</p>
+                ) : (
+                  <div className="w-12 h-12 rounded-xl bg-cream-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 flex items-center justify-center text-burgundy dark:text-rosegold font-serif font-bold text-base shrink-0">
+                    {profile.name ? profile.name.slice(0, 2).toUpperCase() : 'AP'}
                   </div>
+                )}
+                <div>
+                  <h4 className="text-sm font-serif font-bold text-burgundy dark:text-cream leading-tight">{profile.name}</h4>
+                  <p className="text-xs font-mono text-rosegold-700 dark:text-rosegold font-medium">BCA Undergraduate • Year 2</p>
                 </div>
-              )}
+              </div>
 
               {/* Hero Call to Action Buttons */}
               <div className="pt-2 flex flex-wrap items-center gap-4">

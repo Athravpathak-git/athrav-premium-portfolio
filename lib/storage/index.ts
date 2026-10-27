@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
+import { put, del } from '@vercel/blob';
 
 export interface StorageResult {
   url: string;
@@ -8,6 +9,14 @@ export interface StorageResult {
   originalName: string;
   mimeType: string;
   sizeBytes: number;
+}
+
+export function isBlobStorageConfigured(): boolean {
+  return Boolean(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+export function getStorageProvider(): 'vercel-blob' | 'local' {
+  return isBlobStorageConfigured() ? 'vercel-blob' : 'local';
 }
 
 const ALLOWED_MIME_TYPES = new Set([
@@ -172,7 +181,32 @@ export async function saveCertificateImage(file: File): Promise<StorageResult> {
   const ext = path.extname(file.name).toLowerCase();
   const safeBase = crypto.randomBytes(12).toString('hex');
   const filename = `cert-${Date.now()}-${safeBase}${ext}`;
+  const detectedMime = magicValidation.detectedMime || file.type;
 
+  // 1. If Vercel Blob token is configured, upload to persistent Blob storage
+  if (isBlobStorageConfigured()) {
+    const blob = await put(`uploads/${filename}`, buffer, {
+      access: 'public',
+      contentType: detectedMime,
+    });
+
+    return {
+      url: blob.url,
+      filename,
+      originalName: file.name,
+      mimeType: detectedMime,
+      sizeBytes: file.size,
+    };
+  }
+
+  // 2. If running on Vercel or in production without Blob configuration, fail safely
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Vercel Blob storage is not configured for production deployment. Please ensure your Vercel project is connected to a Blob store (BLOB_STORE_ID) or set BLOB_READ_WRITE_TOKEN.'
+    );
+  }
+
+  // 3. Local filesystem fallback for offline development
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
   await fs.mkdir(uploadsDir, { recursive: true });
 
@@ -183,7 +217,7 @@ export async function saveCertificateImage(file: File): Promise<StorageResult> {
     url: `/uploads/${filename}`,
     filename,
     originalName: file.name,
-    mimeType: magicValidation.detectedMime || file.type,
+    mimeType: detectedMime,
     sizeBytes: file.size,
   };
 }
@@ -210,7 +244,32 @@ export async function saveUploadedFile(file: File, isProfilePhoto = false): Prom
   const safeBase = crypto.randomBytes(12).toString('hex');
   const prefix = isProfilePhoto ? 'profile' : 'asset';
   const filename = `${prefix}-${Date.now()}-${safeBase}${ext}`;
+  const detectedMime = magicValidation.detectedMime || file.type;
 
+  // 1. If Vercel Blob token is configured, upload to persistent Blob storage
+  if (isBlobStorageConfigured()) {
+    const blob = await put(`uploads/${filename}`, buffer, {
+      access: 'public',
+      contentType: detectedMime,
+    });
+
+    return {
+      url: blob.url,
+      filename,
+      originalName: file.name,
+      mimeType: detectedMime,
+      sizeBytes: file.size,
+    };
+  }
+
+  // 2. If running on Vercel or in production without Blob configuration, fail safely
+  if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Vercel Blob storage is not configured for production deployment. Please ensure your Vercel project is connected to a Blob store (BLOB_STORE_ID) or set BLOB_READ_WRITE_TOKEN.'
+    );
+  }
+
+  // 3. Local filesystem fallback for offline development
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
   await fs.mkdir(uploadsDir, { recursive: true });
 
@@ -221,7 +280,7 @@ export async function saveUploadedFile(file: File, isProfilePhoto = false): Prom
     url: `/uploads/${filename}`,
     filename,
     originalName: file.name,
-    mimeType: magicValidation.detectedMime || file.type,
+    mimeType: detectedMime,
     sizeBytes: file.size,
   };
 }
@@ -229,6 +288,26 @@ export async function saveUploadedFile(file: File, isProfilePhoto = false): Prom
 export async function deleteUploadedFile(filenameOrUrl: string): Promise<boolean> {
   try {
     if (!filenameOrUrl) return false;
+
+    // 1. Handle Vercel Blob URLs
+    if (
+      filenameOrUrl.startsWith('http://') ||
+      filenameOrUrl.startsWith('https://') ||
+      filenameOrUrl.includes('blob.vercel-storage.com')
+    ) {
+      if (isBlobStorageConfigured() || filenameOrUrl.includes('blob.vercel-storage.com')) {
+        try {
+          await del(filenameOrUrl);
+          return true;
+        } catch (blobErr) {
+          console.warn('[Storage] Error deleting Vercel blob file:', blobErr);
+          return false;
+        }
+      }
+      return false;
+    }
+
+    // 2. Handle local filesystem deletion
     const clean = filenameOrUrl.split('?')[0];
     const sanitizedName = path.basename(clean);
     

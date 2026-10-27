@@ -21,8 +21,8 @@ export function ProfilePortrait({
 }: ProfilePortraitProps) {
   const [hasError, setHasError] = useState(false);
 
-  // Fallback to active uploaded file if avatarUrl is missing
-  const effectiveUrl = avatarUrl || '/uploads/profile-1793013930445-d7f4837227f112de8d472f17.png';
+  // Use avatarUrl directly if provided; no invalid hardcoded legacy filename
+  const effectiveUrl = avatarUrl && avatarUrl.trim() ? avatarUrl.trim() : null;
 
   if (!hasError && effectiveUrl) {
     return (
@@ -30,6 +30,7 @@ export function ProfilePortrait({
         <div className="relative rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 p-2.5 shadow-sm overflow-hidden group">
           {/* Main portrait image container with clean editorial framing */}
           <div className="w-full aspect-[4/5] sm:aspect-square rounded-xl overflow-hidden relative bg-cream-100 dark:bg-charcoal-700">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={effectiveUrl}
               alt={name}
@@ -67,18 +68,29 @@ export function ProfilePortrait({
     );
   }
 
-  // Graceful fallback if image is not accessible
+  // Graceful fallback if image is not accessible or not yet uploaded
+  const initials = name
+    ? name
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : 'AP';
+
   return (
     <div className={`space-y-4 ${className}`}>
       <div className="w-full aspect-[4/5] sm:aspect-square rounded-2xl bg-white dark:bg-charcoal-800 border border-border-soft dark:border-charcoal-700 flex flex-col items-center justify-center p-8 text-center shadow-sm">
-        <div className="w-20 h-20 rounded-full bg-cream-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 flex items-center justify-center mb-4 text-burgundy dark:text-rosegold">
-          <User className="w-10 h-10" />
+        <div className="w-20 h-20 rounded-full bg-cream-100 dark:bg-charcoal-700 border-2 border-rosegold/50 flex items-center justify-center mb-4 text-burgundy dark:text-rosegold font-serif font-bold text-2xl shadow-inner">
+          {initials}
         </div>
         <h2 className="text-xl font-serif font-bold text-burgundy dark:text-cream">{name}</h2>
         <p className="text-xs font-mono text-charcoal/70 dark:text-cream/70 mt-1">{headline}</p>
         {status && (
-          <div className="mt-4 px-3 py-1 rounded-full bg-blush-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 text-burgundy dark:text-rosegold text-xs font-mono font-medium">
-            {status}
+          <div className="mt-4 px-3 py-1 rounded-full bg-blush-100 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 text-burgundy dark:text-rosegold text-xs font-mono font-medium flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-rosegold animate-pulse" />
+            <span>{status}</span>
           </div>
         )}
       </div>
