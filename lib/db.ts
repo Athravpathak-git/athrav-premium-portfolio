@@ -42,6 +42,12 @@ const CIRCUIT_BREAKER_COOLDOWN_MS = 30000; // 30 seconds cooldown after a connec
 export function isDatabaseAvailable(): boolean {
   if (!isDatabaseConfigured()) return false;
   
+  // In production, when database is configured, it is the sole source of truth.
+  // Never disable database connectivity globally, as that drops all active admin sessions and triggers 401s.
+  if (process.env.NODE_ENV === 'production') {
+    return true;
+  }
+
   const cb = globalThis.__athravDbCircuitBreaker;
   if (cb && !cb.isHealthy) {
     const elapsed = Date.now() - cb.lastFailureTime;
@@ -55,6 +61,10 @@ export function isDatabaseAvailable(): boolean {
 }
 
 export function recordDatabaseFailure(err: unknown) {
+  // In production, do not trip the circuit breaker on individual query errors
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
   const reason = err instanceof Error ? err.message : String(err);
   console.warn(`[Database CircuitBreaker] Recorded DB failure, deferring to mock mode for 30s: ${reason}`);
   if (globalThis.__athravDbCircuitBreaker) {
@@ -64,7 +74,7 @@ export function recordDatabaseFailure(err: unknown) {
   }
 }
 
-export async function withDbTimeout<T>(promise: Promise<T>, timeoutMs = 3000): Promise<T> {
+export async function withDbTimeout<T>(promise: Promise<T>, timeoutMs = 15000): Promise<T> {
   let timer: NodeJS.Timeout;
   const timeoutPromise = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {

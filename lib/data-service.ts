@@ -2552,11 +2552,14 @@ export async function getSocialLinksList(filter?: SocialLinksFilter): Promise<So
         orderBy: { sortOrder: 'asc' },
       });
 
-      // If empty, auto-seed with initialSocialLinks
-      if (items.length === 0) {
+      // Ensure all standard initialSocialLinks (email, github, linkedin, twitter) exist in the database
+      const existingPlatforms = new Set(items.map((i) => i.platform));
+      const missingInitial = initialSocialLinks.filter((s) => !existingPlatforms.has(s.platform));
+
+      if (missingInitial.length > 0) {
         try {
           await getPrisma().socialLink.createMany({
-            data: initialSocialLinks.map((s) => ({
+            data: missingInitial.map((s) => ({
               id: s.id,
               platform: s.platform,
               label: s.label,
@@ -2764,24 +2767,67 @@ export async function createSocialLink(data: Omit<SocialLinkData, 'id' | 'create
 export async function updateSocialLink(id: string, data: Partial<SocialLinkData>): Promise<SocialLinkData | null> {
   if (isDatabaseAvailable()) {
     try {
-      const updated = await getPrisma().socialLink.update({
-        where: { id },
-        data: {
-          platform: data.platform,
-          label: data.label,
-          url: data.url,
-          username: data.username !== undefined ? data.username : undefined,
-          icon: data.icon,
-          isEnabled: data.isEnabled,
-          isPublished: data.isPublished,
-          showInHeader: data.showInHeader,
-          showInFooter: data.showInFooter,
-          showInContact: data.showInContact,
-          showInAbout: data.showInAbout,
-          showInHero: data.showInHero,
-          sortOrder: data.sortOrder,
-        },
-      });
+      const prisma = getPrisma();
+
+      // 1. Attempt lookup by ID
+      let existing = await prisma.socialLink.findUnique({ where: { id } });
+
+      // 2. If not found by ID, attempt lookup by platform (e.g. if ID is 'social-linkedin')
+      const targetPlatform = data.platform || (id.startsWith('social-') ? id.replace(/^social-/, '') : undefined);
+      if (!existing && targetPlatform) {
+        existing = await prisma.socialLink.findUnique({ where: { platform: targetPlatform } });
+      }
+
+      let updated;
+      if (existing) {
+        updated = await prisma.socialLink.update({
+          where: { id: existing.id },
+          data: {
+            platform: data.platform !== undefined ? data.platform : undefined,
+            label: data.label !== undefined ? data.label : undefined,
+            url: data.url !== undefined ? data.url : undefined,
+            username: data.username !== undefined ? data.username : undefined,
+            icon: data.icon !== undefined ? data.icon : undefined,
+            isEnabled: data.isEnabled !== undefined ? data.isEnabled : undefined,
+            isPublished: data.isPublished !== undefined ? data.isPublished : undefined,
+            showInHeader: data.showInHeader !== undefined ? data.showInHeader : undefined,
+            showInFooter: data.showInFooter !== undefined ? data.showInFooter : undefined,
+            showInContact: data.showInContact !== undefined ? data.showInContact : undefined,
+            showInAbout: data.showInAbout !== undefined ? data.showInAbout : undefined,
+            showInHero: data.showInHero !== undefined ? data.showInHero : undefined,
+            sortOrder: data.sortOrder !== undefined ? data.sortOrder : undefined,
+          },
+        });
+      } else {
+        // Safe create / upsert fallback if record does not yet exist in database
+        const initial = initialSocialLinks.find(
+          (s) => s.id === id || (targetPlatform && s.platform === targetPlatform)
+        );
+
+        const platformToSet = data.platform || targetPlatform || (initial ? initial.platform : 'custom');
+        const labelToSet = data.label || (initial ? initial.label : platformToSet);
+        const iconToSet = data.icon || (initial ? initial.icon : 'Link');
+        const urlToSet = data.url !== undefined ? data.url : (initial ? initial.url : '');
+
+        updated = await prisma.socialLink.create({
+          data: {
+            id: id && !id.startsWith('social-') ? id : undefined,
+            platform: platformToSet,
+            label: labelToSet,
+            url: urlToSet,
+            username: data.username !== undefined ? data.username : (initial?.username ?? null),
+            icon: iconToSet,
+            isEnabled: data.isEnabled !== undefined ? data.isEnabled : (initial ? initial.isEnabled : true),
+            isPublished: data.isPublished !== undefined ? data.isPublished : (initial ? initial.isPublished : false),
+            showInHeader: data.showInHeader !== undefined ? data.showInHeader : (initial ? initial.showInHeader : false),
+            showInFooter: data.showInFooter !== undefined ? data.showInFooter : (initial ? initial.showInFooter : true),
+            showInContact: data.showInContact !== undefined ? data.showInContact : (initial ? initial.showInContact : true),
+            showInAbout: data.showInAbout !== undefined ? data.showInAbout : (initial ? initial.showInAbout : true),
+            showInHero: data.showInHero !== undefined ? data.showInHero : (initial ? initial.showInHero : false),
+            sortOrder: data.sortOrder !== undefined ? data.sortOrder : (initial ? initial.sortOrder : 99),
+          },
+        });
+      }
 
       // Synchronize with Profile if matching platform
       if (updated.platform === 'email' && updated.url) {
@@ -2794,11 +2840,12 @@ export async function updateSocialLink(id: string, data: Partial<SocialLinkData>
       }
 
       // Keep devStore in sync
-      const idx = devStore.socialLinks.findIndex((l) => l.id === id);
+      const idx = devStore.socialLinks.findIndex((l) => l.id === id || l.platform === updated.platform);
       if (idx !== -1) {
         devStore.socialLinks[idx] = {
           ...devStore.socialLinks[idx],
           ...data,
+          id: updated.id,
           updatedAt: updated.updatedAt.toISOString(),
         };
         persistDevStore();
@@ -2824,13 +2871,31 @@ export async function updateSocialLink(id: string, data: Partial<SocialLinkData>
       };
     } catch (err) {
       console.error('[DataService] Prisma updateSocialLink error:', err);
-      recordDatabaseFailure(err);
-      throw new Error('Database operation failed while updating social link.');
+      // Do NOT trip the circuit breaker on application query errors
+      throw new Error(err instanceof Error ? err.message : 'Database operation failed while updating social link.');
     }
   }
 
-  const idx = devStore.socialLinks.findIndex((l) => l.id === id);
-  if (idx === -1) return null;
+  // devStore fallback (mock mode)
+  let idx = devStore.socialLinks.findIndex((l) => l.id === id);
+  if (idx === -1 && (data.platform || id.startsWith('social-'))) {
+    const platformToFind = data.platform || id.replace(/^social-/, '');
+    idx = devStore.socialLinks.findIndex((l) => l.platform === platformToFind);
+  }
+  if (idx === -1) {
+    const initial = initialSocialLinks.find((s) => s.id === id || (data.platform && s.platform === data.platform));
+    if (initial) {
+      const newItem: SocialLinkData = {
+        ...initial,
+        ...data,
+        updatedAt: new Date().toISOString(),
+      };
+      devStore.socialLinks.push(newItem);
+      persistDevStore();
+      return newItem;
+    }
+    return null;
+  }
 
   devStore.socialLinks[idx] = {
     ...devStore.socialLinks[idx],
@@ -2857,14 +2922,23 @@ export async function updateSocialLink(id: string, data: Partial<SocialLinkData>
 export async function deleteSocialLink(id: string): Promise<boolean> {
   if (isDatabaseAvailable()) {
     try {
-      await getPrisma().socialLink.delete({ where: { id } });
-      return true;
+      const prisma = getPrisma();
+      const existing = await prisma.socialLink.findFirst({
+        where: {
+          OR: [{ id }, { platform: id.replace(/^social-/, '') }],
+        },
+      });
+      if (existing) {
+        await prisma.socialLink.delete({ where: { id: existing.id } });
+        return true;
+      }
+      return false;
     } catch (err) {
       console.warn('[DataService] Prisma deleteSocialLink error:', err);
     }
   }
 
-  const idx = devStore.socialLinks.findIndex((l) => l.id === id);
+  const idx = devStore.socialLinks.findIndex((l) => l.id === id || l.platform === id.replace(/^social-/, ''));
   if (idx === -1) return false;
   devStore.socialLinks.splice(idx, 1);
   persistDevStore();
@@ -2874,13 +2948,19 @@ export async function deleteSocialLink(id: string): Promise<boolean> {
 export async function reorderSocialLinks(orderedIds: string[]): Promise<boolean> {
   if (isDatabaseAvailable()) {
     try {
+      const prisma = getPrisma();
+      const allLinks = await prisma.socialLink.findMany();
       await Promise.all(
-        orderedIds.map((id, index) =>
-          getPrisma().socialLink.update({
-            where: { id },
-            data: { sortOrder: index },
-          })
-        )
+        orderedIds.map((id, index) => {
+          const match = allLinks.find((l) => l.id === id || l.platform === id.replace(/^social-/, ''));
+          if (match) {
+            return prisma.socialLink.update({
+              where: { id: match.id },
+              data: { sortOrder: index },
+            });
+          }
+          return Promise.resolve();
+        })
       );
       return true;
     } catch (err) {
@@ -2889,7 +2969,7 @@ export async function reorderSocialLinks(orderedIds: string[]): Promise<boolean>
   }
 
   orderedIds.forEach((id, index) => {
-    const item = devStore.socialLinks.find((l) => l.id === id);
+    const item = devStore.socialLinks.find((l) => l.id === id || l.platform === id.replace(/^social-/, ''));
     if (item) {
       item.sortOrder = index;
     }

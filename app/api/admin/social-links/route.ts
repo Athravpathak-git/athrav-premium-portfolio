@@ -150,6 +150,7 @@ export async function PUT(req: Request) {
     }
 
     const updated = await updateSocialLink(id, {
+      platform: typeof body.platform === 'string' ? body.platform.trim().toLowerCase() : undefined,
       label: typeof body.label === 'string' ? body.label.trim() : undefined,
       url,
       username: body.username !== undefined ? (body.username ? String(body.username).trim() : null) : undefined,

@@ -86,9 +86,17 @@ export default function AdminSocialLinksPage() {
   }, []);
 
   const handleUpdateField = (id: string, field: keyof SocialLinkItem, value: any) => {
-    setLinks((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, [field]: value } : item))
-    );
+    setLinks((prev) => {
+      const exists = prev.some((item) => item.id === id || (id.startsWith('social-') && item.platform === id.replace(/^social-/, '')));
+      if (!exists && id === 'social-linkedin') {
+        return [...prev, { ...linkedInItem, [field]: value }];
+      }
+      return prev.map((item) =>
+        item.id === id || (id.startsWith('social-') && item.platform === id.replace(/^social-/, ''))
+          ? { ...item, [field]: value }
+          : item
+      );
+    });
   };
 
   const handleSaveItem = async (item: SocialLinkItem) => {
@@ -104,7 +112,15 @@ export default function AdminSocialLinksPage() {
       if (!res.ok) throw new Error(data.error || 'Failed to save social link.');
 
       if (data && data.link) {
-        setLinks((prev) => prev.map((l) => (l.id === data.link.id ? data.link : l)));
+        setLinks((prev) => {
+          const matchIdx = prev.findIndex((l) => l.id === data.link.id || l.platform === data.link.platform);
+          if (matchIdx !== -1) {
+            const next = [...prev];
+            next[matchIdx] = data.link;
+            return next;
+          }
+          return [...prev, data.link];
+        });
       }
 
       setStatusMsg({
@@ -203,8 +219,23 @@ export default function AdminSocialLinksPage() {
     }
   };
 
-  // Find LinkedIn special item
-  const linkedInItem = links.find((l) => l.platform === 'linkedin');
+  // Find LinkedIn special item with robust initial fallback
+  const linkedInItem = links.find((l) => l.platform === 'linkedin') || {
+    id: 'social-linkedin',
+    platform: 'linkedin',
+    label: 'LinkedIn Profile',
+    url: '',
+    username: null,
+    icon: 'Linkedin',
+    isEnabled: true,
+    isPublished: false,
+    showInHeader: true,
+    showInFooter: true,
+    showInContact: true,
+    showInAbout: true,
+    showInHero: true,
+    sortOrder: 3,
+  };
   const isLinkedInConfigured = Boolean(
     linkedInItem && linkedInItem.url.trim().length > 0 && linkedInItem.isPublished && linkedInItem.isEnabled
   );
