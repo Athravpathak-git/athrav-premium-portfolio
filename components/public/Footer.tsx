@@ -1,9 +1,18 @@
 import React from 'react';
 import Link from 'next/link';
-import { Github, Mail, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import { getProfile, getSocialLinksList } from '@/lib/data-service';
+import { SocialIcon } from '@/components/common/SocialIcon';
 
-export function Footer() {
+export async function Footer() {
   const currentYear = new Date().getFullYear();
+  const profile = await getProfile().catch(() => null);
+  const socialLinks = await getSocialLinksList({
+    publishedOnly: true,
+    placement: 'footer',
+  }).catch(() => []);
+
+  const verifiedEmail = profile?.email || 'athravpathak07@gmail.com';
 
   return (
     <footer className="border-t border-burgundy-800 dark:border-burgundy-950/80 bg-burgundy dark:bg-[#12070A] text-cream py-16 relative overflow-hidden transition-colors duration-200">
@@ -20,14 +29,25 @@ export function Footer() {
               Creative Developer & Aspiring AI Engineer pursuing Bachelor of Computer Applications (BCA).
               Building thoughtful digital experiences at the intersection of machine learning and modern web technologies.
             </p>
-            <div className="flex items-center gap-2 pt-2">
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rosegold opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-rosegold"></span>
-              </span>
-              <span className="text-xs font-mono text-rosegold-200">
-                Available for internships & creative collaborations
-              </span>
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rosegold opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rosegold"></span>
+                </span>
+                <span className="text-xs font-mono text-rosegold-200">
+                  Available for internships & creative collaborations
+                </span>
+              </div>
+              <div className="text-xs font-mono text-blush-200/90">
+                Direct Contact:{' '}
+                <a
+                  href={`mailto:${verifiedEmail}`}
+                  className="text-cream underline underline-offset-4 hover:text-rosegold transition-colors font-medium"
+                >
+                  {verifiedEmail}
+                </a>
+              </div>
             </div>
           </div>
 
@@ -71,25 +91,68 @@ export function Footer() {
               Channels & Connect
             </h4>
             <ul className="space-y-2.5 text-sm text-blush-100">
-              <li>
-                <a
-                  href="https://github.com/Athravpathak-git"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 hover:text-cream transition-colors group"
-                >
-                  <Github className="w-4 h-4 text-rosegold group-hover:text-cream" />
-                  <span>GitHub Profile</span>
-                  <ArrowUpRight className="w-3 h-3 opacity-60 group-hover:opacity-100" />
-                </a>
-              </li>
+              {socialLinks.length > 0 ? (
+                socialLinks.map((link) => {
+                  const isEmail = link.platform === 'email';
+                  const href = isEmail
+                    ? link.url.startsWith('mailto:')
+                      ? link.url
+                      : `mailto:${link.url}`
+                    : link.url;
+
+                  return (
+                    <li key={link.id}>
+                      <a
+                        href={href}
+                        target={isEmail ? undefined : '_blank'}
+                        rel={isEmail ? undefined : 'noopener noreferrer'}
+                        className="inline-flex items-center gap-2 hover:text-cream transition-colors group"
+                        aria-label={link.label}
+                      >
+                        <SocialIcon
+                          platform={link.platform}
+                          iconName={link.icon}
+                          className="w-4 h-4 text-rosegold group-hover:text-cream transition-colors"
+                        />
+                        <span>{link.label}</span>
+                        {!isEmail && (
+                          <ArrowUpRight className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </a>
+                    </li>
+                  );
+                })
+              ) : (
+                <>
+                  <li>
+                    <a
+                      href="https://github.com/Athravpathak-git"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 hover:text-cream transition-colors group"
+                    >
+                      <SocialIcon platform="github" className="w-4 h-4 text-rosegold group-hover:text-cream" />
+                      <span>GitHub Profile</span>
+                      <ArrowUpRight className="w-3 h-3 opacity-60 group-hover:opacity-100" />
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={`mailto:${verifiedEmail}`}
+                      className="inline-flex items-center gap-1.5 hover:text-cream transition-colors group"
+                    >
+                      <SocialIcon platform="email" className="w-4 h-4 text-rosegold group-hover:text-cream" />
+                      <span>{verifiedEmail}</span>
+                    </a>
+                  </li>
+                </>
+              )}
               <li>
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-1.5 hover:text-cream transition-colors group"
+                  className="inline-flex items-center gap-1.5 hover:text-cream transition-colors group text-rosegold-200 hover:text-cream pt-1 font-medium"
                 >
-                  <Mail className="w-4 h-4 text-rosegold group-hover:text-cream" />
-                  <span>Contact Inquiries</span>
+                  <span>Contact Form Inquiries →</span>
                 </Link>
               </li>
               <li>

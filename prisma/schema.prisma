@@ -339,3 +339,27 @@ model WebsiteSetting {
   @@index([category])
   @@map("website_settings")
 }
+
+model SocialLink {
+  id            String   @id @default(uuid())
+  platform      String   @unique // email, github, linkedin, instagram, facebook, twitter, youtube, whatsapp, website, custom-...
+  label         String
+  url           String
+  username      String?
+  icon          String   // Linkedin, Github, Mail, Instagram, Facebook, Twitter, Youtube, MessageCircle, Globe, Link
+  isEnabled     Boolean  @default(true) @map("is_enabled")
+  isPublished   Boolean  @default(false) @map("is_published")
+  showInHeader  Boolean  @default(false) @map("show_in_header")
+  showInFooter  Boolean  @default(true) @map("show_in_footer")
+  showInContact Boolean  @default(true) @map("show_in_contact")
+  showInAbout   Boolean  @default(true) @map("show_in_about")
+  showInHero    Boolean  @default(false) @map("show_in_hero")
+  sortOrder     Int      @default(0) @map("sort_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([isEnabled])
+  @@index([isPublished])
+  @@index([sortOrder])
+  @@map("social_links")
+}

@@ -543,7 +543,27 @@ export default function AdminProfilePage() {
 
         {/* Social & External Profiles */}
         <div className="rounded-2xl border border-border-soft bg-white p-6 sm:p-8 space-y-4 shadow-sm">
-          <h3 className="text-base font-serif font-bold text-burgundy">Social Links & External Presence</h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <h3 className="text-base font-serif font-bold text-burgundy">Social Links & External Presence</h3>
+            <a
+              href="/admin/social-links"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-burgundy hover:text-burgundy-500 underline underline-offset-4"
+            >
+              <span>Advanced Social & Contact Settings →</span>
+            </a>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-burgundy/5 border border-burgundy/15 text-xs text-charcoal/80 flex items-center justify-between gap-3">
+            <span>
+              Manage all 9+ channels (LinkedIn, GitHub, Email, WhatsApp, Instagram, YouTube, X, Custom links) and their Header/Footer/Contact placements.
+            </span>
+            <a
+              href="/admin/social-links"
+              className="px-3 py-1.5 rounded-lg bg-burgundy text-white font-medium text-xs whitespace-nowrap hover:bg-burgundy-500 transition-colors"
+            >
+              Open Social Channels
+            </a>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

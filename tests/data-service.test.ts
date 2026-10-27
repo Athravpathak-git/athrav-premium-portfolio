@@ -13,6 +13,13 @@ import {
   updateCertificateCategory,
   deleteCertificateCategory,
   getCertificateCategoryUsageCounts,
+  getProfile,
+  getSocialLinksList,
+  getSocialLinkById,
+  createSocialLink,
+  updateSocialLink,
+  deleteSocialLink,
+  reorderSocialLinks,
 } from '@/lib/data-service';
 
 describe('Data Service & Content Publishing Workflows', () => {
@@ -190,6 +197,96 @@ describe('Data Service & Content Publishing Workflows', () => {
       const certs = await getCertificationsList({ publishedOnly: false });
       const reassignedCert = certs.find((c) => c.id === cert.id);
       expect(reassignedCert?.category).toBe(targetCatName);
+    });
+  });
+
+  describe('Social Links & Contact Channels Workflows', () => {
+    it('guarantees verified primary email is athravpathak07@gmail.com and not legacy address', async () => {
+      const profile = await getProfile();
+      expect(profile.email).toBe('athravpathak07@gmail.com');
+      expect(profile.email).not.toBe('athravpathak01@gmail.com');
+    });
+
+    it('retrieves default channels with LinkedIn safely unconfigured and draft by default', async () => {
+      const allLinks = await getSocialLinksList({ publishedOnly: false });
+      expect(allLinks.length).toBeGreaterThanOrEqual(8);
+
+      const linkedIn = allLinks.find((l) => l.platform === 'linkedin');
+      expect(linkedIn).toBeDefined();
+
+      // Ensure LinkedIn is in unconfigured draft state
+      await updateSocialLink(linkedIn!.id, { url: '', isPublished: false });
+
+      // LinkedIn must not be published when unconfigured / empty
+      const publicLinks = await getSocialLinksList({ publishedOnly: true });
+      const publicLinkedIn = publicLinks.find((l) => l.platform === 'linkedin');
+      expect(publicLinkedIn).toBeUndefined();
+    });
+
+    it('enables, publishes, and synchronizes LinkedIn profile URL seamlessly', async () => {
+      const allLinks = await getSocialLinksList({ publishedOnly: false });
+      const linkedIn = allLinks.find((l) => l.platform === 'linkedin');
+      expect(linkedIn).toBeDefined();
+
+      const testLinkedInUrl = 'https://www.linkedin.com/in/athrav-pathak-test';
+      const updated = await updateSocialLink(linkedIn!.id, {
+        url: testLinkedInUrl,
+        isPublished: true,
+        isEnabled: true,
+        showInFooter: true,
+      });
+
+      expect(updated).toBeDefined();
+      expect(updated?.url).toBe(testLinkedInUrl);
+      expect(updated?.isPublished).toBe(true);
+
+      // Now it must appear in public listing
+      const publicLinks = await getSocialLinksList({ publishedOnly: true });
+      const publicLinkedIn = publicLinks.find((l) => l.platform === 'linkedin');
+      expect(publicLinkedIn).toBeDefined();
+      expect(publicLinkedIn?.url).toBe(testLinkedInUrl);
+
+      // Verify Profile synchronization
+      const profile = await getProfile();
+      expect(profile.linkedinUrl).toBe(testLinkedInUrl);
+
+      // Cleanup: revert LinkedIn back to unpublished draft
+      await updateSocialLink(linkedIn!.id, { url: '', isPublished: false });
+    });
+
+    it('supports custom channel creation, placement filtering, and deletion', async () => {
+      const customKey = `custom-kaggle-${Date.now()}`;
+      const created = await createSocialLink({
+        platform: customKey,
+        label: 'Kaggle Notebooks',
+        url: 'https://kaggle.com/athravpathak',
+        icon: 'Globe',
+        isEnabled: true,
+        isPublished: true,
+        showInHeader: false,
+        showInFooter: true,
+        showInContact: true,
+        showInAbout: false,
+        showInHero: false,
+        sortOrder: 50,
+      });
+
+      expect(created.id).toBeDefined();
+      expect(created.label).toBe('Kaggle Notebooks');
+
+      // Placement filter verification
+      const footerLinks = await getSocialLinksList({ publishedOnly: true, placement: 'footer' });
+      expect(footerLinks.some((l) => l.id === created.id)).toBe(true);
+
+      const headerLinks = await getSocialLinksList({ publishedOnly: true, placement: 'header' });
+      expect(headerLinks.some((l) => l.id === created.id)).toBe(false);
+
+      // Deletion test
+      const deleted = await deleteSocialLink(created.id);
+      expect(deleted).toBe(true);
+
+      const afterDelete = await getSocialLinkById(created.id);
+      expect(afterDelete).toBeNull();
     });
   });
 });

@@ -116,9 +116,9 @@ export default function AdminServicesPage() {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Services & Capabilities</h1>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-burgundy">Services & Capabilities</h1>
           <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE APPLIED TECHNICAL OFFERINGS AND COLLABORATIVE SERVICES
           </p>
@@ -126,7 +126,7 @@ export default function AdminServicesPage() {
         <button
           type="button"
           onClick={() => handleOpenEditor()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors w-full sm:w-auto min-h-[44px]"
         >
           <Plus className="w-4 h-4" />
           <span>New Service</span>

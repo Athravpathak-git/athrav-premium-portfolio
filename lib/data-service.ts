@@ -12,6 +12,7 @@ import {
   initialServices,
   initialHomepageSections,
   initialCertificateCategories,
+  initialSocialLinks,
   ProfileData,
   EducationData,
   SkillData,
@@ -24,6 +25,7 @@ import {
   HomepageSectionData,
   ContactMessageData,
   AuditLogData,
+  SocialLinkData,
 } from './mock-data';
 
 const DEV_STORAGE_DIR = path.join(process.cwd(), '.dev-storage');
@@ -51,6 +53,7 @@ function getInitialDevStore() {
     achievements: [...initialAchievements],
     services: [...initialServices],
     homepageSections: [...initialHomepageSections],
+    socialLinks: [...initialSocialLinks],
     contactMessages: [] as ContactMessageData[],
     auditLogs: [] as AuditLogData[],
     mediaItems: [] as {
@@ -87,13 +90,22 @@ function loadDevStore(): DevStoreType {
       const raw = fs.readFileSync(DEV_STORE_FILE, 'utf-8');
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object' && parsed.profile) {
+        const profile = { ...parsed.profile };
+        if (profile.email === 'athravpathak01@gmail.com') {
+          profile.email = 'athravpathak07@gmail.com';
+        }
         return {
           ...getInitialDevStore(),
           ...parsed,
+          profile,
           certificateCategories:
             Array.isArray(parsed.certificateCategories) && parsed.certificateCategories.length > 0
               ? parsed.certificateCategories
               : [...initialCertificateCategories],
+          socialLinks:
+            Array.isArray(parsed.socialLinks) && parsed.socialLinks.length > 0
+              ? parsed.socialLinks
+              : [...initialSocialLinks],
         };
       }
     }
@@ -158,6 +170,16 @@ export async function getProfile(): Promise<ProfileData> {
         }
       }
       if (p) {
+        if (p.email === 'athravpathak01@gmail.com') {
+          try {
+            p = await getPrisma().profile.update({
+              where: { id: p.id },
+              data: { email: 'athravpathak07@gmail.com', updatedAt: new Date() },
+            });
+          } catch {
+            p.email = 'athravpathak07@gmail.com';
+          }
+        }
         return {
           id: p.id,
           name: p.name,
@@ -180,6 +202,10 @@ export async function getProfile(): Promise<ProfileData> {
     } catch (err) {
       console.warn('[DataService] Prisma error falling back to dev store:', err);
     }
+  }
+  if (devStore.profile.email === 'athravpathak01@gmail.com') {
+    devStore.profile.email = 'athravpathak07@gmail.com';
+    persistDevStore();
   }
   return devStore.profile;
 }
@@ -2398,4 +2424,345 @@ export async function getAnalyticsSummary() {
       ? 'Database is currently unconfigured. Production visitor tracking and project click persistence will automatically activate upon PostgreSQL connection.'
       : 'Live PostgreSQL database connected.',
   };
+}
+
+// ============================================================================
+// SOCIAL LINKS & CONTACT CHANNELS SERVICE
+// ============================================================================
+
+export interface SocialLinksFilter {
+  publishedOnly?: boolean;
+  placement?: 'header' | 'footer' | 'contact' | 'about' | 'hero';
+}
+
+export async function getSocialLinksList(filter?: SocialLinksFilter): Promise<SocialLinkData[]> {
+  if (isDatabaseAvailable()) {
+    try {
+      let items = await getPrisma().socialLink.findMany({
+        orderBy: { sortOrder: 'asc' },
+      });
+
+      // If empty, auto-seed with initialSocialLinks
+      if (items.length === 0) {
+        try {
+          await getPrisma().socialLink.createMany({
+            data: initialSocialLinks.map((s) => ({
+              id: s.id,
+              platform: s.platform,
+              label: s.label,
+              url: s.url,
+              username: s.username || null,
+              icon: s.icon,
+              isEnabled: s.isEnabled,
+              isPublished: s.isPublished,
+              showInHeader: s.showInHeader,
+              showInFooter: s.showInFooter,
+              showInContact: s.showInContact,
+              showInAbout: s.showInAbout,
+              showInHero: s.showInHero,
+              sortOrder: s.sortOrder,
+            })),
+            skipDuplicates: true,
+          });
+          items = await getPrisma().socialLink.findMany({
+            orderBy: { sortOrder: 'asc' },
+          });
+        } catch (seedErr) {
+          console.warn('[DataService] Prisma initial social links seed skipped:', seedErr);
+        }
+      }
+
+      let mapped: SocialLinkData[] = items.map((s) => ({
+        id: s.id,
+        platform: s.platform,
+        label: s.label,
+        url: s.url,
+        username: s.username,
+        icon: s.icon,
+        isEnabled: s.isEnabled,
+        isPublished: s.isPublished,
+        showInHeader: s.showInHeader,
+        showInFooter: s.showInFooter,
+        showInContact: s.showInContact,
+        showInAbout: s.showInAbout,
+        showInHero: s.showInHero,
+        sortOrder: s.sortOrder,
+        createdAt: s.createdAt.toISOString(),
+        updatedAt: s.updatedAt.toISOString(),
+      }));
+
+      // In case the DB has legacy email link with old address, auto-upgrade it:
+      const emailLink = mapped.find((l) => l.platform === 'email');
+      if (emailLink && emailLink.url.includes('athravpathak01@gmail.com')) {
+        const newUrl = emailLink.url.replace('athravpathak01@gmail.com', 'athravpathak07@gmail.com');
+        emailLink.url = newUrl;
+        emailLink.label = 'athravpathak07@gmail.com';
+        getPrisma().socialLink.update({
+          where: { id: emailLink.id },
+          data: { url: newUrl, label: 'athravpathak07@gmail.com' },
+        }).catch(() => {});
+      }
+
+      if (filter?.publishedOnly) {
+        mapped = mapped.filter((item) => item.isEnabled && item.isPublished && item.url.trim().length > 0);
+      }
+      if (filter?.placement) {
+        switch (filter.placement) {
+          case 'header':
+            mapped = mapped.filter((item) => item.showInHeader);
+            break;
+          case 'footer':
+            mapped = mapped.filter((item) => item.showInFooter);
+            break;
+          case 'contact':
+            mapped = mapped.filter((item) => item.showInContact);
+            break;
+          case 'about':
+            mapped = mapped.filter((item) => item.showInAbout);
+            break;
+          case 'hero':
+            mapped = mapped.filter((item) => item.showInHero);
+            break;
+        }
+      }
+      return mapped;
+    } catch (err) {
+      console.warn('[DataService] Prisma social links query error:', err);
+    }
+  }
+
+  let list = [...devStore.socialLinks];
+  if (filter?.publishedOnly) {
+    list = list.filter((item) => item.isEnabled && item.isPublished && item.url.trim().length > 0);
+  }
+  if (filter?.placement) {
+    switch (filter.placement) {
+      case 'header':
+        list = list.filter((item) => item.showInHeader);
+        break;
+      case 'footer':
+        list = list.filter((item) => item.showInFooter);
+        break;
+      case 'contact':
+        list = list.filter((item) => item.showInContact);
+        break;
+      case 'about':
+        list = list.filter((item) => item.showInAbout);
+        break;
+      case 'hero':
+        list = list.filter((item) => item.showInHero);
+        break;
+    }
+  }
+  return list.sort((a, b) => a.sortOrder - b.sortOrder);
+}
+
+export async function getSocialLinkById(id: string): Promise<SocialLinkData | null> {
+  if (isDatabaseAvailable()) {
+    try {
+      const s = await getPrisma().socialLink.findUnique({ where: { id } });
+      if (s) {
+        return {
+          id: s.id,
+          platform: s.platform,
+          label: s.label,
+          url: s.url,
+          username: s.username,
+          icon: s.icon,
+          isEnabled: s.isEnabled,
+          isPublished: s.isPublished,
+          showInHeader: s.showInHeader,
+          showInFooter: s.showInFooter,
+          showInContact: s.showInContact,
+          showInAbout: s.showInAbout,
+          showInHero: s.showInHero,
+          sortOrder: s.sortOrder,
+          createdAt: s.createdAt.toISOString(),
+          updatedAt: s.updatedAt.toISOString(),
+        };
+      }
+    } catch (err) {
+      console.warn('[DataService] Prisma getSocialLinkById error:', err);
+    }
+  }
+  return devStore.socialLinks.find((l) => l.id === id) || null;
+}
+
+export async function createSocialLink(data: Omit<SocialLinkData, 'id' | 'createdAt' | 'updatedAt'>): Promise<SocialLinkData> {
+  const newItem: SocialLinkData = {
+    ...data,
+    id: `social-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (isDatabaseAvailable()) {
+    try {
+      const created = await getPrisma().socialLink.create({
+        data: {
+          platform: data.platform,
+          label: data.label,
+          url: data.url,
+          username: data.username || null,
+          icon: data.icon,
+          isEnabled: data.isEnabled ?? true,
+          isPublished: data.isPublished ?? false,
+          showInHeader: data.showInHeader ?? false,
+          showInFooter: data.showInFooter ?? true,
+          showInContact: data.showInContact ?? true,
+          showInAbout: data.showInAbout ?? true,
+          showInHero: data.showInHero ?? false,
+          sortOrder: data.sortOrder ?? devStore.socialLinks.length,
+        },
+      });
+      return {
+        id: created.id,
+        platform: created.platform,
+        label: created.label,
+        url: created.url,
+        username: created.username,
+        icon: created.icon,
+        isEnabled: created.isEnabled,
+        isPublished: created.isPublished,
+        showInHeader: created.showInHeader,
+        showInFooter: created.showInFooter,
+        showInContact: created.showInContact,
+        showInAbout: created.showInAbout,
+        showInHero: created.showInHero,
+        sortOrder: created.sortOrder,
+        createdAt: created.createdAt.toISOString(),
+        updatedAt: created.updatedAt.toISOString(),
+      };
+    } catch (err) {
+      console.warn('[DataService] Prisma createSocialLink error:', err);
+    }
+  }
+
+  devStore.socialLinks.push(newItem);
+  persistDevStore();
+  return newItem;
+}
+
+export async function updateSocialLink(id: string, data: Partial<SocialLinkData>): Promise<SocialLinkData | null> {
+  if (isDatabaseAvailable()) {
+    try {
+      const updated = await getPrisma().socialLink.update({
+        where: { id },
+        data: {
+          platform: data.platform,
+          label: data.label,
+          url: data.url,
+          username: data.username !== undefined ? data.username : undefined,
+          icon: data.icon,
+          isEnabled: data.isEnabled,
+          isPublished: data.isPublished,
+          showInHeader: data.showInHeader,
+          showInFooter: data.showInFooter,
+          showInContact: data.showInContact,
+          showInAbout: data.showInAbout,
+          showInHero: data.showInHero,
+          sortOrder: data.sortOrder,
+        },
+      });
+
+      // Synchronize with Profile if matching platform
+      if (updated.platform === 'email' && updated.url) {
+        const cleanEmail = updated.url.replace(/^mailto:/i, '').trim();
+        await updateProfile({ email: cleanEmail }).catch(() => {});
+      } else if (updated.platform === 'github' && updated.url) {
+        await updateProfile({ githubUrl: updated.url }).catch(() => {});
+      } else if (updated.platform === 'linkedin') {
+        await updateProfile({ linkedinUrl: updated.url || null }).catch(() => {});
+      }
+
+      return {
+        id: updated.id,
+        platform: updated.platform,
+        label: updated.label,
+        url: updated.url,
+        username: updated.username,
+        icon: updated.icon,
+        isEnabled: updated.isEnabled,
+        isPublished: updated.isPublished,
+        showInHeader: updated.showInHeader,
+        showInFooter: updated.showInFooter,
+        showInContact: updated.showInContact,
+        showInAbout: updated.showInAbout,
+        showInHero: updated.showInHero,
+        sortOrder: updated.sortOrder,
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.updatedAt.toISOString(),
+      };
+    } catch (err) {
+      console.warn('[DataService] Prisma updateSocialLink error:', err);
+    }
+  }
+
+  const idx = devStore.socialLinks.findIndex((l) => l.id === id);
+  if (idx === -1) return null;
+
+  devStore.socialLinks[idx] = {
+    ...devStore.socialLinks[idx],
+    ...data,
+    updatedAt: new Date().toISOString(),
+  };
+
+  // Synchronize with Profile in devStore
+  const current = devStore.socialLinks[idx];
+  if (current.platform === 'email' && current.url) {
+    const cleanEmail = current.url.replace(/^mailto:/i, '').trim();
+    devStore.profile.email = cleanEmail;
+  } else if (current.platform === 'github' && current.url) {
+    devStore.profile.githubUrl = current.url;
+  } else if (current.platform === 'linkedin') {
+    devStore.profile.linkedinUrl = current.url || null;
+  }
+
+  persistDevStore();
+  return devStore.socialLinks[idx];
+}
+
+export async function deleteSocialLink(id: string): Promise<boolean> {
+  if (isDatabaseAvailable()) {
+    try {
+      await getPrisma().socialLink.delete({ where: { id } });
+      return true;
+    } catch (err) {
+      console.warn('[DataService] Prisma deleteSocialLink error:', err);
+    }
+  }
+
+  const idx = devStore.socialLinks.findIndex((l) => l.id === id);
+  if (idx === -1) return false;
+  devStore.socialLinks.splice(idx, 1);
+  persistDevStore();
+  return true;
+}
+
+export async function reorderSocialLinks(orderedIds: string[]): Promise<boolean> {
+  if (isDatabaseAvailable()) {
+    try {
+      await Promise.all(
+        orderedIds.map((id, index) =>
+          getPrisma().socialLink.update({
+            where: { id },
+            data: { sortOrder: index },
+          })
+        )
+      );
+      return true;
+    } catch (err) {
+      console.warn('[DataService] Prisma reorderSocialLinks error:', err);
+    }
+  }
+
+  orderedIds.forEach((id, index) => {
+    const item = devStore.socialLinks.find((l) => l.id === id);
+    if (item) {
+      item.sortOrder = index;
+    }
+  });
+  devStore.socialLinks.sort((a, b) => a.sortOrder - b.sortOrder);
+  persistDevStore();
+  return true;
 }

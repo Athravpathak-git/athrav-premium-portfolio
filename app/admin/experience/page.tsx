@@ -131,9 +131,9 @@ export default function AdminExperiencePage() {
 
   return (
     <div className="space-y-8 max-w-5xl">
-      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Experience & Internships</h1>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-burgundy">Experience & Internships</h1>
           <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE TECHNICAL TRAINING PROGRAMS, PRACTICAL INTERNSHIPS & ROLES
           </p>
@@ -141,7 +141,7 @@ export default function AdminExperiencePage() {
         <button
           type="button"
           onClick={() => handleOpenEditor()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors w-full sm:w-auto min-h-[44px]"
         >
           <Plus className="w-4 h-4" />
           <span>New Experience Entry</span>
@@ -167,9 +167,9 @@ export default function AdminExperiencePage() {
 
       {/* Editor Modal / Inline Form */}
       {(isCreating || editingItem) && (
-        <div className="p-6 rounded-2xl border border-border-soft bg-white p-6 sm:p-8 space-y-4 animate-fade-in shadow-2xl">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl border border-border-soft bg-white space-y-4 animate-fade-in shadow-xl">
           <div className="flex items-center justify-between pb-3 border-b border-border-soft">
-            <h3 className="text-lg font-serif font-bold text-burgundy">
+            <h3 className="text-base sm:text-lg font-serif font-bold text-burgundy">
               {editingItem?.id ? `Edit: ${editingItem.role}` : 'Create Experience Entry'}
             </h3>
             <button
@@ -178,9 +178,10 @@ export default function AdminExperiencePage() {
                 setEditingItem(null);
                 setIsCreating(false);
               }}
-              className="p-1 rounded text-charcoal/70 hover:text-burgundy"
+              className="p-2 rounded-xl text-charcoal/70 hover:text-burgundy min-h-[44px] min-w-[44px] flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-rosegold"
+              aria-label="Close editor"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
@@ -302,7 +303,7 @@ export default function AdminExperiencePage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs"
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs w-full sm:w-auto min-h-[44px] transition-colors"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 <span>Save Experience Entry</span>
@@ -314,53 +315,57 @@ export default function AdminExperiencePage() {
 
       {/* Listing Table */}
       <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
-            <tr>
-              <th className="p-4">Role</th>
-              <th className="p-4">Organization</th>
-              <th className="p-4">Type</th>
-              <th className="p-4">Visibility</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border-soft">
-            {items.map((item) => (
-              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
-                <td className="p-4 font-semibold text-burgundy">{item.role}</td>
-                <td className="p-4 text-charcoal/85">{item.company}</td>
-                <td className="p-4 font-mono text-charcoal/70">{item.employmentType}</td>
-                <td className="p-4">
-                  <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
-                      item.isPublished
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
-                    }`}
-                  >
-                    {item.isPublished ? 'Published' : 'Draft'}
-                  </span>
-                </td>
-                <td className="p-4 text-right space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => handleOpenEditor(item)}
-                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(item.id, item.role)}
-                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[600px]">
+            <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
+              <tr>
+                <th className="p-4">Role</th>
+                <th className="p-4">Organization</th>
+                <th className="p-4">Type</th>
+                <th className="p-4">Visibility</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border-soft">
+              {items.map((item) => (
+                <tr key={item.id} className="hover:bg-cream-50 transition-colors">
+                  <td className="p-4 font-semibold text-burgundy">{item.role}</td>
+                  <td className="p-4 text-charcoal/85">{item.company}</td>
+                  <td className="p-4 font-mono text-charcoal/70">{item.employmentType}</td>
+                  <td className="p-4">
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
+                        item.isPublished
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-cream-100 text-charcoal/70 border border-border-soft'
+                      }`}
+                    >
+                      {item.isPublished ? 'Published' : 'Draft'}
+                    </span>
+                  </td>
+                  <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditor(item)}
+                      className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                      aria-label={`Edit ${item.role}`}
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.id, item.role)}
+                      className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/70 hover:text-red-400 inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                      aria-label={`Delete ${item.role}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

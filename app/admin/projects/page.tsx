@@ -142,9 +142,9 @@ export default function AdminProjectsPage() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Projects Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-burgundy">Projects Management</h1>
           <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE AI IMPLEMENTATIONS, ARCHITECTURES, DRAFTS & REPOSITORIES
           </p>
@@ -152,7 +152,7 @@ export default function AdminProjectsPage() {
         <button
           type="button"
           onClick={() => handleOpenEditor()}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors w-full sm:w-auto min-h-[44px]"
         >
           <Plus className="w-4 h-4" />
           <span>New Project</span>
@@ -399,76 +399,81 @@ export default function AdminProjectsPage() {
 
       {/* Projects Listing Table */}
       <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
-            <tr>
-              <th className="p-4">Title & Slug</th>
-              <th className="p-4">Category</th>
-              <th className="p-4">Featured</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border-soft">
-            {items.map((item) => (
-              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
-                <td className="p-4">
-                  <div className="font-semibold text-burgundy">{item.title}</div>
-                  <div className="text-[10px] font-mono text-charcoal/70 mt-0.5">/{item.slug}</div>
-                </td>
-                <td className="p-4 text-charcoal/85 font-mono">{item.category}</td>
-                <td className="p-4">
-                  {item.isFeatured ? (
-                    <span className="text-amber-400 font-mono flex items-center gap-1">
-                      <Star className="w-3.5 h-3.5 fill-amber-400" /> Featured
-                    </span>
-                  ) : (
-                    <span className="text-charcoal/60 font-mono">Standard</span>
-                  )}
-                </td>
-                <td className="p-4">
-                  <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
-                      item.isPublished
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
-                    }`}
-                  >
-                    {item.isPublished ? 'Published' : 'Draft (Hidden)'}
-                  </span>
-                </td>
-                <td className="p-4 text-right space-x-2">
-                  {item.isPublished && (
-                    <Link
-                      href={`/projects/${item.slug}`}
-                      target="_blank"
-                      className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-block"
-                      title="Preview on Public Site"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </Link>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => handleOpenEditor(item)}
-                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
-                    title="Edit Project"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(item.id, item.title)}
-                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
-                    title="Delete Project"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[650px]">
+            <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
+              <tr>
+                <th className="p-4">Title & Slug</th>
+                <th className="p-4">Category</th>
+                <th className="p-4">Featured</th>
+                <th className="p-4">Status</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border-soft">
+              {items.map((item) => (
+                <tr key={item.id} className="hover:bg-cream-50 transition-colors">
+                  <td className="p-4">
+                    <div className="font-semibold text-burgundy">{item.title}</div>
+                    <div className="text-[10px] font-mono text-charcoal/70 mt-0.5">/{item.slug}</div>
+                  </td>
+                  <td className="p-4 text-charcoal/85 font-mono">{item.category}</td>
+                  <td className="p-4">
+                    {item.isFeatured ? (
+                      <span className="text-amber-400 font-mono flex items-center gap-1">
+                        <Star className="w-3.5 h-3.5 fill-amber-400" /> Featured
+                      </span>
+                    ) : (
+                      <span className="text-charcoal/60 font-mono">Standard</span>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
+                        item.isPublished
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-cream-100 text-charcoal/70 border border-border-soft'
+                      }`}
+                    >
+                      {item.isPublished ? 'Published' : 'Draft (Hidden)'}
+                    </span>
+                  </td>
+                  <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                    {item.isPublished && (
+                      <Link
+                        href={`/projects/${item.slug}`}
+                        target="_blank"
+                        className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                        title="Preview on Public Site"
+                        aria-label={`Preview ${item.title}`}
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </Link>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditor(item)}
+                      className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                      title="Edit Project"
+                      aria-label={`Edit ${item.title}`}
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.id, item.title)}
+                      className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/70 hover:text-red-400 inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                      title="Delete Project"
+                      aria-label={`Delete ${item.title}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

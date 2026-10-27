@@ -372,21 +372,21 @@ export default function AdminCertificationsPage() {
 
   return (
     <div className="space-y-8 max-w-6xl">
-      <div className="flex items-center justify-between pb-6 border-b border-border-soft">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border-soft">
         <div>
-          <h1 className="text-3xl font-serif font-bold tracking-tight text-burgundy">Certifications Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold tracking-tight text-burgundy">Certifications Management</h1>
           <p className="text-xs font-mono text-charcoal/70 mt-1">
             MANAGE COURSEWORK CREDENTIALS, CERTIFICATE IMAGES & ISSUER METADATA
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => {
               setCategoryError(null);
               setShowCategoryModal(true);
             }}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-border-soft hover:border-burgundy text-charcoal hover:text-burgundy bg-white font-semibold text-xs transition-colors shadow-xs"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-border-soft hover:border-burgundy text-charcoal hover:text-burgundy bg-white font-semibold text-xs transition-colors shadow-xs min-h-[44px]"
           >
             <Tags className="w-4 h-4 text-burgundy" />
             <span>Manage Categories</span>
@@ -394,7 +394,7 @@ export default function AdminCertificationsPage() {
           <button
             type="button"
             onClick={() => handleOpenEditor()}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-sm"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-burgundy hover:bg-burgundy-500 text-white font-bold text-xs transition-colors shadow-sm min-h-[44px]"
           >
             <Plus className="w-4 h-4" />
             <span>New Credential Record</span>
@@ -782,97 +782,102 @@ export default function AdminCertificationsPage() {
 
       {/* Listing Table */}
       <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
-            <tr>
-              <th className="p-4 w-16">Preview</th>
-              <th className="p-4">Certificate</th>
-              <th className="p-4">Issuer</th>
-              <th className="p-4">Issue Date</th>
-              <th className="p-4">Category</th>
-              <th className="p-4">Verification</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border-soft">
-            {items.map((item) => (
-              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
-                <td className="p-4">
-                  {item.imageUrl ? (
-                    <div className="w-12 h-9 rounded-lg border border-border-soft overflow-hidden bg-cream-100 shrink-0">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-12 h-9 rounded-lg border border-border-soft/60 bg-cream-50 flex items-center justify-center text-charcoal/40 shrink-0">
-                      <Award className="w-4 h-4" />
-                    </div>
-                  )}
-                </td>
-                <td className="p-4">
-                  <div className="font-semibold text-burgundy">{item.title}</div>
-                  <div className="text-[11px] font-mono text-charcoal/50">{item.slug}</div>
-                </td>
-                <td className="p-4 text-charcoal/85">{item.issuer}</td>
-                <td className="p-4 font-mono text-charcoal/70">{item.issueDate || '—'}</td>
-                <td className="p-4 font-mono text-charcoal/80">{item.category}</td>
-                <td className="p-4">
-                  {item.credentialUrl ? (
-                    <span className="text-emerald-700 font-mono flex items-center gap-1 font-semibold">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> URL Verified
-                    </span>
-                  ) : (
-                    <span className="text-amber-700 font-mono">Draft Record</span>
-                  )}
-                </td>
-                <td className="p-4">
-                  <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
-                      item.isPublished
-                        ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-semibold'
-                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
-                    }`}
-                  >
-                    {item.isPublished ? 'Published' : 'Draft'}
-                  </span>
-                </td>
-                <td className="p-4 text-right space-x-2">
-                  {item.isPublished && (
-                    <Link
-                      href={`/certifications/${item.slug}`}
-                      target="_blank"
-                      className="p-1.5 rounded-lg hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-block"
-                      title="Preview Public Page"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </Link>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => handleOpenEditor(item)}
-                    className="p-1.5 rounded-lg hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
-                    title="Edit Credential"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(item.id, item.title)}
-                    className="p-1.5 rounded-lg hover:bg-cream-100 text-charcoal/70 hover:text-red-600"
-                    title="Delete Credential"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[750px]">
+            <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
+              <tr>
+                <th className="p-4 w-16">Preview</th>
+                <th className="p-4">Certificate</th>
+                <th className="p-4">Issuer</th>
+                <th className="p-4">Issue Date</th>
+                <th className="p-4">Category</th>
+                <th className="p-4">Verification</th>
+                <th className="p-4">Status</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border-soft">
+              {items.map((item) => (
+                <tr key={item.id} className="hover:bg-cream-50 transition-colors">
+                  <td className="p-4">
+                    {item.imageUrl ? (
+                      <div className="w-12 h-9 rounded-lg border border-border-soft overflow-hidden bg-cream-100 shrink-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-9 rounded-lg border border-border-soft/60 bg-cream-50 flex items-center justify-center text-charcoal/40 shrink-0">
+                        <Award className="w-4 h-4" />
+                      </div>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <div className="font-semibold text-burgundy">{item.title}</div>
+                    <div className="text-[11px] font-mono text-charcoal/50">{item.slug}</div>
+                  </td>
+                  <td className="p-4 text-charcoal/85">{item.issuer}</td>
+                  <td className="p-4 font-mono text-charcoal/70">{item.issueDate || '—'}</td>
+                  <td className="p-4 font-mono text-charcoal/80">{item.category}</td>
+                  <td className="p-4">
+                    {item.credentialUrl ? (
+                      <span className="text-emerald-700 font-mono flex items-center gap-1 font-semibold">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> URL Verified
+                      </span>
+                    ) : (
+                      <span className="text-amber-700 font-mono">Draft Record</span>
+                    )}
+                  </td>
+                  <td className="p-4">
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
+                        item.isPublished
+                          ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20 font-semibold'
+                          : 'bg-cream-100 text-charcoal/70 border border-border-soft'
+                      }`}
+                    >
+                      {item.isPublished ? 'Published' : 'Draft'}
+                    </span>
+                  </td>
+                  <td className="p-4 text-right space-x-2 whitespace-nowrap">
+                    {item.isPublished && (
+                      <Link
+                        href={`/certifications/${item.slug}`}
+                        target="_blank"
+                        className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                        title="Preview Public Page"
+                        aria-label={`Preview ${item.title}`}
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </Link>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditor(item)}
+                      className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/85 hover:text-burgundy inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                      title="Edit Credential"
+                      aria-label={`Edit ${item.title}`}
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.id, item.title)}
+                      className="p-2 rounded-lg hover:bg-cream-100 text-charcoal/70 hover:text-red-600 inline-flex items-center justify-center min-h-[36px] min-w-[36px]"
+                      title="Delete Credential"
+                      aria-label={`Delete ${item.title}`}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* MANAGE CATEGORIES MODAL */}

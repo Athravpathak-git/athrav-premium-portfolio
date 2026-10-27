@@ -1,9 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getProfile } from '@/lib/data-service';
+import { getProfile, getSocialLinksList } from '@/lib/data-service';
 import { constructMetadata } from '@/lib/seo';
 import { ProfilePortrait } from '@/components/public/ProfilePortrait';
+import { SocialIcon } from '@/components/common/SocialIcon';
 import {
   Brain,
   GraduationCap,
@@ -14,6 +15,7 @@ import {
   Mail,
   ArrowRight,
   Sparkles,
+  ArrowUpRight,
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +29,10 @@ export const metadata: Metadata = constructMetadata({
 
 export default async function AboutPage() {
   const profile = await getProfile();
+  const aboutSocials = await getSocialLinksList({
+    publishedOnly: true,
+    placement: 'about',
+  }).catch(() => []);
 
   return (
     <div className="min-h-screen bg-cream dark:bg-charcoal-900 text-charcoal dark:text-cream pt-32 pb-24 px-4 sm:px-6 lg:px-8 transition-colors duration-200">
@@ -77,17 +83,38 @@ export default async function AboutPage() {
                 </div>
               </div>
 
-              {/* Links */}
+              {/* Links & Verified Socials */}
               <div className="pt-2 flex flex-col gap-2.5">
-                <a
-                  href={profile.githubUrl || 'https://github.com/Athravpathak-git'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-cream-100 dark:bg-charcoal-700 hover:bg-cream-200 dark:hover:bg-charcoal-600 border border-border-soft dark:border-charcoal-600 text-xs font-mono font-semibold text-charcoal dark:text-cream transition-colors shadow-sm"
-                >
-                  <Github className="w-4 h-4 text-rosegold" />
-                  <span>GitHub Profile</span>
-                </a>
+                {aboutSocials
+                  .filter((s) => s.platform !== 'email')
+                  .map((channel) => (
+                    <a
+                      key={channel.id}
+                      href={channel.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-between px-4 py-2.5 rounded-xl bg-cream-100 dark:bg-charcoal-700 hover:bg-cream-200 dark:hover:bg-charcoal-600 border border-border-soft dark:border-charcoal-600 text-xs font-mono font-semibold text-charcoal dark:text-cream transition-colors shadow-sm group"
+                    >
+                      <div className="flex items-center gap-2">
+                        <SocialIcon platform={channel.platform} iconName={channel.icon} className="w-4 h-4 text-rosegold" />
+                        <span>{channel.label}</span>
+                      </div>
+                      <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                    </a>
+                  ))}
+
+                {aboutSocials.length === 0 && (
+                  <a
+                    href={profile.githubUrl || 'https://github.com/Athravpathak-git'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-cream-100 dark:bg-charcoal-700 hover:bg-cream-200 dark:hover:bg-charcoal-600 border border-border-soft dark:border-charcoal-600 text-xs font-mono font-semibold text-charcoal dark:text-cream transition-colors shadow-sm"
+                  >
+                    <SocialIcon platform="github" className="w-4 h-4 text-rosegold" />
+                    <span>GitHub Profile</span>
+                  </a>
+                )}
+
                 <Link
                   href="/contact"
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-burgundy hover:bg-burgundy-500 text-xs font-bold text-white transition-colors shadow-sm"

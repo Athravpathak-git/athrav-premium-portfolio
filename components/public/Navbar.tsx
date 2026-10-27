@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import { ThemeToggle } from './ThemeToggle';
 import { Menu, X } from 'lucide-react';
+import { SocialIcon } from '@/components/common/SocialIcon';
 
 const PRIMARY_NAV_LINKS = [
   { name: 'Home', href: '/' },
@@ -31,7 +32,19 @@ const ALL_NAV_LINKS = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [headerLinks, setHeaderLinks] = useState<any[]>([]);
   const pathname = usePathname();
+
+  useEffect(() => {
+    fetch('/api/social-links?placement=header')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && Array.isArray(data.links)) {
+          setHeaderLinks(data.links);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -97,7 +110,30 @@ export function Navbar() {
           </nav>
 
           {/* Right Action Icons & Mobile Hamburger */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            {/* Dynamic Header Social Links */}
+            {headerLinks.map((link) => {
+              const isEmail = link.platform === 'email';
+              const href = isEmail
+                ? link.url.startsWith('mailto:')
+                  ? link.url
+                  : `mailto:${link.url}`
+                : link.url;
+              return (
+                <a
+                  key={link.id}
+                  href={href}
+                  target={isEmail ? undefined : '_blank'}
+                  rel={isEmail ? undefined : 'noopener noreferrer'}
+                  className="hidden md:inline-flex p-2 rounded-full text-charcoal/70 dark:text-cream/70 hover:text-burgundy dark:hover:text-rosegold hover:bg-cream-200/70 dark:hover:bg-charcoal-700/60 transition-colors"
+                  title={link.label}
+                  aria-label={link.label}
+                >
+                  <SocialIcon platform={link.platform} iconName={link.icon} className="w-4 h-4" />
+                </a>
+              );
+            })}
+
             <ThemeToggle />
 
             {/* Admin Portal Shortcut */}
@@ -143,6 +179,23 @@ export function Navbar() {
                 </NextLink>
               );
             })}
+            {headerLinks.length > 0 && (
+              <div className="pt-3 mt-1 border-t border-border-soft dark:border-charcoal-800 flex flex-wrap items-center gap-2 px-2">
+                {headerLinks.map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.platform === 'email' && !link.url.startsWith('mailto:') ? `mailto:${link.url}` : link.url}
+                    target={link.platform === 'email' ? undefined : '_blank'}
+                    rel={link.platform === 'email' ? undefined : 'noopener noreferrer'}
+                    className="p-2 rounded-lg bg-cream-200/50 dark:bg-charcoal-800 text-charcoal dark:text-cream hover:text-burgundy dark:hover:text-rosegold transition-colors flex items-center gap-1.5 text-xs font-mono"
+                    aria-label={link.label}
+                  >
+                    <SocialIcon platform={link.platform} iconName={link.icon} className="w-4 h-4 text-rosegold" />
+                    <span>{link.label}</span>
+                  </a>
+                ))}
+              </div>
+            )}
             <div className="pt-3 mt-2 border-t border-border-soft dark:border-charcoal-800 flex items-center justify-between px-2">
               <span className="text-xs font-mono text-rosegold-700 dark:text-rosegold">Administrative Console</span>
               <NextLink

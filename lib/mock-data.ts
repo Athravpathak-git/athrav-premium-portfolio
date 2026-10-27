@@ -106,6 +106,25 @@ export interface CertificateCategoryData {
   updatedAt: string;
 }
 
+export interface SocialLinkData {
+  id: string;
+  platform: string;
+  label: string;
+  url: string;
+  username?: string | null;
+  icon: string;
+  isEnabled: boolean;
+  isPublished: boolean;
+  showInHeader: boolean;
+  showInFooter: boolean;
+  showInContact: boolean;
+  showInAbout: boolean;
+  showInHero: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ExperienceData {
   id: string;
   slug: string;
@@ -889,6 +908,171 @@ export const initialCertificateCategories: CertificateCategoryData[] = [
     name: 'Other',
     slug: 'other',
     sortOrder: 10,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+];
+
+export const initialSocialLinks: SocialLinkData[] = [
+  {
+    id: 'social-email',
+    platform: 'email',
+    label: 'Direct Email',
+    url: 'mailto:athravpathak07@gmail.com',
+    username: 'athravpathak07@gmail.com',
+    icon: 'Mail',
+    isEnabled: true,
+    isPublished: true,
+    showInHeader: false,
+    showInFooter: true,
+    showInContact: true,
+    showInAbout: true,
+    showInHero: true,
+    sortOrder: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-github',
+    platform: 'github',
+    label: 'GitHub Profile',
+    url: 'https://github.com/Athravpathak-git',
+    username: '@Athravpathak-git',
+    icon: 'Github',
+    isEnabled: true,
+    isPublished: true,
+    showInHeader: true,
+    showInFooter: true,
+    showInContact: true,
+    showInAbout: true,
+    showInHero: true,
+    sortOrder: 2,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-linkedin',
+    platform: 'linkedin',
+    label: 'LinkedIn Profile',
+    url: '',
+    username: null,
+    icon: 'Linkedin',
+    isEnabled: true,
+    isPublished: false, // Unpublished until user adds their URL
+    showInHeader: true,
+    showInFooter: true,
+    showInContact: true,
+    showInAbout: true,
+    showInHero: true,
+    sortOrder: 3,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-twitter',
+    platform: 'twitter',
+    label: 'X (Twitter)',
+    url: '',
+    username: null,
+    icon: 'Twitter',
+    isEnabled: false,
+    isPublished: false,
+    showInHeader: false,
+    showInFooter: true,
+    showInContact: false,
+    showInAbout: false,
+    showInHero: false,
+    sortOrder: 4,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-instagram',
+    platform: 'instagram',
+    label: 'Instagram',
+    url: '',
+    username: null,
+    icon: 'Instagram',
+    isEnabled: false,
+    isPublished: false,
+    showInHeader: false,
+    showInFooter: false,
+    showInContact: false,
+    showInAbout: false,
+    showInHero: false,
+    sortOrder: 5,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-whatsapp',
+    platform: 'whatsapp',
+    label: 'WhatsApp Direct',
+    url: '',
+    username: null,
+    icon: 'MessageCircle',
+    isEnabled: false,
+    isPublished: false,
+    showInHeader: false,
+    showInFooter: false,
+    showInContact: true,
+    showInAbout: false,
+    showInHero: false,
+    sortOrder: 6,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-youtube',
+    platform: 'youtube',
+    label: 'YouTube Channel',
+    url: '',
+    username: null,
+    icon: 'Youtube',
+    isEnabled: false,
+    isPublished: false,
+    showInHeader: false,
+    showInFooter: false,
+    showInContact: false,
+    showInAbout: false,
+    showInHero: false,
+    sortOrder: 7,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-facebook',
+    platform: 'facebook',
+    label: 'Facebook',
+    url: '',
+    username: null,
+    icon: 'Facebook',
+    isEnabled: false,
+    isPublished: false,
+    showInHeader: false,
+    showInFooter: false,
+    showInContact: false,
+    showInAbout: false,
+    showInHero: false,
+    sortOrder: 8,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'social-website',
+    platform: 'website',
+    label: 'Personal Website',
+    url: '',
+    username: null,
+    icon: 'Globe',
+    isEnabled: false,
+    isPublished: false,
+    showInHeader: false,
+    showInFooter: false,
+    showInContact: true,
+    showInAbout: false,
+    showInHero: false,
+    sortOrder: 9,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },

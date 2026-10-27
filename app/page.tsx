@@ -10,6 +10,7 @@ import {
   getExperienceList,
   getAchievementsList,
   getServicesList,
+  getSocialLinksList,
 } from '@/lib/data-service';
 import { Hero3DClient } from '@/components/public/Hero3DClient';
 import { Showcase3DClient } from '@/components/public/Showcase3DClient';
@@ -17,6 +18,7 @@ import { ProjectCard } from '@/components/public/ProjectCard';
 import { CertificateCard } from '@/components/public/CertificateCard';
 import { SkillBadge } from '@/components/public/SkillBadge';
 import { ProfilePortrait } from '@/components/public/ProfilePortrait';
+import { SocialIcon } from '@/components/common/SocialIcon';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -44,6 +46,7 @@ export default async function HomePage() {
   const education = await getEducationList(true);
   const experience = await getExperienceList(true);
   const services = await getServicesList(true);
+  const heroSocials = await getSocialLinksList({ publishedOnly: true, placement: 'hero' }).catch(() => []);
 
   // Helper to check section visibility
   const isSectionEnabled = (key: string) => {
@@ -127,16 +130,40 @@ export default async function HomePage() {
                   <Mail className="w-4 h-4 text-rosegold" />
                 </Link>
 
-                <a
-                  href="https://github.com/Athravpathak-git"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-4 rounded-xl bg-white/80 dark:bg-charcoal-800/80 hover:bg-white dark:hover:bg-charcoal-700 border border-border-soft dark:border-charcoal-700 text-charcoal dark:text-cream font-mono text-xs transition-all shadow-sm"
-                  aria-label="GitHub Profile"
-                >
-                  <Github className="w-4 h-4 text-rosegold" />
-                  <span>GitHub</span>
-                </a>
+                {heroSocials.map((link) => {
+                  const isEmail = link.platform === 'email';
+                  const href = isEmail
+                    ? link.url.startsWith('mailto:')
+                      ? link.url
+                      : `mailto:${link.url}`
+                    : link.url;
+                  return (
+                    <a
+                      key={link.id}
+                      href={href}
+                      target={isEmail ? undefined : '_blank'}
+                      rel={isEmail ? undefined : 'noopener noreferrer'}
+                      className="inline-flex items-center gap-2 px-5 py-4 rounded-xl bg-white/80 dark:bg-charcoal-800/80 hover:bg-white dark:hover:bg-charcoal-700 border border-border-soft dark:border-charcoal-700 text-charcoal dark:text-cream font-mono text-xs transition-all shadow-sm"
+                      aria-label={link.label}
+                    >
+                      <SocialIcon platform={link.platform} iconName={link.icon} className="w-4 h-4 text-rosegold" />
+                      <span>{link.label}</span>
+                    </a>
+                  );
+                })}
+
+                {heroSocials.length === 0 && (
+                  <a
+                    href="https://github.com/Athravpathak-git"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-4 rounded-xl bg-white/80 dark:bg-charcoal-800/80 hover:bg-white dark:hover:bg-charcoal-700 border border-border-soft dark:border-charcoal-700 text-charcoal dark:text-cream font-mono text-xs transition-all shadow-sm"
+                    aria-label="GitHub Profile"
+                  >
+                    <SocialIcon platform="github" className="w-4 h-4 text-rosegold" />
+                    <span>GitHub</span>
+                  </a>
+                )}
               </div>
             </div>
 
