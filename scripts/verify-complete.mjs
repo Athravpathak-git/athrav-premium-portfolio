@@ -139,6 +139,12 @@ async function runCompleteVerification() {
   // -------------------------------------------------------------------------
   console.log('\n--- 4. Testing Profile Photo Workflow ---');
 
+  // Record original profile state to restore after testing
+  const initialProfileRes = await testEndpoint('Get Initial Profile', `${BASE_URL}/api/admin/profile`, {
+    headers: { Cookie: sessionCookie },
+  });
+  const originalAvatarUrl = initialProfileRes.body.profile?.avatarUrl;
+
   // A. Disguised/Malicious File Rejection (e.g. HTML renamed to .png)
   const fakePngBuffer = Buffer.from('<html><script>alert("exploit")</script></html>');
   const fakeForm = new FormData();
@@ -269,6 +275,16 @@ async function runCompleteVerification() {
   if (replacedAvatarUrl) {
     const diskPath = path.join(process.cwd(), 'public', replacedAvatarUrl.replace(/^\//, ''));
     if (fs.existsSync(diskPath)) fs.unlinkSync(diskPath);
+  }
+
+  // I. Restore original profile photo so testing does not destroy genuine user state
+  if (originalAvatarUrl) {
+    await testEndpoint('Restore Original Profile', `${BASE_URL}/api/admin/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Cookie: sessionCookie },
+      body: JSON.stringify({ ...initialProfileRes.body.profile, avatarUrl: originalAvatarUrl }),
+    });
+    console.log(`  [RESTORE] Successfully restored original user avatarUrl: ${originalAvatarUrl}`);
   }
 
   // -------------------------------------------------------------------------

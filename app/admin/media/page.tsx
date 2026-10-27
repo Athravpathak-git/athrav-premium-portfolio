@@ -613,7 +613,7 @@ export default function AdminMediaPage() {
 
                     {item.altText && (
                       <p className="text-[11px] text-charcoal/70 line-clamp-1 italic">
-                        "{item.altText}"
+                        &ldquo;{item.altText}&rdquo;
                       </p>
                     )}
 

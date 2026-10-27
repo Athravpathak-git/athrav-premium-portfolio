@@ -29,6 +29,8 @@ pnpm-debug.log*
 # Uploaded files during local development
 public/uploads/*
 !public/uploads/.gitkeep
+!public/uploads/profile-*.jpg
+!public/uploads/cert-*.png
 
 # Operating system files
 .DS_Store

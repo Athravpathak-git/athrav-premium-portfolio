@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Loader2,
   Inbox,
@@ -19,7 +19,7 @@ export default function AdminMessagesPage() {
   const [selectedMsg, setSelectedMsg] = useState<any | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const fetchMessages = () => {
+  const fetchMessages = useCallback(() => {
     fetch('/api/admin/messages')
       .then((res) => {
         if (res.status === 401) {
@@ -41,11 +41,11 @@ export default function AdminMessagesPage() {
         setStatusMsg({ type: 'error', text: 'Failed to retrieve contact messages.' });
       })
       .finally(() => setLoading(false));
-  };
+  }, [selectedMsg]);
 
   useEffect(() => {
     fetchMessages();
-  }, []);
+  }, [fetchMessages]);
 
   const handleUpdateStatus = async (id: string, patch: any) => {
     try {
