@@ -95,10 +95,9 @@ export async function Footer() {
                 socialLinks.map((link) => {
                   const isEmail = link.platform === 'email';
                   const href = isEmail
-                    ? link.url.startsWith('mailto:')
-                      ? link.url
-                      : `mailto:${link.url}`
+                    ? `mailto:${verifiedEmail}`
                     : link.url;
+                  const displayLabel = isEmail ? verifiedEmail : link.label;
 
                   return (
                     <li key={link.id}>
@@ -107,14 +106,14 @@ export async function Footer() {
                         target={isEmail ? undefined : '_blank'}
                         rel={isEmail ? undefined : 'noopener noreferrer'}
                         className="inline-flex items-center gap-2 hover:text-cream transition-colors group"
-                        aria-label={link.label}
+                        aria-label={displayLabel}
                       >
                         <SocialIcon
                           platform={link.platform}
                           iconName={link.icon}
                           className="w-4 h-4 text-rosegold group-hover:text-cream transition-colors"
                         />
-                        <span>{link.label}</span>
+                        <span>{displayLabel}</span>
                         {!isEmail && (
                           <ArrowUpRight className="w-3 h-3 opacity-60 group-hover:opacity-100 transition-opacity" />
                         )}

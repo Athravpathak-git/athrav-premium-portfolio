@@ -5,7 +5,8 @@ import { cookies } from 'next/headers';
 import { isDatabaseConfigured, isDatabaseAvailable, withDbTimeout, getPrisma } from './db';
 
 export const SESSION_COOKIE_NAME = 'athrav_admin_session';
-export const SESSION_MAX_AGE_SECONDS = Number(process.env.SESSION_MAX_AGE_SECONDS) || 60 * 60 * 24 * 7; // 7 days
+export const INACTIVITY_TIMEOUT_SECONDS = 300; // 5 minutes (300 seconds) inactivity timeout
+export const SESSION_MAX_AGE_SECONDS = Number(process.env.SESSION_MAX_AGE_SECONDS) || INACTIVITY_TIMEOUT_SECONDS;
 
 export function isSecureContext(): boolean {
   return process.env.NODE_ENV === 'production' && Boolean(process.env.VERCEL || process.env.NEXT_PUBLIC_SITE_URL?.startsWith('https'));
@@ -207,7 +208,7 @@ export async function createSession(
   meta?: { ipAddress?: string; userAgent?: string }
 ): Promise<string> {
   const token = generateSessionToken();
-  const expiresAt = new Date(Date.now() + SESSION_MAX_AGE_SECONDS * 1000);
+  const expiresAt = new Date(Date.now() + INACTIVITY_TIMEOUT_SECONDS * 1000);
 
   if (isDatabaseAvailable()) {
     try {
@@ -239,7 +240,56 @@ export async function createSession(
   return token;
 }
 
-export async function validateSessionToken(token: string) {
+/**
+ * Resets the sliding inactivity expiration deadline for an active session.
+ * Strictly checks that the session has not already expired; expired sessions cannot be touched.
+ */
+export async function touchSession(token: string): Promise<boolean> {
+  if (!token) return false;
+  const newExpiresAt = new Date(Date.now() + INACTIVITY_TIMEOUT_SECONDS * 1000);
+
+  if (isDatabaseAvailable()) {
+    try {
+      const result = await withDbTimeout(
+        getPrisma().session.updateMany({
+          where: {
+            sessionToken: token,
+            expiresAt: { gt: new Date() }, // strictly only if NOT already expired!
+          },
+          data: {
+            expiresAt: newExpiresAt,
+          },
+        })
+      );
+      if (result.count > 0) return true;
+      return false;
+    } catch (err) {
+      console.warn('[Auth] Prisma touchSession error:', err);
+    }
+  }
+
+  let memSession = mockSessions.get(token);
+  if (!memSession) {
+    const reloaded = loadDevSessions();
+    for (const [k, v] of reloaded.entries()) {
+      mockSessions.set(k, v);
+    }
+    memSession = mockSessions.get(token);
+  }
+
+  if (memSession && memSession.expiresAt > new Date()) {
+    memSession.expiresAt = newExpiresAt;
+    saveDevSessions(mockSessions);
+    return true;
+  }
+
+  return false;
+}
+
+export async function validateSessionToken(
+  token: string,
+  options: { touch?: boolean } = { touch: true }
+) {
   if (!token) return null;
 
   if (isDatabaseAvailable()) {
@@ -253,13 +303,36 @@ export async function validateSessionToken(token: string) {
 
       if (!session) return null;
 
+      // 1. Strict Server-Side Expiration Check (> 300 seconds of inactivity)
       if (session.expiresAt < new Date()) {
-        await withDbTimeout(getPrisma().session.delete({ where: { id: session.id } }));
+        try {
+          await withDbTimeout(getPrisma().session.delete({ where: { id: session.id } }));
+        } catch {
+          // ignore cleanup errors
+        }
         return null;
       }
 
       if (session.user.status !== 'ACTIVE') {
         return null;
+      }
+
+      // 2. Rolling Inactivity Extension (throttled to avoid DB write thrashing)
+      // Only extend if more than 30 seconds have passed since last renewal (remaining time < 270s)
+      const remainingMs = session.expiresAt.getTime() - Date.now();
+      if (options.touch && remainingMs < (INACTIVITY_TIMEOUT_SECONDS - 30) * 1000) {
+        const newExpiresAt = new Date(Date.now() + INACTIVITY_TIMEOUT_SECONDS * 1000);
+        try {
+          await withDbTimeout(
+            getPrisma().session.update({
+              where: { id: session.id },
+              data: { expiresAt: newExpiresAt },
+            })
+          );
+          session.expiresAt = newExpiresAt;
+        } catch (touchErr) {
+          console.warn('[Auth] Rolling session extension error:', touchErr);
+        }
       }
 
       return {
@@ -301,6 +374,13 @@ export async function validateSessionToken(token: string) {
   const user = mockAdminUsers.find((u) => u.id === memSession.userId);
   if (!user || user.status !== 'ACTIVE') {
     return null;
+  }
+
+  // Rolling Inactivity Extension for mock sessions
+  const remainingMs = memSession.expiresAt.getTime() - Date.now();
+  if (options.touch && remainingMs < (INACTIVITY_TIMEOUT_SECONDS - 30) * 1000) {
+    memSession.expiresAt = new Date(Date.now() + INACTIVITY_TIMEOUT_SECONDS * 1000);
+    saveDevSessions(mockSessions);
   }
 
   return {

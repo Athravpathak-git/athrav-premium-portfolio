@@ -83,6 +83,18 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
+      try {
+        localStorage.removeItem('athrav_admin_last_activity');
+        localStorage.setItem(
+          'athrav_admin_logout_event',
+          JSON.stringify({ reason: 'manual', timestamp: Date.now() })
+        );
+        if ('BroadcastChannel' in window) {
+          const bc = new BroadcastChannel('athrav_admin_inactivity_channel');
+          bc.postMessage({ type: 'LOGOUT', reason: 'manual' });
+          bc.close();
+        }
+      } catch {}
       await fetch('/api/auth/logout', { method: 'POST' });
       window.location.href = '/admin/login';
     } catch (err) {

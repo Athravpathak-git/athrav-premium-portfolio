@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { isDatabaseConfigured, isDatabaseAvailable, withDbTimeout, getPrisma } from './db';
+import { isDatabaseConfigured, isDatabaseAvailable, withDbTimeout, getPrisma, recordDatabaseFailure } from './db';
 import {
   initialProfile,
   initialEducation,
@@ -145,7 +145,9 @@ function persistDevStore() {
 export async function getProfile(): Promise<ProfileData> {
   if (isDatabaseAvailable()) {
     try {
-      let p = await getPrisma().profile.findFirst();
+      let p = await getPrisma().profile.findFirst({
+        orderBy: { updatedAt: 'desc' },
+      });
       if (!p) {
         try {
           p = await getPrisma().profile.create({
@@ -170,16 +172,19 @@ export async function getProfile(): Promise<ProfileData> {
         }
       }
       if (p) {
-        if (p.email === 'athravpathak01@gmail.com') {
-          try {
-            p = await getPrisma().profile.update({
-              where: { id: p.id },
-              data: { email: 'athravpathak07@gmail.com', updatedAt: new Date() },
-            });
-          } catch {
-            p.email = 'athravpathak07@gmail.com';
+        // Keep in-memory dev store synchronized with database value
+        if (p.email && devStore.profile.email !== p.email) {
+          devStore.profile.email = p.email;
+          const devEmailLink = devStore.socialLinks.find((l) => l.platform === 'email');
+          if (devEmailLink) {
+            devEmailLink.url = `mailto:${p.email}`;
+            devEmailLink.label = p.email;
+            devEmailLink.username = p.email;
           }
+          devStore.settings.notificationEmail = p.email;
+          persistDevStore();
         }
+
         return {
           id: p.id,
           name: p.name,
@@ -203,40 +208,41 @@ export async function getProfile(): Promise<ProfileData> {
       console.warn('[DataService] Prisma error falling back to dev store:', err);
     }
   }
-  if (devStore.profile.email === 'athravpathak01@gmail.com') {
-    devStore.profile.email = 'athravpathak07@gmail.com';
-    persistDevStore();
-  }
   return devStore.profile;
 }
 
 export async function updateProfile(data: Partial<ProfileData>): Promise<ProfileData> {
+  const cleanEmail = typeof data.email === 'string' && data.email.trim()
+    ? data.email.trim().toLowerCase()
+    : undefined;
+
+  const profilePayload = {
+    ...data,
+    ...(cleanEmail ? { email: cleanEmail } : {}),
+  };
+
   if (isDatabaseAvailable()) {
     try {
-      const existing = await getPrisma().profile.findFirst();
+      const existing = await getPrisma().profile.findFirst({
+        orderBy: { updatedAt: 'desc' },
+      });
+
+      let updatedRecord;
       if (existing) {
-        const updated = await getPrisma().profile.update({
+        updatedRecord = await getPrisma().profile.update({
           where: { id: existing.id },
           data: {
-            ...data,
+            ...profilePayload,
             updatedAt: new Date(),
           },
         });
-        return {
-          ...updated,
-          location: updated.location || '',
-          status: updated.status || '',
-          githubUrl: updated.githubUrl || '',
-          createdAt: updated.createdAt.toISOString(),
-          updatedAt: updated.updatedAt.toISOString(),
-        };
       } else {
-        const created = await getPrisma().profile.create({
+        updatedRecord = await getPrisma().profile.create({
           data: {
             name: data.name || initialProfile.name,
             headline: data.headline || initialProfile.headline,
             bio: data.bio || initialProfile.bio,
-            email: data.email || initialProfile.email,
+            email: cleanEmail || initialProfile.email,
             location: data.location || initialProfile.location,
             status: data.status || initialProfile.status,
             avatarUrl: data.avatarUrl !== undefined ? data.avatarUrl : initialProfile.avatarUrl,
@@ -248,24 +254,108 @@ export async function updateProfile(data: Partial<ProfileData>): Promise<Profile
             resumePublished: data.resumePublished !== undefined ? data.resumePublished : false,
           },
         });
-        return {
-          ...created,
-          location: created.location || '',
-          status: created.status || '',
-          githubUrl: created.githubUrl || '',
-          createdAt: created.createdAt.toISOString(),
-          updatedAt: created.updatedAt.toISOString(),
-        };
       }
+
+      // Synchronize with SocialLink (platform: 'email') & WebsiteSetting (key: 'notificationEmail')
+      if (cleanEmail) {
+        try {
+          const emailLink = await getPrisma().socialLink.findFirst({ where: { platform: 'email' } });
+          if (emailLink) {
+            await getPrisma().socialLink.update({
+              where: { id: emailLink.id },
+              data: {
+                url: `mailto:${cleanEmail}`,
+                label: cleanEmail,
+                username: cleanEmail,
+              },
+            });
+          } else {
+            await getPrisma().socialLink.create({
+              data: {
+                platform: 'email',
+                label: cleanEmail,
+                url: `mailto:${cleanEmail}`,
+                username: cleanEmail,
+                icon: 'Mail',
+                isEnabled: true,
+                isPublished: true,
+                showInHeader: false,
+                showInFooter: true,
+                showInContact: true,
+                showInAbout: true,
+                showInHero: true,
+                sortOrder: 1,
+              },
+            });
+          }
+
+          await getPrisma().websiteSetting.upsert({
+            where: { key: 'notificationEmail' },
+            update: { value: cleanEmail },
+            create: { key: 'notificationEmail', value: cleanEmail },
+          });
+        } catch (syncErr) {
+          console.warn('[DataService] Email synchronization warning:', syncErr);
+        }
+      }
+
+      // Also synchronize devStore in memory and disk
+      devStore.profile = {
+        ...devStore.profile,
+        ...profilePayload,
+        updatedAt: updatedRecord.updatedAt.toISOString(),
+      };
+      if (cleanEmail) {
+        const devLink = devStore.socialLinks.find((l) => l.platform === 'email');
+        if (devLink) {
+          devLink.url = `mailto:${cleanEmail}`;
+          devLink.label = cleanEmail;
+          devLink.username = cleanEmail;
+        }
+        devStore.settings.notificationEmail = cleanEmail;
+      }
+      persistDevStore();
+
+      return {
+        id: updatedRecord.id,
+        name: updatedRecord.name,
+        headline: updatedRecord.headline,
+        bio: updatedRecord.bio,
+        email: updatedRecord.email,
+        location: updatedRecord.location || '',
+        status: updatedRecord.status || '',
+        avatarUrl: updatedRecord.avatarUrl,
+        githubUrl: updatedRecord.githubUrl || '',
+        linkedinUrl: updatedRecord.linkedinUrl,
+        twitterUrl: updatedRecord.twitterUrl,
+        websiteUrl: updatedRecord.websiteUrl,
+        resumeUrl: updatedRecord.resumeUrl,
+        resumePublished: updatedRecord.resumePublished,
+        createdAt: updatedRecord.createdAt.toISOString(),
+        updatedAt: updatedRecord.updatedAt.toISOString(),
+      };
     } catch (err) {
-      console.warn('[DataService] Prisma update failed:', err);
+      console.error('[DataService] Prisma profile update failed:', err);
+      recordDatabaseFailure(err);
+      throw new Error('Database operation failed while persisting profile update.');
     }
   }
+
+  // Fallback for local development / mock mode
   devStore.profile = {
     ...devStore.profile,
-    ...data,
+    ...profilePayload,
     updatedAt: new Date().toISOString(),
   };
+  if (cleanEmail) {
+    const devLink = devStore.socialLinks.find((l) => l.platform === 'email');
+    if (devLink) {
+      devLink.url = `mailto:${cleanEmail}`;
+      devLink.label = cleanEmail;
+      devLink.username = cleanEmail;
+    }
+    devStore.settings.notificationEmail = cleanEmail;
+  }
   persistDevStore();
   return devStore.profile;
 }
@@ -2327,11 +2417,27 @@ export async function updateSettings(settings: Record<string, string>): Promise<
           create: { key, value },
         });
       }
+      if (settings.notificationEmail) {
+        const cleanEmail = settings.notificationEmail.trim().toLowerCase();
+        await updateProfile({ email: cleanEmail }).catch(() => {});
+      }
     } catch (err) {
-      console.warn('[DataService] Prisma update settings error:', err);
+      console.error('[DataService] Prisma update settings error:', err);
+      recordDatabaseFailure(err);
+      throw new Error('Database operation failed while saving settings.');
     }
   }
   devStore.settings = { ...devStore.settings, ...settings };
+  if (settings.notificationEmail) {
+    const cleanEmail = settings.notificationEmail.trim().toLowerCase();
+    devStore.profile.email = cleanEmail;
+    const emailLink = devStore.socialLinks.find((l) => l.platform === 'email');
+    if (emailLink) {
+      emailLink.url = `mailto:${cleanEmail}`;
+      emailLink.label = cleanEmail;
+      emailLink.username = cleanEmail;
+    }
+  }
   persistDevStore();
   return devStore.settings;
 }
@@ -2493,13 +2599,14 @@ export async function getSocialLinksList(filter?: SocialLinksFilter): Promise<So
 
       // In case the DB has legacy email link with old address, auto-upgrade it:
       const emailLink = mapped.find((l) => l.platform === 'email');
-      if (emailLink && emailLink.url.includes('athravpathak01@gmail.com')) {
+      if (emailLink && (emailLink.url.includes('athravpathak01@gmail.com') || emailLink.label.includes('athravpathak01@gmail.com'))) {
         const newUrl = emailLink.url.replace('athravpathak01@gmail.com', 'athravpathak07@gmail.com');
         emailLink.url = newUrl;
         emailLink.label = 'athravpathak07@gmail.com';
+        emailLink.username = 'athravpathak07@gmail.com';
         getPrisma().socialLink.update({
           where: { id: emailLink.id },
-          data: { url: newUrl, label: 'athravpathak07@gmail.com' },
+          data: { url: newUrl, label: 'athravpathak07@gmail.com', username: 'athravpathak07@gmail.com' },
         }).catch(() => {});
       }
 
@@ -2634,10 +2741,17 @@ export async function createSocialLink(data: Omit<SocialLinkData, 'id' | 'create
         updatedAt: created.updatedAt.toISOString(),
       };
     } catch (err) {
-      console.warn('[DataService] Prisma createSocialLink error:', err);
+      console.error('[DataService] Prisma createSocialLink error:', err);
+      recordDatabaseFailure(err);
+      throw new Error('Database operation failed while creating social link.');
     }
   }
 
+  if (data.platform === 'email' && data.url) {
+    const cleanEmail = data.url.replace(/^mailto:/i, '').trim().toLowerCase();
+    devStore.profile.email = cleanEmail;
+    devStore.settings.notificationEmail = cleanEmail;
+  }
   devStore.socialLinks.push(newItem);
   persistDevStore();
   return newItem;
@@ -2667,12 +2781,23 @@ export async function updateSocialLink(id: string, data: Partial<SocialLinkData>
 
       // Synchronize with Profile if matching platform
       if (updated.platform === 'email' && updated.url) {
-        const cleanEmail = updated.url.replace(/^mailto:/i, '').trim();
+        const cleanEmail = updated.url.replace(/^mailto:/i, '').trim().toLowerCase();
         await updateProfile({ email: cleanEmail }).catch(() => {});
       } else if (updated.platform === 'github' && updated.url) {
         await updateProfile({ githubUrl: updated.url }).catch(() => {});
       } else if (updated.platform === 'linkedin') {
         await updateProfile({ linkedinUrl: updated.url || null }).catch(() => {});
+      }
+
+      // Keep devStore in sync
+      const idx = devStore.socialLinks.findIndex((l) => l.id === id);
+      if (idx !== -1) {
+        devStore.socialLinks[idx] = {
+          ...devStore.socialLinks[idx],
+          ...data,
+          updatedAt: updated.updatedAt.toISOString(),
+        };
+        persistDevStore();
       }
 
       return {
@@ -2694,7 +2819,9 @@ export async function updateSocialLink(id: string, data: Partial<SocialLinkData>
         updatedAt: updated.updatedAt.toISOString(),
       };
     } catch (err) {
-      console.warn('[DataService] Prisma updateSocialLink error:', err);
+      console.error('[DataService] Prisma updateSocialLink error:', err);
+      recordDatabaseFailure(err);
+      throw new Error('Database operation failed while updating social link.');
     }
   }
 
@@ -2710,8 +2837,9 @@ export async function updateSocialLink(id: string, data: Partial<SocialLinkData>
   // Synchronize with Profile in devStore
   const current = devStore.socialLinks[idx];
   if (current.platform === 'email' && current.url) {
-    const cleanEmail = current.url.replace(/^mailto:/i, '').trim();
+    const cleanEmail = current.url.replace(/^mailto:/i, '').trim().toLowerCase();
     devStore.profile.email = cleanEmail;
+    devStore.settings.notificationEmail = cleanEmail;
   } else if (current.platform === 'github' && current.url) {
     devStore.profile.githubUrl = current.url;
   } else if (current.platform === 'linkedin') {

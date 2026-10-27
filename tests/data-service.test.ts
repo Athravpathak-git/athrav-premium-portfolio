@@ -14,6 +14,9 @@ import {
   deleteCertificateCategory,
   getCertificateCategoryUsageCounts,
   getProfile,
+  updateProfile,
+  getSettings,
+  updateSettings,
   getSocialLinksList,
   getSocialLinkById,
   createSocialLink,
@@ -287,6 +290,29 @@ describe('Data Service & Content Publishing Workflows', () => {
 
       const afterDelete = await getSocialLinkById(created.id);
       expect(afterDelete).toBeNull();
+    });
+
+    it('persists email update across profile, social channels, and settings without reverting', async () => {
+      const testEmail = 'athravpathak07@gmail.com';
+
+      // 1. Update profile email
+      const updated = await updateProfile({ email: testEmail });
+      expect(updated.email).toBe(testEmail);
+
+      // 2. Verify getProfile() read-back
+      const fetchedProfile = await getProfile();
+      expect(fetchedProfile.email).toBe(testEmail);
+
+      // 3. Verify social channels sync
+      const socials = await getSocialLinksList({ publishedOnly: false });
+      const emailSocial = socials.find((s) => s.platform === 'email');
+      expect(emailSocial).toBeDefined();
+      expect(emailSocial?.url).toBe(`mailto:${testEmail}`);
+      expect(emailSocial?.label).toBe(testEmail);
+
+      // 4. Verify settings sync
+      const settings = await getSettings();
+      expect(settings.notificationEmail).toBe(testEmail);
     });
   });
 });

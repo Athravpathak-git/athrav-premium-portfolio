@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAdminApi } from '@/lib/auth-guard';
 import {
   getSocialLinksList,
@@ -9,21 +10,41 @@ import {
 } from '@/lib/data-service';
 import { logAuditEvent } from '@/lib/audit';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+};
+
+function triggerRevalidation() {
+  try {
+    revalidatePath('/', 'layout');
+    revalidatePath('/contact');
+    revalidatePath('/about');
+  } catch (err) {
+    console.warn('[API Social Links] Revalidation warning:', err);
+  }
+}
+
 export async function GET() {
   const auth = await requireAdminApi();
   if (!auth.authorized) return auth.response;
 
   try {
     const links = await getSocialLinksList();
-    return NextResponse.json({
-      success: true,
-      links,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        links,
+      },
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (err: unknown) {
     console.error('[API Social Links GET Error]:', err);
     return NextResponse.json(
       { error: 'Failed to retrieve social links.' },
-      { status: 500 }
+      { status: 500, headers: NO_CACHE_HEADERS }
     );
   }
 }
@@ -42,7 +63,7 @@ export async function POST(req: Request) {
     if (!platform || !label) {
       return NextResponse.json(
         { error: 'Platform identifier and label are required.' },
-        { status: 400 }
+        { status: 400, headers: NO_CACHE_HEADERS }
       );
     }
 
@@ -75,14 +96,19 @@ export async function POST(req: Request) {
       metadata: { platform: created.platform, label: created.label },
     });
 
-    return NextResponse.json({
-      success: true,
-      link: created,
-      message: `Social link "${created.label}" created successfully.`,
-    });
+    triggerRevalidation();
+
+    return NextResponse.json(
+      {
+        success: true,
+        link: created,
+        message: `Social link "${created.label}" created successfully.`,
+      },
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to create social link.';
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: message }, { status: 400, headers: NO_CACHE_HEADERS });
   }
 }
 
@@ -103,15 +129,19 @@ export async function PUT(req: Request) {
         req,
         metadata: { count: body.reorder.length },
       });
-      return NextResponse.json({
-        success: true,
-        message: 'Social links order updated successfully.',
-      });
+      triggerRevalidation();
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Social links order updated successfully.',
+        },
+        { headers: NO_CACHE_HEADERS }
+      );
     }
 
     const { id } = body;
     if (!id) {
-      return NextResponse.json({ error: 'Social Link ID is required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Social Link ID is required.' }, { status: 400, headers: NO_CACHE_HEADERS });
     }
 
     let url = typeof body.url === 'string' ? body.url.trim() : undefined;
@@ -135,7 +165,7 @@ export async function PUT(req: Request) {
     });
 
     if (!updated) {
-      return NextResponse.json({ error: 'Social link not found.' }, { status: 404 });
+      return NextResponse.json({ error: 'Social link not found.' }, { status: 404, headers: NO_CACHE_HEADERS });
     }
 
     await logAuditEvent({
@@ -147,14 +177,19 @@ export async function PUT(req: Request) {
       metadata: { platform: updated.platform, label: updated.label },
     });
 
-    return NextResponse.json({
-      success: true,
-      link: updated,
-      message: `Social link "${updated.label}" updated successfully.`,
-    });
+    triggerRevalidation();
+
+    return NextResponse.json(
+      {
+        success: true,
+        link: updated,
+        message: `Social link "${updated.label}" updated successfully.`,
+      },
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to update social link.';
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: message }, { status: 400, headers: NO_CACHE_HEADERS });
   }
 }
 
@@ -167,12 +202,12 @@ export async function DELETE(req: Request) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json({ error: 'Social Link ID is required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Social Link ID is required.' }, { status: 400, headers: NO_CACHE_HEADERS });
     }
 
     const deleted = await deleteSocialLink(id);
     if (!deleted) {
-      return NextResponse.json({ error: 'Social link not found.' }, { status: 404 });
+      return NextResponse.json({ error: 'Social link not found.' }, { status: 404, headers: NO_CACHE_HEADERS });
     }
 
     await logAuditEvent({
@@ -183,15 +218,20 @@ export async function DELETE(req: Request) {
       req,
     });
 
-    return NextResponse.json({
-      success: true,
-      message: 'Social link deleted successfully.',
-    });
+    triggerRevalidation();
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Social link deleted successfully.',
+      },
+      { headers: NO_CACHE_HEADERS }
+    );
   } catch (err: unknown) {
     console.error('[API Social Link DELETE Error]:', err);
     return NextResponse.json(
       { error: 'Failed to delete social link.' },
-      { status: 500 }
+      { status: 500, headers: NO_CACHE_HEADERS }
     );
   }
 }

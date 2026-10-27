@@ -64,7 +64,7 @@ export default function AdminSocialLinksPage() {
 
   const fetchLinks = async () => {
     try {
-      const res = await fetch('/api/admin/social-links');
+      const res = await fetch('/api/admin/social-links', { cache: 'no-store' });
       if (res.status === 401) {
         window.location.href = '/admin/login?from=' + encodeURIComponent(window.location.pathname);
         return;
@@ -102,6 +102,10 @@ export default function AdminSocialLinksPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to save social link.');
+
+      if (data && data.link) {
+        setLinks((prev) => prev.map((l) => (l.id === data.link.id ? data.link : l)));
+      }
 
       setStatusMsg({
         type: 'success',

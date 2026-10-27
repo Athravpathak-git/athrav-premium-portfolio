@@ -29,7 +29,7 @@ export default function AdminProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchProfile = () => {
-    fetch('/api/admin/profile')
+    fetch('/api/admin/profile', { cache: 'no-store' })
       .then((res) => {
         if (res.status === 401) {
           window.location.href = '/admin/login?from=' + encodeURIComponent(window.location.pathname);
@@ -231,6 +231,10 @@ export default function AdminProfilePage() {
           throw new Error(Array.isArray(firstErr) ? firstErr[0] : data.error || 'Validation error.');
         }
         throw new Error(data.error || 'Failed to update profile.');
+      }
+
+      if (data && data.profile) {
+        setProfile(data.profile);
       }
 
       setStatusMsg({ type: 'success', text: 'All profile details successfully updated and saved.' });

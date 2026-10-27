@@ -10,12 +10,16 @@ export default function AdminLoginPage() {
   const [status, setStatus] = useState<'idle' | 'checking' | 'loading' | 'error'>('checking');
   const [errorMessage, setErrorMessage] = useState('');
   const [sessionExpiredNotice, setSessionExpiredNotice] = useState(false);
+  const [inactivityNotice, setInactivityNotice] = useState(false);
 
   // Check if session is already active or if user arrived via expiration redirect
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('reason') === 'session_expired') {
+      const reason = params.get('reason');
+      if (reason === 'inactivity') {
+        setInactivityNotice(true);
+      } else if (reason === 'session_expired') {
         setSessionExpiredNotice(true);
       }
     }
@@ -47,6 +51,7 @@ export default function AdminLoginPage() {
     setStatus('loading');
     setErrorMessage('');
     setSessionExpiredNotice(false);
+    setInactivityNotice(false);
 
     try {
       const res = await fetch('/api/auth/login', {
@@ -104,7 +109,19 @@ export default function AdminLoginPage() {
 
         {/* Login Form Box */}
         <div className="rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 p-8 space-y-6 shadow-xl">
-          {sessionExpiredNotice && (
+          {inactivityNotice && (
+            <div className="p-4 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 text-amber-950 dark:text-amber-100 text-xs flex items-start gap-3 animate-fade-in shadow-sm">
+              <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">Session Expired</p>
+                <p className="text-amber-900 dark:text-amber-200 mt-0.5">
+                  Your session expired due to inactivity. Please log in again.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {sessionExpiredNotice && !inactivityNotice && (
             <div className="p-4 rounded-xl border border-rosegold/50 dark:border-rosegold/60 bg-rosegold-50 dark:bg-rosegold-900/40 text-burgundy dark:text-cream text-xs flex items-start gap-3 animate-fade-in shadow-sm">
               <AlertCircle className="w-4 h-4 text-rosegold-700 dark:text-rosegold shrink-0 mt-0.5" />
               <div>
