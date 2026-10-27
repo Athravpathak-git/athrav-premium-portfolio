@@ -12,6 +12,8 @@ export const metadata: Metadata = constructMetadata({
   path: '/education',
 });
 
+export const dynamic = 'force-dynamic';
+
 export default async function EducationPage() {
   const educationList = await getEducationList(true);
 

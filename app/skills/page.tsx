@@ -13,6 +13,8 @@ export const metadata: Metadata = constructMetadata({
   path: '/skills',
 });
 
+export const dynamic = 'force-dynamic';
+
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   Programming: <Code2 className="w-4 h-4 text-burgundy dark:text-rosegold" />,
   'Web Development': <Globe className="w-4 h-4 text-burgundy dark:text-rosegold" />,

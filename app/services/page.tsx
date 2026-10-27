@@ -12,6 +12,8 @@ export const metadata: Metadata = constructMetadata({
   path: '/services',
 });
 
+export const dynamic = 'force-dynamic';
+
 const ICON_MAP: Record<string, React.ReactNode> = {
   Layers: <Layers className="w-5 h-5 text-burgundy dark:text-rosegold" />,
   Cpu: <Cpu className="w-5 h-5 text-burgundy dark:text-rosegold" />,

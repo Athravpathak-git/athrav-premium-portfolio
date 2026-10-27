@@ -12,6 +12,8 @@ export const metadata: Metadata = constructMetadata({
   path: '/achievements',
 });
 
+export const dynamic = 'force-dynamic';
+
 export default async function AchievementsPage() {
   const achievements = await getAchievementsList(true);
 

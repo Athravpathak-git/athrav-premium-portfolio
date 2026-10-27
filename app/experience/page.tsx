@@ -12,6 +12,8 @@ export const metadata: Metadata = constructMetadata({
   path: '/experience',
 });
 
+export const dynamic = 'force-dynamic';
+
 export default async function ExperiencePage() {
   const experiences = await getExperienceList(true);
 
