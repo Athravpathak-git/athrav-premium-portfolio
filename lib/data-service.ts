@@ -1,3 +1,7 @@
+/**
+ * Data Service & Content Persistence Layer
+ * Guarantees single-source-of-truth email persistence and multi-model synchronization.
+ */
 import fs from 'fs';
 import path from 'path';
 import { isDatabaseConfigured, isDatabaseAvailable, withDbTimeout, getPrisma, recordDatabaseFailure } from './db';
