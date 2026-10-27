@@ -221,7 +221,32 @@ async function main() {
       return;
     }
 
-    // 7. Query matching administrator (Read-Only)
+    // 7. Check status of critical tables
+    const hasSocialLinksTable = existingTables.some(
+      (t) => t.table_name === 'social_links' && (t.table_schema === 'public' || !t.table_schema)
+    );
+    const hasCertCategoriesTable = existingTables.some(
+      (t) => t.table_name === 'certificate_categories' && (t.table_schema === 'public' || !t.table_schema)
+    );
+
+    console.log('\n--- EXTENSION TABLES AUDIT ---');
+    console.log(`Table "public.certificate_categories": ${hasCertCategoriesTable ? 'PRESENT' : 'MISSING (Run npm run prisma:deploy)'}`);
+    console.log(`Table "public.social_links":           ${hasSocialLinksTable ? 'PRESENT' : 'MISSING (Run npm run prisma:deploy)'}`);
+
+    if (!hasSocialLinksTable) {
+      console.log('\n====================================================');
+      console.log('NOTICE: TABLE "public.social_links" HAS NOT YET BEEN CREATED');
+      console.log('====================================================');
+      console.log('Reason:');
+      console.log('  Migration "20261027170000_social_links" is committed in the repository,');
+      console.log('  but has not yet been applied to this database instance.');
+      console.log('\nSafe Fix:');
+      console.log('  Run the non-destructive deployment command:');
+      console.log('    npm run prisma:deploy');
+      console.log('====================================================');
+    }
+
+    // 8. Query matching administrator (Read-Only)
     const matchingUsers = await prisma.adminUser.findMany({
       where: {
         OR: [

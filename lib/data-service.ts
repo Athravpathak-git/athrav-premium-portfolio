@@ -2749,8 +2749,16 @@ export async function createSocialLink(data: Omit<SocialLinkData, 'id' | 'create
       };
     } catch (err) {
       console.error('[DataService] Prisma createSocialLink error:', err);
-      recordDatabaseFailure(err);
-      throw new Error('Database operation failed while creating social link.');
+      const isTableMissing =
+        (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'P2021') ||
+        (err instanceof Error && err.message.includes('does not exist in the current database'));
+
+      if (isTableMissing) {
+        throw new Error(
+          'Database table "public.social_links" does not exist yet. Please run "npm run prisma:deploy" to apply pending migrations.'
+        );
+      }
+      throw new Error(err instanceof Error ? err.message : 'Database operation failed while creating social link.');
     }
   }
 
@@ -2872,6 +2880,15 @@ export async function updateSocialLink(id: string, data: Partial<SocialLinkData>
     } catch (err) {
       console.error('[DataService] Prisma updateSocialLink error:', err);
       // Do NOT trip the circuit breaker on application query errors
+      const isTableMissing =
+        (typeof err === 'object' && err !== null && 'code' in err && (err as { code: string }).code === 'P2021') ||
+        (err instanceof Error && err.message.includes('does not exist in the current database'));
+
+      if (isTableMissing) {
+        throw new Error(
+          'Database table "public.social_links" does not exist yet. Please run "npm run prisma:deploy" to apply pending migrations.'
+        );
+      }
       throw new Error(err instanceof Error ? err.message : 'Database operation failed while updating social link.');
     }
   }
