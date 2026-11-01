@@ -16,6 +16,10 @@ if (!globalThis.__athravDbCircuitBreaker) {
 }
 
 export function isDatabaseConfigured(): boolean {
+  if (process.env.VITEST === 'true' || process.env.NODE_ENV === 'test') {
+    return false;
+  }
+
   const url = process.env.DATABASE_URL;
   if (!url || !url.trim()) return false;
   

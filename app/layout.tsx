@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/public/ThemeProvider';
 import { Navbar } from '@/components/public/Navbar';
 import { Footer } from '@/components/public/Footer';
+import { FooterWrapper } from '@/components/public/FooterWrapper';
 import { constructMetadata, generatePersonJsonLd } from '@/lib/seo';
 
 const inter = Inter({
@@ -61,7 +62,9 @@ export default function RootLayout({
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <FooterWrapper>
+              <Footer />
+            </FooterWrapper>
           </div>
         </ThemeProvider>
       </body>

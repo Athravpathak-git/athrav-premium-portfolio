@@ -60,42 +60,44 @@ export default async function AdminSecurityPage() {
         </div>
 
         {logs.length > 0 ? (
-          <table className="w-full text-left text-xs font-mono">
-            <thead className="bg-cream-100/70 dark:bg-charcoal-700 border-b border-border-soft dark:border-charcoal-600 text-charcoal/70 dark:text-cream/70 uppercase text-[10px]">
-              <tr>
-                <th className="p-4">Action</th>
-                <th className="p-4">Entity</th>
-                <th className="p-4">IP Address</th>
-                <th className="p-4">Metadata</th>
-                <th className="p-4 text-right">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border-soft dark:divide-charcoal-700">
-              {logs.map((log) => (
-                <tr key={log.id} className="hover:bg-cream-50 dark:hover:bg-charcoal-700/50">
-                  <td className="p-4">
-                    <span
-                      className={`inline-block px-2 py-0.5 rounded text-[10px] ${
-                        log.action.includes('SUCCESS')
-                          ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
-                          : log.action.includes('FAILED')
-                          ? 'bg-red-500/10 text-red-700 dark:text-red-300 border border-red-500/20'
-                          : 'bg-cream-100 dark:bg-charcoal-700 text-charcoal/80 dark:text-cream/80 border border-border-soft dark:border-charcoal-600'
-                      }`}
-                    >
-                      {log.action}
-                    </span>
-                  </td>
-                  <td className="p-4 text-charcoal/80 dark:text-cream/80">{log.entityType || '—'}</td>
-                  <td className="p-4 text-charcoal/80 dark:text-cream/80">{log.ipAddress || '127.0.0.1'}</td>
-                  <td className="p-4 text-charcoal/80 dark:text-cream/80 truncate max-w-xs">{log.metadata || '—'}</td>
-                  <td className="p-4 text-right text-charcoal/80 dark:text-cream/80">
-                    {new Date(log.createdAt).toLocaleString()}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs font-mono min-w-[650px]">
+              <thead className="bg-cream-100/70 dark:bg-charcoal-700 border-b border-border-soft dark:border-charcoal-600 text-charcoal/70 dark:text-cream/70 uppercase text-[10px]">
+                <tr>
+                  <th className="p-4">Action</th>
+                  <th className="p-4">Entity</th>
+                  <th className="p-4">IP Address</th>
+                  <th className="p-4">Metadata</th>
+                  <th className="p-4 text-right">Timestamp</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border-soft dark:divide-charcoal-700">
+                {logs.map((log) => (
+                  <tr key={log.id} className="hover:bg-cream-50 dark:hover:bg-charcoal-700/50">
+                    <td className="p-4">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded text-[10px] ${
+                          log.action.includes('SUCCESS')
+                            ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'
+                            : log.action.includes('FAILED')
+                            ? 'bg-red-500/10 text-red-700 dark:text-red-300 border border-red-500/20'
+                            : 'bg-cream-100 dark:bg-charcoal-700 text-charcoal/80 dark:text-cream/80 border border-border-soft dark:border-charcoal-600'
+                        }`}
+                      >
+                        {log.action}
+                      </span>
+                    </td>
+                    <td className="p-4 text-charcoal/80 dark:text-cream/80">{log.entityType || '—'}</td>
+                    <td className="p-4 text-charcoal/80 dark:text-cream/80">{log.ipAddress || '127.0.0.1'}</td>
+                    <td className="p-4 text-charcoal/80 dark:text-cream/80 truncate max-w-xs">{log.metadata || '—'}</td>
+                    <td className="p-4 text-right text-charcoal/80 dark:text-cream/80">
+                      {new Date(log.createdAt).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="text-center py-16 text-charcoal/70 text-xs font-mono">
             No audit records recorded yet.

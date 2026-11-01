@@ -115,7 +115,7 @@ export default function AdminMessagesPage() {
       {messages.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Messages List Sidebar */}
-          <div className="md:col-span-5 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-4 space-y-2 h-[600px] overflow-y-auto">
+          <div className="md:col-span-5 rounded-2xl border border-border-soft dark:border-charcoal-700 bg-white dark:bg-charcoal-800 shadow-sm p-4 space-y-2 max-h-[320px] md:max-h-none md:h-[600px] overflow-y-auto">
             {messages.map((msg) => (
               <div
                 key={msg.id}

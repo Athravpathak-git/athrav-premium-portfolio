@@ -75,26 +75,28 @@ export default async function AdminAnalyticsPage() {
           <h3 className="text-sm font-semibold text-burgundy dark:text-cream">Monitored Routes Overview</h3>
           <span className="text-xs font-mono text-charcoal/70 dark:text-cream/70">First-Party Endpoints</span>
         </div>
-        <table className="w-full text-left text-xs">
-          <thead className="bg-cream-100/70 dark:bg-charcoal-900/80 border-b border-border-soft dark:border-charcoal-700 font-mono text-charcoal/70 dark:text-cream/70 uppercase">
-            <tr>
-              <th className="p-4">Path</th>
-              <th className="p-4">Section Name</th>
-              <th className="p-4 text-right">Privacy Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border-soft dark:divide-charcoal-700">
-            {analytics.pageViewsSummary.map((route) => (
-              <tr key={route.path} className="hover:bg-cream-50 dark:hover:bg-charcoal-700/50 transition-colors">
-                <td className="p-4 font-mono font-medium text-burgundy dark:text-cream">{route.path}</td>
-                <td className="p-4 text-charcoal/85 dark:text-cream/85">{route.description}</td>
-                <td className="p-4 text-right font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
-                  Zero Third-Party Cookies
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[450px]">
+            <thead className="bg-cream-100/70 dark:bg-charcoal-900/80 border-b border-border-soft dark:border-charcoal-700 font-mono text-charcoal/70 dark:text-cream/70 uppercase">
+              <tr>
+                <th className="p-4">Path</th>
+                <th className="p-4">Section Name</th>
+                <th className="p-4 text-right">Privacy Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border-soft dark:divide-charcoal-700">
+              {analytics.pageViewsSummary.map((route) => (
+                <tr key={route.path} className="hover:bg-cream-50 dark:hover:bg-charcoal-700/50 transition-colors">
+                  <td className="p-4 font-mono font-medium text-burgundy dark:text-cream">{route.path}</td>
+                  <td className="p-4 text-charcoal/85 dark:text-cream/85">{route.description}</td>
+                  <td className="p-4 text-right font-mono text-emerald-700 dark:text-emerald-400 font-semibold">
+                    Zero Third-Party Cookies
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -531,7 +531,7 @@ export default function AdminUsersPage() {
       {/* ========================================================================= */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white rounded-2xl border border-border-soft shadow-2xl p-6 space-y-5 animate-fade-in">
+          <div className="w-full max-w-lg bg-white rounded-2xl border border-border-soft shadow-2xl p-6 space-y-5 animate-fade-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-border-soft">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-burgundy/10 text-burgundy flex items-center justify-center">
@@ -670,7 +670,7 @@ export default function AdminUsersPage() {
       {/* ========================================================================= */}
       {editingUser && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white rounded-2xl border border-border-soft shadow-2xl p-6 space-y-5 animate-fade-in">
+          <div className="w-full max-w-lg bg-white rounded-2xl border border-border-soft shadow-2xl p-6 space-y-5 animate-fade-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-border-soft">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-burgundy/10 text-burgundy flex items-center justify-center">
@@ -779,7 +779,7 @@ export default function AdminUsersPage() {
       {/* ========================================================================= */}
       {passwordModalUser && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white rounded-2xl border border-border-soft shadow-2xl p-6 space-y-5 animate-fade-in">
+          <div className="w-full max-w-md bg-white rounded-2xl border border-border-soft shadow-2xl p-6 space-y-5 animate-fade-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-border-soft">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-burgundy/10 text-burgundy flex items-center justify-center">
@@ -868,7 +868,7 @@ export default function AdminUsersPage() {
       {/* ========================================================================= */}
       {deletingUser && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white rounded-2xl border border-red-200 shadow-2xl p-6 space-y-4 animate-fade-in">
+          <div className="w-full max-w-md bg-white rounded-2xl border border-red-200 shadow-2xl p-6 space-y-4 animate-fade-in max-h-[90vh] overflow-y-auto">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center shrink-0">
                 <AlertCircle className="w-5 h-5" />

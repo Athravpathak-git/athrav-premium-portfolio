@@ -154,12 +154,11 @@ export default function AdminLoginPage() {
                   id="admin_identifier"
                   type="text"
                   required
-                  autoFocus
                   autoComplete="username"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="Enter your username or email"
-                  className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
+                  className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-base sm:text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
                 />
                 <User className="w-4 h-4 text-rosegold-700 dark:text-rosegold absolute left-3.5 top-3" />
               </div>
@@ -181,7 +180,7 @@ export default function AdminLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
+                  className="w-full bg-cream-50 dark:bg-charcoal-700 border border-border-soft dark:border-charcoal-600 rounded-xl px-4 py-2.5 pl-10 text-base sm:text-sm text-charcoal dark:text-cream placeholder-charcoal/40 dark:placeholder-cream/40 focus:outline-none focus:ring-2 focus:ring-burgundy dark:focus:ring-rosegold focus:border-burgundy dark:focus:border-rosegold transition-all"
                 />
                 <Lock className="w-4 h-4 text-rosegold-700 dark:text-rosegold absolute left-3.5 top-3" />
               </div>

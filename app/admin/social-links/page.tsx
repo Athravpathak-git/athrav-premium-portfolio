@@ -643,7 +643,7 @@ export default function AdminSocialLinksPage() {
       {/* Add Custom Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-lg rounded-2xl border border-border-soft bg-white p-6 shadow-2xl space-y-4">
+          <div className="relative w-full max-w-lg rounded-2xl border border-border-soft bg-white p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-border-soft">
               <div>
                 <h3 className="text-lg font-serif font-bold text-burgundy">Add Custom Channel</h3>
@@ -776,7 +776,7 @@ export default function AdminSocialLinksPage() {
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-md rounded-2xl border border-border-soft bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-border-soft bg-white p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-serif font-bold text-burgundy mb-2">Delete Custom Link?</h3>
             <p className="text-xs text-charcoal/80 mb-6">
               Are you sure you want to remove this channel? This action cannot be undone.

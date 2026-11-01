@@ -252,53 +252,55 @@ export default function AdminServicesPage() {
 
       {/* Listing Table */}
       <div className="rounded-2xl border border-border-soft bg-white shadow-sm overflow-hidden">
-        <table className="w-full text-left text-xs">
-          <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
-            <tr>
-              <th className="p-4">Service</th>
-              <th className="p-4">Icon</th>
-              <th className="p-4">Tech Stack</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border-soft">
-            {items.map((item) => (
-              <tr key={item.id} className="hover:bg-cream-50 transition-colors">
-                <td className="p-4 font-semibold text-burgundy">{item.title}</td>
-                <td className="p-4 font-mono text-charcoal/70">{item.icon || 'Layers'}</td>
-                <td className="p-4 text-charcoal/85 font-mono">{item.techStack?.join(', ')}</td>
-                <td className="p-4">
-                  <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
-                      item.isPublished
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-cream-100 text-charcoal/70 border border-border-soft'
-                    }`}
-                  >
-                    {item.isPublished ? 'Published' : 'Draft'}
-                  </span>
-                </td>
-                <td className="p-4 text-right space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => handleOpenEditor(item)}
-                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
-                  >
-                    <Edit2 className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(item.id, item.title)}
-                    className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs min-w-[550px]">
+            <thead className="bg-cream-100/70 border-b border-border-soft font-mono text-charcoal/70 uppercase">
+              <tr>
+                <th className="p-4">Service</th>
+                <th className="p-4">Icon</th>
+                <th className="p-4">Tech Stack</th>
+                <th className="p-4">Status</th>
+                <th className="p-4 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border-soft">
+              {items.map((item) => (
+                <tr key={item.id} className="hover:bg-cream-50 transition-colors">
+                  <td className="p-4 font-semibold text-burgundy">{item.title}</td>
+                  <td className="p-4 font-mono text-charcoal/70">{item.icon || 'Layers'}</td>
+                  <td className="p-4 text-charcoal/85 font-mono">{item.techStack?.join(', ')}</td>
+                  <td className="p-4">
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono ${
+                        item.isPublished
+                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                          : 'bg-cream-100 text-charcoal/70 border border-border-soft'
+                      }`}
+                    >
+                      {item.isPublished ? 'Published' : 'Draft'}
+                    </span>
+                  </td>
+                  <td className="p-4 text-right space-x-2">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditor(item)}
+                      className="p-1.5 rounded hover:bg-cream-100 text-charcoal/85 hover:text-burgundy"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item.id, item.title)}
+                      className="p-1.5 rounded hover:bg-cream-100 text-charcoal/70 hover:text-red-400"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

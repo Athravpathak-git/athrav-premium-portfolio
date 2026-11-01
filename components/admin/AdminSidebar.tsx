@@ -183,7 +183,7 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
   return (
     <>
       {/* 1. Mobile Top Navigation Bar (Visible only on < lg screens) */}
-      <header className="lg:hidden sticky top-0 z-30 bg-burgundy border-b border-burgundy-800 text-cream px-4 py-2.5 flex items-center justify-between shadow-md">
+      <header className="lg:hidden sticky top-0 z-40 bg-burgundy border-b border-burgundy-800 text-cream px-4 py-2.5 flex items-center justify-between shadow-md">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -224,7 +224,7 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
         <div className="lg:hidden">
           {/* Backdrop overlay */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 transition-opacity animate-fade-in"
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 transition-opacity animate-fade-in"
             onClick={() => setMobileOpen(false)}
             aria-hidden="true"
           />
@@ -234,7 +234,7 @@ export function AdminSidebar({ user }: { user: { username: string; email: string
             role="dialog"
             aria-modal="true"
             aria-label="Admin Navigation Drawer"
-            className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-burgundy border-r border-burgundy-800 text-cream flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-in-out transform translate-x-0"
+            className="fixed inset-y-0 left-0 z-[60] w-72 max-w-[85vw] bg-burgundy border-r border-burgundy-800 text-cream flex flex-col justify-between shadow-2xl transition-transform duration-300 ease-in-out transform translate-x-0"
           >
             {navContent(true)}
           </aside>
